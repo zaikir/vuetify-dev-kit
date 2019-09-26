@@ -1,3 +1,3 @@
-export const DataTable = require('./src/components/DataTable');
-export const EditItemDialog = require('./src/components/EditItemDialog');
-export const ConfirmationDialog = require('./src/components/ConfirmationDialog');
+export { default as DataTable } from './src/components/DataTable';
+export { default as EditItemDialog } from './src/components/EditItemDialog';
+export { default as ConfirmationDialog } from './src/components/ConfirmationDialog';
