@@ -40,7 +40,7 @@ export default {
   },
   props: {
     value: {
-      type: Date,
+      type: String,
       required: false,
       default: null
     },
@@ -78,9 +78,21 @@ export default {
       menu: false
     }
   },
+
   computed: {
     dateValue () {
       return moment(this.value || new Date()).toISOString(true).substr(0, 10)
+    }
+  },
+
+  watch: {
+    value: {
+      handler (val) {
+        if (val) {
+          this.dateFormatted = moment(this.value).format('DD.MM.YYYY')
+        }
+      },
+      immediate: true
     }
   },
 
@@ -88,7 +100,7 @@ export default {
     tryToSetDate (str) {
       const parsedDate = this.tryToParseDate(str)
       if (parsedDate) {
-        this.$emit('input', parsedDate)
+        this.$emit('input', parsedDate.toString())
       }
     },
     tryToParseDate (str = '') {
@@ -104,7 +116,7 @@ export default {
       this.dateFormatted = date.format('DD.MM.YYYY')
 
       this.$nextTick(() => {
-        this.$emit('input', date.toDate())
+        this.$emit('input', date.toDate().toString())
 
         this.menu = false
       })
