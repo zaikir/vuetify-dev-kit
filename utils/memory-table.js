@@ -1,4 +1,4 @@
-import capitalize from '../utils/capitalize'
+import capitalize from './capitalize'
 
 export const mapTableData = ({ name }) => ({
   [name]: []
