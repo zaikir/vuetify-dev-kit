@@ -75,6 +75,15 @@
                           :label="field.text"
                           :disabled="field.disabled"
                         />
+                        <date-picker
+                          v-else-if="field.type === 'date'"
+                          v-model="editableItem[field.value]"
+                          :rules="getRules(field)"
+                          :required="field.required"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          @input="test"
+                        />
                         <v-text-field
                           v-else-if="field.mask && field.mask.length"
                           v-model="editableItem[field.value]"
@@ -128,10 +137,14 @@
 
 import { mask } from 'vue-the-mask'
 import EmailValidator from 'email-validator'
+import DatePicker from './DatePicker'
 
 export default {
   directives: {
     mask
+  },
+  components: {
+    DatePicker
   },
   props: {
     title: {
@@ -204,6 +217,10 @@ export default {
     }
   },
   methods: {
+    test (val) {
+      // eslint-disable-next-line no-console
+      console.log(val)
+    },
     getRules ({ rules = [], required }) {
       return [...rules, ...required ? [x => !!x || 'Введите значение'] : []]
     },
