@@ -103,9 +103,6 @@ export default {
       const option = this.filter.options().find(option => loweredText === this.filter.optionText(option).toLowerCase())
 
       if (option) {
-        // eslint-disable-next-line no-console
-        console.log(option, loweredText)
-
         this.handleChange(this.filter.optionValue(option))
       }
     },
