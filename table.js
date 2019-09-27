@@ -25,7 +25,7 @@ export const mapTableActions = ({ name, singular, url, defaultItem = {}, headers
 
     const { page, itemsPerPage, sortBy = '', sortDesc = '' } = options
 
-    const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${search}${headersKey ? `&columns=${this[headersKey].map(({ value }) => value).join(',')}` : ''}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
+    const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${search}${headersKey ? `&columns=${[...this[headersKey].map(({ value }) => value), 'isRemoved'].join(',')+}` : ''}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
 
     const { items, total } = await this.$axios.$get(`${url}${url.includes('?') ? '' : '?'}${query}`, { progress: false })
 

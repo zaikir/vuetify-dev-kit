@@ -145,6 +145,7 @@
       :fields="editDialogProps.fields"
       :title="editDialogProps.title"
       :context="context"
+      :pre-save="editDialogProps.preSave"
       :breakpoints="editDialogProps.breakpoints"
       @onSaved="saveItem"
     >

@@ -83,7 +83,6 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
-                          @input="test"
                         />
                         <v-text-field
                           v-else-if="field.mask && field.mask.length"
@@ -182,6 +181,10 @@ export default {
         cols: 12
       })
     },
+    preSave: {
+      type: Function,
+      default: ({ item }) => item
+    },
     context: {
       type: Object,
       required: false,
@@ -218,10 +221,6 @@ export default {
     }
   },
   methods: {
-    test (val) {
-      // eslint-disable-next-line no-console
-      console.log(val)
-    },
     getRules ({ rules = [], required }) {
       return [...rules, ...required ? [x => !!x || 'Введите значение'] : []]
     },
@@ -236,7 +235,7 @@ export default {
       this.isSaving = true
 
       this.$emit('onSaved', {
-        item: this.editableItem,
+        item: this.preSave({ item: this.editableItem, ...this.context }),
         done: () => {
           this.onValueChanged(false)
           this.isSaving = false
