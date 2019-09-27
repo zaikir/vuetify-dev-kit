@@ -68,6 +68,16 @@
                           :disabled="field.disabled"
                         />
                         <v-text-field
+                          v-else-if="field.type === 'phone'"
+                          v-model="editableItem[field.value]"
+                          :rules="[...getRules(field)]"
+                          :required="field.required"
+                          :label="field.text"
+                          prefix="+"
+                          :disabled="field.disabled"
+                          @keypress="isNumber($event)"
+                        />
+                        <v-text-field
                           v-else-if="field.type === 'number'"
                           v-model.number="editableItem[field.value]"
                           type="number"
@@ -221,6 +231,15 @@ export default {
     }
   },
   methods: {
+    isNumber (evt) {
+      evt = (evt) || window.event
+      const charCode = (evt.which) ? evt.which : evt.keyCode
+      if ((charCode > 31 && (charCode < 48 || charCode > 57))) {
+        evt.preventDefault()
+      } else {
+        return true
+      }
+    },
     getRules ({ rules = [], required }) {
       return [...rules, ...required ? [x => !!x || 'Введите значение'] : []]
     },

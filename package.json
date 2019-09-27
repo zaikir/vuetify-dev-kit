@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ZaidulinKirill/vuetify-development-kit#readme",
   "dependencies": {
+    "bson": "^4.0.2",
     "email-validator": "^2.0.4",
     "libphonenumber-js": "^1.7.25",
     "moment": "^2.24.0",

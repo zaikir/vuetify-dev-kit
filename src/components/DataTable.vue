@@ -285,6 +285,11 @@ export default {
       type: Object,
 
       default: () => ({})
+    },
+    preFilter: {
+      type: Function,
+
+      default: ({ filter }) => filter
     }
   },
   data () {
@@ -376,7 +381,10 @@ export default {
       this.$emit('updateSource', {
         options: this.options,
         search: this.search,
-        ...getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {})
+        filter: this.preFilter({
+          filter: getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
+          ...this.context
+        })
       })
 
       if (this.tabs && this.tabs.length && updateCounts) {
@@ -385,7 +393,12 @@ export default {
         this.$emit('updateCounts', {
           options: this.options,
           search: this.search,
-          filters: this.tabs.map(tab => getFilterData(tab)),
+          filters: this.tabs.map(
+            tab => ({
+              filter: this.preFilter({ filter: getFilterData(tab).filter, ...this.context }),
+              id: getFilterData(tab).id
+            })
+          ),
           done: (counts) => {
             this.totalCounts = counts.reduce((acc, item) => {
               acc[item.id] = item.value
@@ -456,10 +469,10 @@ export default {
         }, 500)
       }
     },
-    formatPhoneNumber (phone) {
-      const phoneNumber = parsePhoneNumberFromString(phone)
+    formatPhoneNumber (phone = '') {
+      const phoneNumber = parsePhoneNumberFromString('+' + phone)
       if (!phoneNumber) {
-        return parsePhoneNumberFromString('+7' + phone).formatNational()
+        return phone.length ? '+' + phone : null
       } else {
         return phoneNumber.formatInternational()
       }

@@ -1,3 +1,4 @@
+import { ObjectID } from 'bson'
 import capitalize from './capitalize'
 
 export const mapTableData = ({ name }) => ({
@@ -19,13 +20,15 @@ export const mapTableFilters = ({ name, filters = [] }) => ({
   }
 })
 
-export const mapTableActions = ({ name, singular, url, defaultItem = {}, headersKey = 'headers' }) => ({
+export const mapTableActions = ({ name, singular, url, defaultItem = {
+  _id: (new ObjectID()).toString()
+}, headersKey = 'headers' }) => ({
   async [`update${capitalize(name)}`] ({ options, search = '', filter }) {
     this[`${name}Loading`] = true
 
     const { page, itemsPerPage, sortBy = '', sortDesc = '' } = options
 
-    const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${search}${headersKey ? `&columns=${[...this[headersKey].map(({ value }) => value), 'isRemoved'].join(',')+}` : ''}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
+    const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${search}${headersKey ? `&columns=${[...this[headersKey].map(({ value }) => value), 'isRemoved'].join(',')}` : ''}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
 
     const { items, total } = await this.$axios.$get(`${url}${url.includes('?') ? '' : '?'}${query}`, { progress: false })
 
