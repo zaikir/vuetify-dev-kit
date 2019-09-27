@@ -70,6 +70,7 @@
                         <v-text-field
                           v-else-if="field.type === 'number'"
                           v-model.number="editableItem[field.value]"
+                          type="number"
                           :rules="getRules(field)"
                           :required="field.required"
                           :label="field.text"
