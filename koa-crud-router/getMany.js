@@ -6,7 +6,7 @@ export default ({
   briefColumns = '_id'
 }) => async (ctx) => {
   const {
-    sortBy, sortDesc, page = 1, itemsPerPage = 0, columns, filter = '{}', postGet = x => x
+    sortBy, sortDesc, page = 1, itemsPerPage = '-1', columns, filter = '{}', postGet = x => x
   } = ctx.request.query
 
   const totalSearchQuery = {
@@ -16,17 +16,21 @@ export default ({
   }
 
   const [items, total] = await Promise.all([
-    model.find(totalSearchQuery)
-      .collation({ locale: 'ru' })
-      .sort(sortBy && { [sortBy]: sortDesc === 'true' ? -1 : 1 })
-      .skip(itemsPerPage !== '-1' ? (page - 1) * parseInt(itemsPerPage, 10) : 0)
-      .limit(itemsPerPage !== '-1' ? parseInt(itemsPerPage, 10) : 0),
+    model
+      .aggregate([
+        { $match: totalSearchQuery },
+        sortBy && { [sortBy]: sortDesc === 'true' ? -1 : 1 },
+        itemsPerPage !== '-1' && { $skip: (page - 1) * parseInt(itemsPerPage, 10) },
+        itemsPerPage !== '-1' && { $limit: parseInt(itemsPerPage, 10) },
+        columns && { $project: applyProjection(columns === 'brief' ? briefColumns : columns) }
+      ].filter(x => !!x))
+      .collation({ locale: 'ru' }),
+
     model.countDocuments(totalSearchQuery)
   ])
 
   ctx.body = {
     items: items
-      .map(applyProjection(columns === 'brief' ? briefColumns : columns))
       .map(x => postGet(x)),
     total
   }
