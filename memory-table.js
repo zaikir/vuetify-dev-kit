@@ -11,7 +11,7 @@ export const mapTableFilters = ({ name, filters = [] }) => ({
 })
 
 export const mapTableActions = ({ name, singular, defaultItem = {}, removedKey = 'isRemoved' }) => ({
-  [`get${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}`]: ({ row, done, items = [] }) => {
+  [`get${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}`]: ({ row, done, items }) => {
     const filteredItems = items.filter(x => !x[removedKey])
 
     if (row) {
@@ -20,12 +20,14 @@ export const mapTableActions = ({ name, singular, defaultItem = {}, removedKey =
       done({ ...defaultItem })
     }
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Added`]: ({ item, done, items = [] }) => {
+  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Added`]: ({ item, done, items }) => {
     items.push({ ...item })
+    // eslint-disable-next-line no-console
+    console.log(items)
 
     done()
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Updated`]: ({ item, done, items = [] }) => {
+  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Updated`]: ({ item, done, items }) => {
     const index = items.findIndex(({ _id }) => item._id === _id)
     if (index === -1) { throw new Error('Item not found') }
 
@@ -33,7 +35,7 @@ export const mapTableActions = ({ name, singular, defaultItem = {}, removedKey =
 
     done()
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Deleted`]: ({ item, done, items = [] }) => {
+  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Deleted`]: ({ item, done, items }) => {
     const index = items.findIndex(({ _id }) => item._id === _id)
     if (index === -1) { throw new Error('Item not found') }
 

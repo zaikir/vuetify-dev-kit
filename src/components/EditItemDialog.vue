@@ -50,6 +50,7 @@
                           :item-text="field.itemText"
                           :item-value="field.itemValue"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-switch
                           v-else-if="field.type === 'switch'"
@@ -58,6 +59,7 @@
                           :disabled="field.disabled"
                           :rules="getRules(field)"
                           :required="field.required"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else-if="field.type === 'email'"
@@ -66,6 +68,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else-if="field.type === 'phone'"
@@ -76,6 +79,7 @@
                           prefix="+"
                           :disabled="field.disabled"
                           @keypress="isNumber($event)"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else-if="field.type === 'number'"
@@ -85,6 +89,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <date-picker
                           v-else-if="field.type === 'date'"
@@ -93,6 +98,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else-if="field.mask && field.mask.length"
@@ -102,6 +108,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else
@@ -110,6 +117,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
                         />
                       </v-col>
                       <slot name="form.append" :item="editableItem" :context="context" />
@@ -239,6 +247,11 @@ export default {
     }
   },
   methods: {
+    onFieldValueChanged (func, newValue) {
+      if (func) {
+        func({ value: newValue, item: this.editableItem, ...this.context })
+      }
+    },
     isNumber (evt) {
       evt = (evt) || window.event
       const charCode = (evt.which) ? evt.which : evt.keyCode
