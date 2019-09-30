@@ -5,6 +5,7 @@
     scrollable
     :persistent="persistent"
     :max-width="maxWidth"
+    class="edit-item-dialog"
     @input="onValueChanged"
   >
     <v-card :flat="flat">
@@ -41,7 +42,7 @@
                         :xl="field.xl"
                       >
                         <v-autocomplete
-                          v-if="field.type === 'select'"
+                          v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint.smAndDown)"
                           v-model="editableItem[field.value]"
                           :rules="getRules(field)"
                           :required="field.required"
@@ -52,6 +53,44 @@
                           :disabled="field.disabled"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
+                        <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint.smAndDown" no-gutters>
+                          <v-col cols="12" style="margin-bottom: -10px;">
+                            <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
+                              {{ field.text }}
+                            </v-subheader>
+                          </v-col>
+                          <v-col cols="12">
+                            <v-btn-toggle
+                              v-model="editableItem[field.value]"
+                              mandatory
+                              class="mb-2"
+                              style="width: 100%"
+                              :active-class="field.activeClass || 'select-field-toggle-btn-selected'"
+                              :rules="getRules(field)"
+                              :required="field.required"
+                              :label="field.text"
+                              :disabled="field.disabled"
+                              @input="onFieldValueChanged(field.onChange, $event)"
+                            >
+                              <v-row no-gutters>
+                                <v-col
+                                  v-for="option in field.options({item: editableItem, ...context})"
+                                  :key="option[field.itemValue]"
+                                  :cols="field.optionCols || 6"
+                                  :sm="field.optionSm || 4"
+                                >
+                                  <v-btn
+                                    :value="option[field.itemValue]"
+                                    text
+                                    block
+                                  >
+                                    {{ option[field.itemText] }}
+                                  </v-btn>
+                                </v-col>
+                              </v-row>
+                            </v-btn-toggle>
+                          </v-col>
+                        </v-row>
                         <v-switch
                           v-else-if="field.type === 'switch'"
                           v-model="editableItem[field.value]"
@@ -290,3 +329,8 @@ export default {
   }
 }
 </script>
+<style>
+  .select-field-toggle-btn-selected {
+    background-color: rgb(181, 255, 121);
+  }
+</style>
