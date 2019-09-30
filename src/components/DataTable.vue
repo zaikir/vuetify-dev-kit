@@ -146,6 +146,7 @@
       :title="editDialogProps.title"
       :context="context"
       :pre-save="editDialogProps.preSave"
+      :pre-open="editDialogProps.preOpen"
       :breakpoints="editDialogProps.breakpoints"
       @onSaved="saveItem"
     >
@@ -263,7 +264,9 @@ export default {
       default: () => ({
         maxWidth: '500px',
         fields: [],
-        persistent: true
+        persistent: true,
+        preSave: () => {},
+        preOpen: () => {}
       })
     },
     fontSize: {

@@ -195,6 +195,10 @@ export default {
       type: Function,
       default: ({ item }) => item
     },
+    preOpen: {
+      type: Function,
+      default: ({ item }) => {}
+    },
     context: {
       type: Object,
       required: false,
@@ -203,7 +207,6 @@ export default {
   },
   data () {
     return {
-      valueCopy: false,
       editableItem: {},
       isSaving: false,
       isAdded: false,
@@ -211,6 +214,11 @@ export default {
     }
   },
   watch: {
+    value (val) {
+      if (val) {
+        this.preOpen({ item: this.editableItem, ...this.context })
+      }
+    },
     item: {
       immediate: true,
       handler (value) {
