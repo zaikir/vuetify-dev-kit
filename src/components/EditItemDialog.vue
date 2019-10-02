@@ -51,6 +51,7 @@
                           :item-text="field.itemText"
                           :item-value="field.itemValue"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint.smAndDown" no-gutters>
@@ -98,6 +99,7 @@
                           :disabled="field.disabled"
                           :rules="getRules(field)"
                           :required="field.required"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
@@ -107,6 +109,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
@@ -117,6 +120,7 @@
                           :label="field.text"
                           prefix="+"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @keypress="isNumber($event)"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -128,6 +132,17 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        />
+                        <v-textarea
+                          v-else-if="field.type === 'textArea'"
+                          v-model="editableItem[field.value]"
+                          :rules="getRules(field)"
+                          :required="field.required"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <date-picker
@@ -137,6 +152,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
@@ -147,6 +163,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
@@ -156,6 +173,7 @@
                           :required="field.required"
                           :label="field.text"
                           :disabled="field.disabled"
+                          :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                       </v-col>

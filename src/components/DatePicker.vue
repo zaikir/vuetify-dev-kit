@@ -16,6 +16,7 @@
         :label="label"
         :rules="[...rules, isDateValid]"
         prepend-icon="event"
+        :outlined="outlined"
         v-on="on"
         @input="tryToSetDate"
       />
@@ -60,6 +61,11 @@ export default {
       default: false
     },
     disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    outlined: {
       type: Boolean,
       required: false,
       default: false
