@@ -80,7 +80,7 @@
       <template v-for="header in headers" :slot="`item.${header.value}`" slot-scope="{item}">
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
-            {{ item[header.value] ? formatPhoneNumber(item[header.value]) : '&mdash;' }}
+            {{ item[header.value] ? formatPhoneNumber(item[header.value], header.countryCode) : '&mdash;' }}
           </template>
           <template v-else-if="header.display === 'switch'">
             <v-switch :input-value="item[header.value]" flat disabled />
@@ -472,8 +472,8 @@ export default {
         }, 500)
       }
     },
-    formatPhoneNumber (phone = '') {
-      const phoneNumber = parsePhoneNumberFromString('+' + phone)
+    formatPhoneNumber (phone = '', countryCode = '7') {
+      const phoneNumber = parsePhoneNumberFromString('+' + countryCode + phone)
       if (!phoneNumber) {
         return phone.length ? '+' + phone : null
       } else {
