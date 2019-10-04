@@ -88,6 +88,27 @@
           <template v-else-if="header.display === 'checkbox'">
             <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
           </template>
+          <template v-else-if="header.display === 'image'">
+            <v-img
+              v-if="item[header.value]"
+              :src="item[header.value].url"
+              aspect-ratio="1"
+              max-width="60px"
+              contain
+              class="image"
+              @click="openLink(item[header.value].url)"
+            >
+              <template v-slot:placeholder>
+                <v-row
+                  class="fill-height ma-0"
+                  align="center"
+                  justify="center"
+                >
+                  <v-progress-circular indeterminate color="black" />
+                </v-row>
+              </template>
+            </v-img>
+          </template>
           <template v-else>
             {{ item[header.value] || '&mdash;' }}
           </template>
@@ -345,6 +366,9 @@ export default {
     }, 300)
   },
   methods: {
+    openLink (url) {
+      window.open(url, '_blank')
+    },
     debouncedUpdateSource () {
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout)
@@ -527,6 +551,17 @@ export default {
 
   .universal-table th.nowrap {
     white-space: nowrap;
+  }
+
+  .universal-table .v-image {
+    border: thin solid rgba(0, 0, 0, 0.322);
+    border-radius: 6px;
+    margin: 4px;
+    cursor: pointer;
+  }
+
+  .universal-table .v-image:hover {
+    border: thin solid rgba(0, 0, 0, 1.0);
   }
 
   .universal-table .tabs .v-tab {

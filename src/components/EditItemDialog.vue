@@ -145,6 +145,18 @@
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
+                        <drag-and-drop-image-container
+                          v-else-if="field.type === 'image'"
+                          v-model="editableItem[field.value]"
+                          single
+                          :rules="getRules(field)"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          :url="field.uploadUrl || '/api/uploads'"
+                          :accepted-files="field.acceptedFiles"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        />
                         <drag-and-drop-images-container
                           v-else-if="field.type === 'images'"
                           v-model="editableItem[field.value]"
@@ -224,6 +236,7 @@
 import { mask } from 'vue-the-mask'
 import EmailValidator from 'email-validator'
 import DatePicker from './DatePicker'
+import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
 
 export default {
@@ -232,6 +245,7 @@ export default {
   },
   components: {
     DatePicker,
+    DragAndDropImageContainer,
     DragAndDropImagesContainer
   },
   props: {
