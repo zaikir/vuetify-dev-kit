@@ -20,9 +20,8 @@ export const mapTableFilters = ({ name, filters = [] }) => ({
   }
 })
 
-export const mapTableActions = ({ name, singular, url, defaultItem = {
-  _id: (new ObjectID()).toString()
-}, headersKey = 'headers' }) => ({
+export const mapTableActions = ({ name, singular, url, defaultItem = {},
+  headersKey = 'headers' }) => ({
   async [`update${capitalize(name)}`] ({ options, search = '', filter }) {
     this[`${name}Loading`] = true
 
@@ -52,7 +51,7 @@ export const mapTableActions = ({ name, singular, url, defaultItem = {
     if (row) {
       done(await this.$axios.$get(`${url}/${row._id}`, { progress: false }))
     } else {
-      done({ ...defaultItem })
+      done({ _id: (new ObjectID()).toString(), ...defaultItem })
     }
   },
   async [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Added`] ({ item, done }) {
