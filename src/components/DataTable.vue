@@ -95,6 +95,7 @@
               aspect-ratio="1"
               max-width="60px"
               contain
+              eager
               class="image"
               @click="openLink(item[header.value].url)"
             >
@@ -104,7 +105,7 @@
                   align="center"
                   justify="center"
                 >
-                  <v-progress-circular indeterminate color="black" />
+                  <v-progress-circular width="2" indeterminate color="black" />
                 </v-row>
               </template>
             </v-img>
@@ -570,6 +571,13 @@ export default {
 
   .universal-table .tabs .v-tabs-bar {
     width: 100%;
+  }
+
+  .universal-table .v-data-table__mobile-row__cell .v-image {
+    width: 48px !important;
+    height: 48px !important;
+    margin: 0px;
+    margin-top: -8px;
   }
 
 </style>

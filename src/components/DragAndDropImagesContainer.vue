@@ -22,7 +22,7 @@
                 mdi-cloud-upload-outline
               </v-icon>
               <h3 class="dropzone-custom-title">
-                Перетащите сюда файл для загрузки
+                Перетащите сюда файл
               </h3>
             </div>
           </template>
@@ -144,7 +144,7 @@ export default {
   computed: {
     dropzoneOptions () {
       return {
-        dictDefaultMessage: 'Перетащите сюда файл для загрузки',
+        dictDefaultMessage: 'Перетащите сюда файл',
         url: this.url,
         thumbnailWidth: 200
       }
