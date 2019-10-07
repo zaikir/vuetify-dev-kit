@@ -84,9 +84,8 @@
 </template>
 <script>
 
-import VueDropzone from 'vue2-dropzone'
+import VueDropzone from 'nuxt-dropzone'
 import ConfirmationDialog from './ConfirmationDialog'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
 export default {
   components: {
