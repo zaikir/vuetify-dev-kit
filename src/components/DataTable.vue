@@ -110,6 +110,35 @@
               </template>
             </v-img>
           </template>
+          <template v-else-if="header.display === 'images'">
+            <v-row no-gutters>
+              <v-col
+                v-for="(image, i) in item[header.value]"
+                :key="i"
+                cols="auto"
+              >
+                <v-img
+                  :src="image.url"
+                  aspect-ratio="1"
+                  width="60px"
+                  contain
+                  eager
+                  :class="`image ${header.padding}`"
+                  @click="openLink(image.url)"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular width="2" indeterminate color="black" />
+                    </v-row>
+                  </template>
+                </v-img>
+              </v-col>
+            </v-row>
+          </template>
           <template v-else>
             {{ item[header.value] || '&mdash;' }}
           </template>
