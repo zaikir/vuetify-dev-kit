@@ -168,6 +168,17 @@
                           :accepted-files="field.acceptedFiles"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
+                        <html-editor
+                          v-else-if="field.type === 'html'"
+                          v-model="editableItem[field.value]"
+                          :rules="getRules(field)"
+                          :required="field.required"
+                          :label="field.text"
+                          :height="field.height"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        />
                         <date-picker
                           v-else-if="field.type === 'date'"
                           v-model="editableItem[field.value]"
@@ -238,6 +249,7 @@ import EmailValidator from 'email-validator'
 import DatePicker from './DatePicker'
 import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
+import HtmlEditor from './HtmlEditor'
 
 export default {
   directives: {
@@ -246,7 +258,8 @@ export default {
   components: {
     DatePicker,
     DragAndDropImageContainer,
-    DragAndDropImagesContainer
+    DragAndDropImagesContainer,
+    HtmlEditor
   },
   props: {
     title: {
