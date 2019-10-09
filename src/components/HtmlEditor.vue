@@ -316,7 +316,9 @@ export default {
   outline: none;
   padding: 4px;
   margin-top: 4px;
+  overflow-y: auto;
 }
+
 .ProseMirror:hover {
   outline: none;
   border: thin solid black;
