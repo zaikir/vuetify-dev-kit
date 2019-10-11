@@ -92,6 +92,27 @@
                             </v-btn-toggle>
                           </v-col>
                         </v-row>
+                        <v-radio-group
+                          v-else-if="field.type === 'radio'"
+                          v-model="editableItem[field.value]"
+                          mandatory
+                          class="mb-2"
+                          style="width: 100%"
+                          :active-class="field.activeClass"
+                          :rules="getRules(field)"
+                          :row="field.row"
+                          :required="field.required"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        >
+                          <v-radio
+                            v-for="option in field.options({item: editableItem, ...context})"
+                            :key="option[field.itemValue]"
+                            :label="option[field.itemText]"
+                            :value="option[field.itemValue]"
+                          />
+                        </v-radio-group>
                         <v-switch
                           v-else-if="field.type === 'switch'"
                           v-model="editableItem[field.value]"
@@ -137,6 +158,16 @@
                         />
                         <v-textarea
                           v-else-if="field.type === 'textArea'"
+                          v-model="editableItem[field.value]"
+                          :rules="getRules(field)"
+                          :required="field.required"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        />
+                        <v-textarea
+                          v-else-if="field.type === 'radio'"
                           v-model="editableItem[field.value]"
                           :rules="getRules(field)"
                           :required="field.required"
