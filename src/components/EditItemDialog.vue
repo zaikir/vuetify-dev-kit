@@ -33,13 +33,13 @@
                     <v-row no-gutters>
                       <slot name="form.prepend" :item="editableItem" :context="context" />
                       <v-col
-                        v-for="field in fields"
+                        v-for="field in filteredFields"
                         :key="field.value"
                         :class="field.class || 'px-1'"
                         :cols="field.cols || 12"
-                        :sm="field.sm"
-                        :md="field.md"
-                        :xl="field.xl"
+                        :sm="conditionalFunction(field.sm)"
+                        :md="conditionalFunction(field.md)"
+                        :xl="conditionalFunction(field.xl)"
                       >
                         <v-autocomplete
                           v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint.smAndDown)"
@@ -349,6 +349,11 @@ export default {
       emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат'
     }
   },
+  computed: {
+    filteredFields () {
+      return this.fields.filter(field => !field.showIf || field.showIf({ item: this.editableItem, ...this.context }))
+    }
+  },
   watch: {
     value (val) {
       if (val) {
@@ -375,6 +380,13 @@ export default {
     }
   },
   methods: {
+    conditionalFunction (value, item) {
+      if (value && typeof value === 'function') {
+        return value({ item: this.editableItem, ...this.context })
+      } else {
+        return value
+      }
+    },
     onFieldValueChanged (func, newValue) {
       if (func) {
         func({ value: newValue, item: this.editableItem, ...this.context })

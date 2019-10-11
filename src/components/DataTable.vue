@@ -88,21 +88,6 @@
           <template v-else-if="header.display === 'checkbox'">
             <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
           </template>
-          <!-- <template v-else-if="header.display === 'preview'">
-            <v-menu open-on-hover top offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  color="primary"
-                  dark
-                  v-on="on"
-                >
-                <v-
-                </v-btn>
-              </template>
-
-              <div v-html="item[header.value]" />
-            </v-menu>
-          </template> -->
           <template v-else-if="header.display === 'image'">
             <v-img
               v-if="item[header.value]"
