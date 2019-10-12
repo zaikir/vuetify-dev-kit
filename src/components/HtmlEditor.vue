@@ -33,66 +33,12 @@
         </v-col>
       </v-row>
     </editor-menu-bar>
-    <!-- <editor-menu-bubble v-slot="{ commands, isActive, menu }" :editor="editor" keep-in-bounds>
-      <div
-        class="menububble"
-        :class="{ 'is-active': menu.isActive }"
-        :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
-      >
-        <v-row no-gutters justify="space-between">
-          <v-col v-for="(button, i) in menuButtons" :key="i" cols="auto">
-            <v-btn
-              icon
-              :class="{ 'is-active': button.isActive(isActive) }"
-              style="padding: 4px 0px;"
-              dark
-              @click="button.onClick(commands)"
-              v-on="on"
-            >
-              <v-icon v-if="button.icon">
-                {{ button.icon }}
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </div> -->
-
-      <!-- <div
-        class="menububble"
-        :class="{ 'is-active': menu.isActive }"
-        :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
-      >
-        <button
-          class="menububble__button"
-          :class="{ 'is-active': isActive.bold() }"
-          @click="commands.bold"
-        >
-          <icon name="bold" />
-        </button>
-
-        <button
-          class="menububble__button"
-          :class="{ 'is-active': isActive.italic() }"
-          @click="commands.italic"
-        >
-          <icon name="italic" />
-        </button>
-
-        <button
-          class="menububble__button"
-          :class="{ 'is-active': isActive.code() }"
-          @click="commands.code"
-        >
-          <icon name="code" />
-        </button>
-      </div> -->
-    </editor-menu-bubble>
     <editor-content ref="htmlEditor" class="editor__content" :editor="editor" :style="`height: ${height}px`" />
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBar, EditorMenuBubble } from 'tiptap'
+import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
 import {
   Blockquote,
   CodeBlock,
@@ -120,8 +66,7 @@ import {
 export default {
   components: {
     EditorContent,
-    EditorMenuBar,
-    EditorMenuBubble
+    EditorMenuBar
   },
   props: {
     value: {
