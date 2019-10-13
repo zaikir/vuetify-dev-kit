@@ -221,6 +221,27 @@
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
+                          v-else-if="field.type === 'slug'"
+                          v-model="editableItem[field.value]"
+                          :rules="[...getRules(field), slugRule]"
+                          :required="field.required"
+                          :label="field.text"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        >
+                          <template #append>
+                            <v-tooltip bottom>
+                              <template #activator="{on}">
+                                <v-btn icon @click="setSlug(editableItem, field.value, field.basedOn || 'name')" v-on="on">
+                                  <v-icon>mdi-reply-outline</v-icon>
+                                </v-btn>
+                              </template>
+                              Сгенерировать
+                            </v-tooltip>
+                          </template>
+                        </v-text-field>
+                        <v-text-field
                           v-else-if="field.mask && field.mask.length"
                           v-model="editableItem[field.value]"
                           v-mask="field.mask"
@@ -277,6 +298,7 @@
 
 import { mask } from 'vue-the-mask'
 import EmailValidator from 'email-validator'
+import slugify from 'slugify'
 import DatePicker from './DatePicker'
 import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
@@ -346,7 +368,8 @@ export default {
       editableItem: {},
       isSaving: false,
       isAdded: false,
-      emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат'
+      emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат',
+      slugRule: x => !x || x === slugify(x) || 'Неверный формат'
     }
   },
   computed: {
@@ -380,6 +403,9 @@ export default {
     }
   },
   methods: {
+    setSlug (item, fieldName, basedOnField) {
+      this.$set(item, fieldName, slugify(item[basedOnField]).toLowerCase())
+    },
     conditionalFunction (value, item) {
       if (value && typeof value === 'function') {
         return value({ item: this.editableItem, ...this.context })
