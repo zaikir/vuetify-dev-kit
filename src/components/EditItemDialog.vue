@@ -36,7 +36,7 @@
       </v-card-title>
       <v-card-text class="pt-0" style="height: 100%;">
         <v-row justify="center" class="fill-height">
-          <v-col v-if="!item" cols="12" class="text-center align-self-center" style="">
+          <v-col v-if="!item || !isTransitionEnded" cols="12" class="text-center align-self-center" style="">
             <v-progress-circular :size="94" width="4" class="py-5" indeterminate color="secondary">
               Загрузка...
             </v-progress-circular>
@@ -394,6 +394,7 @@ export default {
       editableItem: {},
       isSaving: false,
       isAdded: false,
+      isTransitionEnded: false,
       emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат',
       slugRule: x => !x || x === slugify(x) || 'Неверный формат'
     }
@@ -409,6 +410,12 @@ export default {
   watch: {
     value (val) {
       if (val) {
+        this.isTransitionEnded = false
+        if (this.isMobile) {
+          setTimeout(() => { this.isTransitionEnded = true }, 300)
+        } else {
+          this.isTransitionEnded = true
+        }
         this.preOpen({ item: this.editableItem, ...this.context })
       }
     },
