@@ -6,15 +6,37 @@
     :persistent="persistent"
     :max-width="maxWidth"
     class="edit-item-dialog"
+    :fullscreen="isMobile"
+    :hide-overlay="isMobile"
+    :transition="isMobile ? 'dialog-bottom-transition' : ''"
     @input="onValueChanged"
   >
     <v-card :flat="flat">
-      <v-card-title v-if="title" class="pb-0">
+      <v-toolbar v-if="isMobile" dark color="primary" style="z-index: 1;">
+        <v-btn icon dark @click="cancelSaving">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title v-if="title">
+          {{ title }}
+        </v-toolbar-title>
+        <v-spacer />
+        <v-toolbar-items>
+          <v-btn
+            dark
+            icon
+            :loading="isSaving"
+            @click="saveItem"
+          >
+            <v-icon>mdi-content-save</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+      <v-card-title v-else-if="title" class="pb-0">
         {{ title }}
       </v-card-title>
-      <v-card-text class="pt-0">
-        <v-row fill-height>
-          <v-col v-if="!item" cols="12" class="text-center">
+      <v-card-text class="pt-0" style="height: 100%;">
+        <v-row justify="center" class="fill-height">
+          <v-col v-if="!item" cols="12" class="text-center align-self-center" style="">
             <v-progress-circular :size="94" width="4" class="py-5" indeterminate color="secondary">
               Загрузка...
             </v-progress-circular>
@@ -273,7 +295,7 @@
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions v-if="item">
+      <v-card-actions v-if="item && !isMobile">
         <v-spacer />
         <v-btn
           :disabled="isSaving"
@@ -343,6 +365,10 @@ export default {
       type: Boolean,
       default: false
     },
+    fullscreen: {
+      type: Boolean,
+      default: true
+    },
     breakpoints: {
       type: Object,
       default: () => ({
@@ -375,6 +401,9 @@ export default {
   computed: {
     filteredFields () {
       return this.fields.filter(field => !field.showIf || field.showIf({ item: this.editableItem, ...this.context }))
+    },
+    isMobile () {
+      return this.fullscreen && this.$vuetify.breakpoint.smAndDown
     }
   },
   watch: {

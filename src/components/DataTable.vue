@@ -195,6 +195,8 @@
       :max-width="editDialogProps.maxWidth"
       :fields="editDialogProps.fields"
       :title="editDialogProps.title"
+      :mobile-fullscreen="editDialogProps.fullscreen"
+      :flat="editDialogProps.flat"
       :context="context"
       :pre-save="editDialogProps.preSave"
       :pre-open="editDialogProps.preOpen"
@@ -607,6 +609,16 @@ export default {
     height: 48px !important;
     margin: 0px;
     margin-top: -8px;
+  }
+
+  .universal-table .v-data-table__mobile-row,
+  .universal-table .v-data-table__mobile-row__wrapper{
+    min-height: 48px;
+    height: auto !important;
+  }
+
+  .universal-table .v-data-table__mobile-row__cell {
+    padding-left: 5px;
   }
 
 </style>
