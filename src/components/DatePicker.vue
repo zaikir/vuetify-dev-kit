@@ -14,9 +14,11 @@
         v-model="dateFormatted"
         v-mask="'##.##.####'"
         :label="label"
-        :rules="[...rules, isDateValid]"
+        :rules="[...getRules(rules, required), isDateValid]"
         prepend-icon="event"
+        :required="required"
         :outlined="outlined"
+        :disabled="disabled"
         v-on="on"
         @input="tryToSetDate"
       />
@@ -104,6 +106,10 @@ export default {
 
   methods: {
     tryToSetDate (str) {
+      if (!str || !str.length) {
+        this.$emit('input', null)
+      }
+
       const parsedDate = this.tryToParseDate(str)
       if (parsedDate) {
         this.$emit('input', parsedDate.toString())
@@ -126,6 +132,9 @@ export default {
 
         this.menu = false
       })
+    },
+    getRules () {
+      return [...this.rules, ...this.required ? [x => !!x || 'Введите значение'] : []]
     }
   }
 }
