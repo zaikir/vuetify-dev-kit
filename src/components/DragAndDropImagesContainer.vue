@@ -176,7 +176,7 @@ export default {
 <style>
   .dropzone-custom-content {
     cursor: pointer;
-    border: 2px solid #E5E5E5;
+    border: thin dashed rgb(168, 167, 167);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -184,7 +184,7 @@ export default {
 
   .dropzone-custom-content:hover {
     background: rgb(245, 245, 245);
-    border: 2px solid rgb(155, 155, 155);
+    border: thin solid rgb(155, 155, 155);
     /* border: thin dashed #1976d2; */
   }
 

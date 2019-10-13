@@ -1,72 +1,19 @@
 
 <template>
-  <div class="html-editor">
+  <div>
     <v-subheader :class="'subtitle-2 pl-0'" style="height: 30px;">
       {{ label }}
     </v-subheader>
-
-    <editor-menu-bar v-slot="{ commands, isActive }" :editor="editor" class="html-editor-menu">
-      <v-row no-gutters justify="space-between">
-        <v-col v-for="(button, i) in buttons" :key="i" cols="auto">
-          <v-tooltip top :open-delay="300">
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :class="{
-                  'is-active': button.isActive(isActive),
-                  'elevation-2': button.isActive(isActive)
-                }"
-                outlined
-                style="padding: 4px 0px;"
-                @click="button.onClick(commands)"
-                v-on="on"
-              >
-                <v-icon v-if="button.icon" color="black">
-                  {{ button.icon }}
-                </v-icon>
-                <span v-else>
-                  {{ button.text }}
-                </span>
-              </v-btn>
-            </template>
-            <span>{{ button.name }}</span>
-          </v-tooltip>
-        </v-col>
-      </v-row>
-    </editor-menu-bar>
-    <editor-content ref="htmlEditor" class="editor__content" :editor="editor" :style="`height: ${height}px`" />
+    <editor v-model="content" class="html-editor" :init="options" />
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import {
-  Blockquote,
-  CodeBlock,
-  HardBreak,
-  Heading,
-  HorizontalRule,
-  OrderedList,
-  BulletList,
-  ListItem,
-  TodoItem,
-  TodoList,
-  Bold,
-  Code,
-  Italic,
-  Link,
-  Strike,
-  Underline,
-  History,
-  Image
-} from 'tiptap-extensions'
-import {
-  Alignment
-} from './commands'
+import Editor from '@tinymce/tinymce-vue'
 
 export default {
   components: {
-    EditorContent,
-    EditorMenuBar
+    Editor
   },
   props: {
     value: {
@@ -88,167 +35,81 @@ export default {
       type: Number,
       required: false,
       default: 600
+    },
+    language: {
+      type: String,
+      required: false,
+      default: 'ru'
+    },
+    uploadUrl: {
+      type: String,
+      required: false,
+      default: '/api/uploads'
+    },
+    uploadFileHandler: {
+      type: Function,
+      required: false,
+      default: result => result.url
     }
   },
   data () {
     return {
-      editor: new Editor({
-        height: 600,
-        extensions: [
-          new Blockquote(),
-          new BulletList(),
-          new CodeBlock(),
-          new HardBreak(),
-          new Heading({ levels: [1, 2, 3] }),
-          new HorizontalRule(),
-          new ListItem(),
-          new OrderedList(),
-          new TodoItem(),
-          new TodoList(),
-          new Link(),
-          new Bold(),
-          new Code(),
-          new Italic(),
-          new Strike(),
-          new Underline(),
-          new History(),
-          new Image(),
-          new Alignment()
-        ],
-        content: '',
-        onUpdate: ({ getHTML }) => {
-          const newContent = getHTML()
-          this.$emit('input', newContent)
-        }
-      }),
-      menuButtons: [{
-        name: 'Выделить жирным',
-        icon: 'mdi-format-bold',
-        onClick: commands => commands.bold(),
-        isActive: isActive => false
-      }, {
-        name: 'Выделить курсивом',
-        icon: 'mdi-format-italic',
-        onClick: commands => commands.italic(),
-        isActive: isActive => false
-      }, {
-        name: 'Перечеркнуть',
-        icon: 'mdi-format-strikethrough-variant',
-        onClick: commands => commands.strike(),
-        isActive: isActive => false
-      }],
-      buttons: [{
-        name: 'Выделить жирным',
-        icon: 'mdi-format-bold',
-        onClick: commands => commands.bold(),
-        isActive: isActive => isActive.bold()
-      }, {
-        name: 'Выделить курсивом',
-        icon: 'mdi-format-italic',
-        onClick: commands => commands.italic(),
-        isActive: isActive => isActive.italic()
-      }, {
-        name: 'Перечеркнуть',
-        icon: 'mdi-format-strikethrough-variant',
-        onClick: commands => commands.strike(),
-        isActive: isActive => isActive.strike()
-      }, {
-        name: 'Подчеркнуть',
-        icon: 'mdi-format-underline',
-        onClick: commands => commands.underline(),
-        isActive: isActive => isActive.underline()
-      },
-      // {
-      //   name: 'Код',
-      //   icon: 'mdi-code-braces',
-      //   onClick: commands => commands.code(),
-      //   isActive: isActive => isActive.code()
-      // },
-      {
-        name: 'Параграф',
-        icon: 'mdi-format-paragraph',
-        onClick: commands => commands.paragraph(),
-        isActive: isActive => isActive.paragraph()
-      }, {
-        name: 'Выравнивание по левому краю',
-        icon: 'mdi-format-align-left',
-        onClick: commands => commands.alignment({ textAlign: 'left' }),
-        isActive: isActive => false
-      }, {
-        name: 'Выравнивание по центру',
-        icon: 'mdi-format-align-center',
-        onClick: commands => commands.alignment({ textAlign: 'center' }),
-        isActive: isActive => false
-      }, {
-        name: 'Выравнивание по правому краю',
-        icon: 'mdi-format-align-right',
-        onClick: commands => commands.alignment({ textAlign: 'right' }),
-        isActive: isActive => false
-      }, {
-        name: 'h1',
-        text: 'h1',
-        onClick: commands => commands.heading({ level: 1 }),
-        isActive: isActive => isActive.heading({ level: 1 })
-      }, {
-        name: 'h2',
-        text: 'h2',
-        onClick: commands => commands.heading({ level: 2 }),
-        isActive: isActive => isActive.heading({ level: 2 })
-      }, {
-        name: 'h3',
-        text: 'h3',
-        onClick: commands => commands.heading({ level: 3 }),
-        isActive: isActive => isActive.heading({ level: 3 })
-      }, {
-        name: 'Список',
-        icon: 'mdi-format-list-bulleted',
-        onClick: commands => commands.bullet_list(),
-        isActive: isActive => isActive.bullet_list()
-      }, {
-        name: 'Упорядоченный список',
-        icon: 'mdi-format-list-numbered',
-        onClick: commands => commands.ordered_list(),
-        isActive: isActive => isActive.ordered_list()
-      },
-      // {
-      //   name: 'Кавычки',
-      //   icon: 'mdi-format-quote-close',
-      //   onClick: commands => commands.blockquote(),
-      //   isActive: isActive => isActive.blockquote()
-      // },
-      {
-        name: 'Горизонтальная линия',
-        text: 'hr',
-        onClick: commands => commands.horizontal_rule(),
-        isActive: () => false
-      }, {
-        name: 'Отменить',
-        icon: 'mdi-undo',
-        onClick: commands => commands.undo(),
-        isActive: () => false
-      }, {
-        name: 'Повторить',
-        icon: 'mdi-redo',
-        onClick: commands => commands.redo(),
-        isActive: () => false
-      }]
+      content: '',
+      options: {
+        language: this.language,
+        language_url: `https://cdn.jsdelivr.net/npm/tinymce-lang@0.0.1/langs/${this.language}.js`,
+        plugins: 'fullpage paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+        imagetools_cors_hosts: ['picsum.photos'],
+        menubar: 'edit view insert format tools table',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media link anchor codesample | ltr rtl',
+        toolbar_sticky: true,
+        autosave_ask_before_unload: true,
+        autosave_interval: '30s',
+        autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
+        image_advtab: true,
+        content_css: [],
+        images_upload_url: '/api/uploads',
+        automatic_uploads: false,
+        images_upload_handler: (blobInfo, success, failure) => {
+          const xhr = new XMLHttpRequest()
+          xhr.withCredentials = false
+          xhr.open('POST', this.uploadUrl)
+
+          xhr.onload = () => {
+            if (xhr.status !== 200) {
+              failure('HTTP Error: ' + xhr.status)
+              return
+            }
+
+            success(this.uploadFileHandler(JSON.parse(xhr.responseText)))
+          }
+
+          const formData = new FormData()
+          formData.append('file', blobInfo.blob(), blobInfo.filename())
+
+          xhr.send(formData)
+        },
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        contextmenu: 'link image imagetools table',
+        height: this.height
+      }
     }
   },
-  // watch: {
-  //   // value () {
-  //   //   this.editor.setContent(this.value)
-  //   // }
-  // },
-  mounted () {
-    this.editor.setContent(this.value)
+  watch: {
+    content (val) {
+      this.$emit('input', val)
+    }
   },
-  beforeDestroy () {
-    this.editor.destroy()
+  mounted () {
+    this.content = this.value
   }
 }
 </script>
 <style>
-.ProseMirror {
+.html-editor {
   height: 100%;
   color: initial;
   font-size: initial;
@@ -256,62 +117,11 @@ export default {
   letter-spacing: initial;
   pointer-events: initial;
   font-family: initial !important;
-  border: thin solid rgb(117, 117, 117);
-  border-radius: 4px;
-  outline: none;
-  padding: 4px;
-  margin-top: 4px;
-  overflow-y: auto;
+  margin-bottom: 20px;
 }
 
-.ProseMirror:hover {
-  outline: none;
-  border: thin solid black;
-}
-
-.html-editor-menu .v-btn {
-  width: 50px !important;
-  min-width: 50px !important;
-}
-
-.html-editor-menu {
-  margin-left: -3px;
-  margin-right: -3px;
-}
-
-.html-editor-menu .col .v-btn {
-  margin: 3px 3px;
-}
-
-.html-editor-menu .col .v-btn {
-  margin: 3px 3px;
-}
-
-.html-editor .menububble {
-  position: absolute;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  z-index: 20;
-  background: #000;
-  border-radius: 5px;
-  padding: .3rem;
-  margin-bottom: .5rem;
-  -webkit-transform: translateX(-50%);
-  transform: translateX(-50%);
-  visibility: hidden;
-  opacity: 0;
-  -webkit-transition: opacity .2s,visibility .2s;
-  transition: opacity .2s,visibility
-}
-
-.html-editor .menububble.is-active {
-  opacity: 0.8;
-  visibility: visible;
-}
-
-.html-editor .v-btn.is-active {
-  background-color: #87c9ff;
+.tox-notification.tox-notification--in {
+  display: none !important;
 }
 
 </style>

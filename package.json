@@ -17,13 +17,12 @@
   },
   "homepage": "https://github.com/ZaidulinKirill/vuetify-development-kit#readme",
   "dependencies": {
+    "@tinymce/tinymce-vue": "^3.0.1",
     "bson": "^4.0.2",
     "email-validator": "^2.0.4",
     "libphonenumber-js": "^1.7.25",
     "moment": "^2.24.0",
     "nuxt-dropzone": "^1.0.4",
-    "tiptap": "^1.26.3",
-    "tiptap-extensions": "^1.28.3",
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
