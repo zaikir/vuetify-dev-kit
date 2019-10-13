@@ -195,7 +195,7 @@
       :max-width="editDialogProps.maxWidth"
       :fields="editDialogProps.fields"
       :title="editDialogProps.title"
-      :mobile-fullscreen="editDialogProps.fullscreen"
+      :fullscreen="editDialogProps.fullscreen"
       :flat="editDialogProps.flat"
       :context="context"
       :pre-save="editDialogProps.preSave"
