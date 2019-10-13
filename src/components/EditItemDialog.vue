@@ -20,7 +20,7 @@
             </v-progress-circular>
           </v-col>
           <v-col v-else cols="12">
-            <v-form ref="editForm" lazy-validation>
+            <v-form ref="editForm" lazy-validation @submit.prevent="saveItem">
               <v-container grid-list-md>
                 <v-row no-gutters>
                   <slot name="body.prepend" :item="editableItem" :context="context" />
