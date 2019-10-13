@@ -5,7 +5,7 @@
         {{ label }}
       </v-subheader>
     </v-col>
-    <v-col cols="12">
+    <v-col v-if="!disabled" cols="12">
       <vue-dropzone
         id="drop-zone"
         :options="dropzoneOptions"
@@ -52,7 +52,7 @@
                 @click="openLink(file.url)"
               >
                 <div
-                  v-if="hover"
+                  v-if="hover && !disabled"
                   class="d-flex justify-end"
                   style="height: 100%;"
                 >

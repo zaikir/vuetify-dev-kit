@@ -4,7 +4,8 @@
     <v-subheader :class="'subtitle-2 pl-0'" style="height: 30px;">
       {{ label }}
     </v-subheader>
-    <editor v-model="content" class="html-editor" :init="options" />
+    <editor v-if="!disabled" v-model="content" class="html-editor" :init="options" />
+    <div v-else class="html-editor" v-html="content" />
   </div>
 </template>
 
@@ -50,6 +51,11 @@ export default {
       type: Function,
       required: false,
       default: result => result.url
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
