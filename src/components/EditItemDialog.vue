@@ -140,6 +140,7 @@
                           v-model="editableItem[field.value]"
                           :rules="getRules(field)"
                           :required="field.required"
+                          :filter="field.filter"
                           :placeholder="field.placeholder"
                           :prepend-icon="field.prependIcon"
                           :response-handler="field.responseHandler"
