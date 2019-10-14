@@ -13,7 +13,6 @@
     :search-input.sync="search"
     :placeholder="placeholder"
     :prepend-icon="prependIcon"
-    return-object
     autocomplete="off"
     @input="handleInput"
   />
@@ -22,7 +21,7 @@
 export default {
   props: {
     value: {
-      type: Object,
+      type: String,
       required: false,
       default: null
     },
@@ -78,7 +77,7 @@ export default {
     minLength: {
       type: Number,
       required: false,
-      default: 3
+      default: 0
     }
   },
   data () {
@@ -90,7 +89,16 @@ export default {
   },
   watch: {
     search (val = '') {
-      if (!val || val.length < this.minLength) {
+      this.updateItems()
+    }
+  },
+
+  created () {
+    this.updateItems()
+  },
+  methods: {
+    updateItems (val = '') {
+      if (this.minLength > 0 && (!val || val.length < this.minLength)) {
         return
       }
 
@@ -105,9 +113,7 @@ export default {
         this.items = this.responseHandler(await this.$axios.$get(this.url(val)))
         this.isLoading = false
       }, 300)
-    }
-  },
-  methods: {
+    },
     handleInput (value) {
       this.$emit('input', value)
     },

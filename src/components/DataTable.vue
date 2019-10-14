@@ -311,6 +311,10 @@ export default {
       type: Boolean,
       default: false
     },
+    refresh: {
+      type: Boolean,
+      default: false
+    },
     hideHeader: {
       type: Boolean,
       default: false
@@ -389,6 +393,13 @@ export default {
     }
   },
   watch: {
+    refresh (val) {
+      if (val) {
+        this.updateSource()
+      }
+
+      this.$emit('update:refresh', false)
+    },
     selectedTab () {
       if (this.isInitialized) {
         this.updateSource(false)
