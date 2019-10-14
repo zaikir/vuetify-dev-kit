@@ -135,6 +135,23 @@
                             :value="option[field.itemValue]"
                           />
                         </v-radio-group>
+                        <external-data-autocomplete
+                          v-else-if="field.type === 'autocomplete'"
+                          v-model="editableItem[field.value]"
+                          :rules="getRules(field)"
+                          :required="field.required"
+                          :placeholder="field.placeholder"
+                          :prepend-icon="field.prependIcon"
+                          :response-handler="field.responseHandler"
+                          :min-length="field.minLength"
+                          :url="field.url"
+                          :label="field.text"
+                          :item-text="field.itemText"
+                          :item-value="field.itemValue"
+                          :disabled="field.disabled"
+                          :outlined="field.outlined"
+                          @input="onFieldValueChanged(field.onChange, $event)"
+                        />
                         <v-switch
                           v-else-if="field.type === 'switch'"
                           v-model="editableItem[field.value]"
@@ -324,6 +341,7 @@ import slugify from 'slugify'
 import DatePicker from './DatePicker'
 import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
+import ExternalDataAutocomplete from './ExternalDataAutocomplete'
 import HtmlEditor from './HtmlEditor'
 
 export default {
@@ -334,7 +352,8 @@ export default {
     DatePicker,
     DragAndDropImageContainer,
     DragAndDropImagesContainer,
-    HtmlEditor
+    HtmlEditor,
+    ExternalDataAutocomplete
   },
   props: {
     title: {

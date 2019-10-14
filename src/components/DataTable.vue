@@ -157,11 +157,29 @@
         <tr>
           <td :colspan="headers.length">
             <slot name="button.add">
-              <v-btn icon>
-                <v-icon @click="addItem">
-                  {{ addButtonProps.icon }}
-                </v-icon>
-              </v-btn>
+              <v-row no-gutters>
+                <v-col cols="12" class="d-flex">
+                  <slot name="button.add.prepend" />
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn
+                        fab
+                        color="secondary"
+                        x-small
+                        class="elevation-0"
+                        @click="addItem"
+                        v-on="on"
+                      >
+                        <v-icon>
+                          {{ addButtonProps.icon }}
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    {{ addButtonProps.tooltip }}
+                  </v-tooltip>
+                  <slot name="button.add.append" />
+                </v-col>
+              </v-row>
             </slot>
           </td>
         </tr>
@@ -299,7 +317,7 @@ export default {
     },
     addButtonProps: {
       type: Object,
-      default: () => ({ type: 'fixed', icon: 'add', color: 'pink' })
+      default: () => ({ type: 'fixed', icon: 'add', color: 'pink', tooltip: 'Создать' })
     },
     deleteButtonProps: {
       type: Object,
@@ -413,14 +431,18 @@ export default {
     },
     saveItem ({ item, done }) {
       if (this.isAdded) {
-        this.$emit('itemAdded', { item,
+        this.$emit('itemAdded', {
+          item,
+          ...this.context,
           done: () => {
             this.updateSource()
             done()
           }
         })
       } else {
-        this.$emit('itemUpdated', { item,
+        this.$emit('itemUpdated', {
+          item,
+          ...this.context,
           done: () => {
             this.updateSource()
             done()
@@ -470,9 +492,12 @@ export default {
     addItem () {
       this.processedItem = null
 
-      this.$emit('getItem', { done: (item) => {
-        this.$nextTick(() => { this.processedItem = item })
-      } })
+      this.$emit('getItem', {
+        ...this.context,
+        done: (item) => {
+          this.$nextTick(() => { this.processedItem = item })
+        }
+      })
 
       this.isAdded = true
       this.editItemDialog = true
@@ -482,6 +507,7 @@ export default {
 
       this.$emit('getItem', {
         row,
+        ...this.context,
         done: (item) => {
           this.$nextTick(() => { this.processedItem = item })
         }
@@ -508,6 +534,7 @@ export default {
 
       this.$emit('itemDeleted', {
         item: this.processedItem,
+        ...this.context,
         done: () => {
           this.updateSource()
         }
