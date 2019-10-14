@@ -33,6 +33,10 @@ export default {
       type: Function,
       default: ({ items }) => items
     },
+    filter: {
+      type: Function,
+      default: items => items
+    },
     label: {
       type: String,
       required: false,
@@ -110,7 +114,7 @@ export default {
       }
 
       this.timer = setTimeout(async () => {
-        this.items = this.responseHandler(await this.$axios.$get(this.url(val)))
+        this.items = this.filter(this.responseHandler(await this.$axios.$get(this.url(val))))
         this.isLoading = false
       }, 300)
     },
