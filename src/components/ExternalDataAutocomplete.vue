@@ -7,8 +7,8 @@
     :label="label"
     :outlined="outlined"
     :disabled="disabled"
-    :item-text="x => itemText(x)"
-    :item-value="x => itemValue(x)"
+    :item-text="itemText"
+    :item-value="itemValue"
     :loading="isLoading"
     :search-input.sync="search"
     :placeholder="placeholder"
@@ -71,11 +71,11 @@ export default {
       default: false
     },
     itemText: {
-      type: Function,
+      type: String,
       required: true
     },
     itemValue: {
-      type: Function,
+      type: String,
       required: true
     },
     minLength: {
