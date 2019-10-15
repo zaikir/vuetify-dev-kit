@@ -164,7 +164,7 @@
                     <template #activator="{on}">
                       <v-btn
                         fab
-                        color="secondary"
+                        color="primary"
                         x-small
                         class="elevation-0"
                         @click="addItem"
@@ -566,7 +566,7 @@ export default {
         }, 500)
       }
     },
-    formatPhoneNumber (phone = '', countryCode = '7') {
+    formatPhoneNumber (phone = '', countryCode = '') {
       const phoneNumber = parsePhoneNumberFromString('+' + countryCode + phone)
       if (!phoneNumber) {
         return phone.length ? '+' + phone : null
