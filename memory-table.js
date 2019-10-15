@@ -10,8 +10,8 @@ export const mapTableFilters = ({ name, filters = [] }) => ({
   }
 })
 
-export const mapTableActions = ({ name, singular, defaultItem = {}, removedKey = 'isRemoved' }) => ({
-  [`get${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}`]: ({ row, done, items }) => {
+export const mapTableActions = ({ name, singular, defaultItem = {}, patch, removedKey = 'isRemoved' }) => ({
+  [`get${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}`] ({ row, done, items }) {
     const filteredItems = items.filter(x => !x[removedKey])
 
     if (row) {
@@ -20,24 +20,39 @@ export const mapTableActions = ({ name, singular, defaultItem = {}, removedKey =
       done({ ...defaultItem })
     }
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Added`]: ({ item, done, items }) => {
+  async [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Added`] ({ item, done, items, ...context }) {
+    const newItems = [...items, item]
+    if (patch) {
+      await this.$axios.$patch(patch.url({ items: newItems, ...context }), patch.body({ items: newItems, ...context }), { progress: false })
+    }
+
     items.push({ ...item })
-    // eslint-disable-next-line no-console
-    console.log(items)
 
     done()
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Updated`]: ({ item, done, items }) => {
+  async [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Updated`] ({ item, done, items, ...context }) {
     const index = items.findIndex(({ _id }) => item._id === _id)
     if (index === -1) { throw new Error('Item not found') }
+
+    const newItems = [...items]
+    newItems.splice(index, 1, { ...item })
+    if (patch) {
+      await this.$axios.$patch(patch.url({ items: newItems, ...context }), patch.body({ items: newItems, ...context }), { progress: false })
+    }
 
     items.splice(index, 1, { ...item })
-
     done()
   },
-  [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Deleted`]: ({ item, done, items }) => {
+  async [`on${singular ? capitalize(singular) : capitalize(name).substring(0, name.length - 1)}Deleted`] ({ item, done, items, ...context }) {
     const index = items.findIndex(({ _id }) => item._id === _id)
     if (index === -1) { throw new Error('Item not found') }
+
+    const newItems = [...items]
+    newItems.splice(index, 1, { ...item, [removedKey]: true })
+
+    if (patch) {
+      await this.$axios.$patch(patch.url({ items: newItems, ...context }), patch.body({ items: newItems, ...context }), { progress: false })
+    }
 
     items.splice(index, 1, { ...item, [removedKey]: true })
 

@@ -80,10 +80,42 @@
       <template v-for="header in headers" :slot="`item.${header.value}`" slot-scope="{item}">
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
-            {{ item[header.value] ? formatPhoneNumber(item[header.value], header.countryCode) : '&mdash;' }}
+            <template v-if="item[header.value]">
+              <a :key="`value-${header.value}`" itemprop="telephone" :href="`tel:${header.countryCode || ''}${item[header.value]}`">
+                {{ formatPhoneNumber(item[header.value], header.countryCode) }}
+              </a>
+            </template>
+            <template v-else>
+              &mdash;
+            </template>
+          </template>
+          <template v-else-if="header.display === 'email'">
+            <template v-if="item[header.value]">
+              <a :key="`value-${header.value}`" itemprop="email" :href="`mailto:${item[header.value]}`">
+                {{ item[header.value] }}
+              </a>
+            </template>
+            <template v-else>
+              &mdash;
+            </template>
           </template>
           <template v-else-if="header.display === 'switch'">
-            <v-switch :input-value="item[header.value]" flat disabled />
+            <div v-if="header.type === 'action'" :key="`action-${header.value}`" @click.prevent.stop="() => {}">
+              <v-switch :input-value="item[header.value]" flat @change="header.onClick" />
+            </div>
+            <v-switch v-else :input-value="item[header.value]" flat disabled />
+          </template>
+          <template v-else-if="header.display === 'custom'">
+            <div v-if="header.type === 'action'" :key="`action-${header.value}`" @click.prevent.stop="() => {}">
+              <custom-checkbox
+                v-model="item[header.value]"
+                :disabled="header.disabled"
+                :color="header.color"
+                :background-color="header.backgroundColor"
+                @input="header.onClick({ item, ...context })"
+              />
+            </div>
+            <custom-checkbox v-else v-model="item[header.value]" flat disabled :color="header.color" />
           </template>
           <template v-else-if="header.display === 'checkbox'">
             <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
@@ -139,6 +171,9 @@
               </v-col>
             </v-row>
           </template>
+          <!-- <template v-else-if="header.display === 'action'">
+            <div :key="`action-${header.value}`" @click.prevent.stop="() => {}" />
+          </template> -->
           <template v-else>
             {{ item[header.value] || '&mdash;' }}
           </template>
@@ -248,12 +283,14 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import EditItemDialog from './EditItemDialog'
 import ConfirmationDialog from './ConfirmationDialog'
 import FiltersCollection from './FiltersCollection'
+import CustomCheckbox from './CustomCheckbox'
 
 export default {
   components: {
     EditItemDialog,
     ConfirmationDialog,
-    FiltersCollection
+    FiltersCollection,
+    CustomCheckbox
   },
   props: {
     headers: {
@@ -551,7 +588,7 @@ export default {
         }
       })
     },
-    selectRow ($event) {
+    selectRow ($event = {}) {
       if (this.lastClickedElement && Object.is(this.lastClickedElement, $event)) {
         this.onDoubleClick($event)
         this.lastClickedElement = null
