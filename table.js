@@ -7,12 +7,12 @@ export const mapTableData = ({ name }) => ({
   [`${name}Loading`]: false
 })
 
-export const mapTableFilters = ({ name, filters = [] }) => ({
+export const mapTableFilters = ({ name, filters = [], headersKey = 'headers' }) => ({
   [`filtered${capitalize(name)}`] () {
     return this[name].filter(x => !filters.some(filter => !filter(x)))
   },
   [`${name}Filters`] () {
-    return this.headers.filter(x => x.filter).map(header => ({
+    return this[headersKey].filter(x => x.filter).map(header => ({
       text: header.text,
       key: header.value,
       ...header.filter
