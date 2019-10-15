@@ -175,7 +175,7 @@
                         </v-icon>
                       </v-btn>
                     </template>
-                    {{ addButtonProps.tooltip }}
+                    {{ addButtonProps.tooltip || 'Создать' }}
                   </v-tooltip>
                   <slot name="button.add.append" />
                 </v-col>
