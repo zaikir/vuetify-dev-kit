@@ -34,10 +34,10 @@
       <v-card-title v-else-if="title" class="pb-0">
         {{ title }}
       </v-card-title>
-      <v-card-text class="pt-0" style="height: 100%;">
+      <v-card-text class="pt-5" style="height: 100%;">
         <v-row justify="center" class="fill-height">
-          <v-col v-if="!item || !isTransitionEnded" cols="12" class="text-center align-self-center" style="">
-            <v-progress-circular :size="94" width="4" class="py-5" indeterminate color="secondary">
+          <v-col v-if="!item || !isTransitionEnded" cols="12" class="py-5 text-center align-self-center" style="">
+            <v-progress-circular :size="94" width="4" indeterminate color="secondary">
               Загрузка...
             </v-progress-circular>
           </v-col>
