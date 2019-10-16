@@ -241,7 +241,7 @@
     </slot>
 
     <edit-item-dialog
-      v-if="canEdit || canAdd"
+      v-if="canEdit || canAdd || canView"
       v-model="editItemDialog"
       :item="processedItem"
       :persistent="editDialogProps.persistent"
@@ -251,6 +251,7 @@
       :fullscreen="editDialogProps.fullscreen"
       :flat="editDialogProps.flat"
       :context="context"
+      :readonly="canView"
       :pre-save="editDialogProps.preSave"
       :pre-open="editDialogProps.preOpen"
       :post-open="editDialogProps.postOpen"
@@ -346,6 +347,10 @@ export default {
       default: false
     },
     canSearch: {
+      type: Boolean,
+      default: false
+    },
+    canView: {
       type: Boolean,
       default: false
     },
@@ -566,7 +571,7 @@ export default {
       this.editItemDialog = true
     },
     onDoubleClick (item) {
-      if (this.canEdit) {
+      if (this.canEdit || this.canView) {
         this.editItem(item)
       }
     },

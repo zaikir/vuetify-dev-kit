@@ -5,13 +5,16 @@
     scrollable
     :persistent="persistent"
     :max-width="maxWidth"
-    class="edit-item-dialog"
     :fullscreen="isMobile"
     :hide-overlay="isMobile"
     :transition="isMobile ? 'dialog-bottom-transition' : ''"
     @input="onValueChanged"
   >
-    <v-card :flat="flat">
+    <v-card
+      :flat="flat"
+      class="edit-item-dialog"
+      :class="{readonly}"
+    >
       <v-toolbar v-if="isMobile" dark color="primary" style="z-index: 1;">
         <v-btn icon dark @click="cancelSaving">
           <v-icon>mdi-close</v-icon>
@@ -22,6 +25,7 @@
         <v-spacer />
         <v-toolbar-items>
           <v-btn
+            v-if="!readonly"
             dark
             icon
             :loading="isSaving"
@@ -72,7 +76,7 @@
                           :items="field.options({item: editableItem, ...context})"
                           :item-text="field.itemText"
                           :item-value="field.itemValue"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -92,7 +96,7 @@
                               :rules="getRules(field)"
                               :required="field.required"
                               :label="field.text"
-                              :disabled="field.disabled"
+                              :disabled="readonly || field.disabled"
                               @input="onFieldValueChanged(field.onChange, $event)"
                             >
                               <v-row no-gutters>
@@ -125,7 +129,7 @@
                           :row="field.row"
                           :required="field.required"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         >
                           <v-radio
@@ -149,7 +153,7 @@
                           :label="field.text"
                           :item-text="field.itemText"
                           :item-value="field.itemValue"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -157,7 +161,7 @@
                           v-else-if="field.type === 'switch'"
                           v-model="editableItem[field.value]"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :rules="getRules(field)"
                           :required="field.required"
                           :outlined="field.outlined"
@@ -170,19 +174,19 @@
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
                         <v-text-field
                           v-else-if="field.type === 'phone'"
                           v-model="editableItem[field.value]"
-                          :rules="[...getRules(field)]"
+                          :rules="[...getRules(field), ]"
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
                           prefix="+"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @keypress="isNumber($event)"
                           @input="onFieldValueChanged(field.onChange, $event)"
@@ -195,7 +199,7 @@
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -206,7 +210,7 @@
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -217,7 +221,7 @@
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -227,7 +231,7 @@
                           single
                           :rules="getRules(field)"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           :url="field.uploadUrl || '/api/uploads'"
                           :accepted-files="field.acceptedFiles"
@@ -238,7 +242,7 @@
                           v-model="editableItem[field.value]"
                           :rules="getRules(field)"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           :url="field.uploadUrl || '/api/uploads'"
                           :accepted-files="field.acceptedFiles"
@@ -251,7 +255,7 @@
                           :required="field.required"
                           :label="field.text"
                           :height="field.height"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -261,7 +265,7 @@
                           :rules="getRules(field)"
                           :required="field.required"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -272,7 +276,7 @@
                           :placeholder="field.placeholder"
                           :required="field.required"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         >
@@ -295,7 +299,7 @@
                           :rules="getRules(field)"
                           :required="field.required"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -306,7 +310,7 @@
                           :required="field.required"
                           :placeholder="field.placeholder"
                           :label="field.text"
-                          :disabled="field.disabled"
+                          :disabled="readonly || field.disabled"
                           :outlined="field.outlined"
                           @input="onFieldValueChanged(field.onChange, $event)"
                         />
@@ -328,9 +332,10 @@
           color="primary"
           @click="cancelSaving"
         >
-          Отмена
+          {{ readonly ? 'Закрыть' : 'Отмена' }}
         </v-btn>
         <v-btn
+          v-if="!readonly"
           color="primary"
           :loading="isSaving"
           @click="saveItem"
@@ -397,6 +402,10 @@ export default {
       type: Boolean,
       default: true
     },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
     breakpoints: {
       type: Object,
       default: () => ({
@@ -427,6 +436,7 @@ export default {
       isSaving: false,
       isAdded: false,
       isTransitionEnded: false,
+      phoneRule: x => !x || x === x.replace(/[^0-9]*/g, '') || 'Неверный формат',
       emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат',
       slugRule: x => !x || x === slugify(x) || 'Неверный формат'
     }
@@ -529,5 +539,11 @@ export default {
 <style>
   .select-field-toggle-btn-selected {
     background-color: rgb(181, 255, 121);
+  }
+
+  .edit-item-dialog.readonly .theme--light.v-input--is-disabled .v-label,
+  .edit-item-dialog.readonly .theme--light.v-input--is-disabled input,
+  .edit-item-dialog.readonly .theme--light.v-input--is-disabled textarea {
+    color: rgba(0, 0, 0, 0.5) !important;
   }
 </style>
