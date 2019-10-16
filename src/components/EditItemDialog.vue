@@ -466,9 +466,9 @@ export default {
               this.editableItem[field.value] = field.default({ item: this.editableItem, ...this.context })
             }
           })
-        }
 
-        this.postOpen({ item: this.editableItem, ...this.context })
+          this.postOpen({ item: this.editableItem, ...this.context })
+        }
       }
     }
   },
