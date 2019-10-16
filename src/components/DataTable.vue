@@ -253,6 +253,7 @@
       :context="context"
       :pre-save="editDialogProps.preSave"
       :pre-open="editDialogProps.preOpen"
+      :post-open="editDialogProps.postOpen"
       :breakpoints="editDialogProps.breakpoints"
       @onSaved="saveItem"
     >

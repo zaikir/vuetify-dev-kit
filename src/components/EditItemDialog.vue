@@ -411,6 +411,10 @@ export default {
       type: Function,
       default: ({ item }) => {}
     },
+    postOpen: {
+      type: Function,
+      default: ({ item }) => {}
+    },
     context: {
       type: Object,
       required: false,
@@ -463,6 +467,8 @@ export default {
             }
           })
         }
+
+        this.postOpen({ item: this.editableItem, ...this.context })
       }
     }
   },
