@@ -77,7 +77,7 @@
         </v-tabs>
       </template>
 
-      <template v-for="header in headers" :slot="`item.${header.value}`" slot-scope="{item}">
+      <template v-for="header in filteredHeaders" v-slot:[`item.${header.value}`]="{item}">
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
             <template v-if="item[header.value]">
@@ -270,6 +270,12 @@
       <template #form.prepend="{item, context}">
         <slot name="editForm.form.prepend" :item="item" :context="context" />
       </template>
+      <template
+        v-for="field in editDialogProps.fields"
+        v-slot:[`field.${field.value}`]="{item}"
+      >
+        <slot :name="`field.${field.value}`" :item="item" :context="context" />
+      </template>
     </edit-item-dialog>
     <confirmation-dialog
       v-model="isConfirmationDialogOpened"
@@ -428,9 +434,12 @@ export default {
     }
   },
   computed: {
+    filteredHeaders () {
+      return this.headers.filter(header => !header.showIf || header.showIf({ ...this.context }))
+    },
     tableHeaders () {
       return [
-        ...this.headers,
+        ...this.filteredHeaders,
         ...this.canDelete ? [this.deleteButtonProps] : []
       ]
     }

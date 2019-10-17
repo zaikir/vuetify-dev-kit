@@ -9,6 +9,7 @@
     :disabled="disabled"
     :item-text="itemText"
     :item-value="itemValue"
+    :return-object="returnObject"
     :loading="isLoading"
     :search-input.sync="search"
     :placeholder="placeholder"
@@ -76,7 +77,11 @@ export default {
     },
     itemValue: {
       type: String,
-      required: true
+      default: null
+    },
+    returnObject: {
+      type: Boolean,
+      default: false
     },
     minLength: {
       type: Number,
