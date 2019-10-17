@@ -112,7 +112,7 @@ export default {
 
       const parsedDate = this.tryToParseDate(str)
       if (parsedDate) {
-        this.$emit('input', parsedDate.toString())
+        this.$emit('input', parsedDate)
       }
     },
     tryToParseDate (str = '') {
@@ -121,14 +121,14 @@ export default {
         return false
       }
 
-      return parsedDate.toDate()
+      return parsedDate.startOf('day').toISOString()
     },
     handleInput (val) {
       const date = moment(val, 'YYYY-MM-DD')
       this.dateFormatted = date.format('DD.MM.YYYY')
 
       this.$nextTick(() => {
-        this.$emit('input', date.toDate().toString())
+        this.$emit('input', date.startOf('day').toISOString())
 
         this.menu = false
       })
