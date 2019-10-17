@@ -271,6 +271,16 @@
                             :outlined="field.outlined"
                             @input="onFieldValueChanged(field.onChange, $event)"
                           />
+                          <time-picker
+                            v-else-if="field.type === 'time'"
+                            v-model="editableItem[field.value]"
+                            :rules="getRules(field)"
+                            :required="field.required"
+                            :label="field.text"
+                            :disabled="readonly || field.disabled"
+                            :outlined="field.outlined"
+                            @input="onFieldValueChanged(field.onChange, $event)"
+                          />
                           <v-text-field
                             v-else-if="field.type === 'slug'"
                             v-model="editableItem[field.value]"
@@ -360,6 +370,7 @@ import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
 import ExternalDataAutocomplete from './ExternalDataAutocomplete'
 import HtmlEditor from './HtmlEditor'
+import TimePicker from './TimePicker'
 
 export default {
   directives: {
@@ -370,7 +381,8 @@ export default {
     DragAndDropImageContainer,
     DragAndDropImagesContainer,
     HtmlEditor,
-    ExternalDataAutocomplete
+    ExternalDataAutocomplete,
+    TimePicker
   },
   props: {
     title: {
