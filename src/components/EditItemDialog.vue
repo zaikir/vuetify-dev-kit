@@ -40,7 +40,7 @@
       </v-card-title>
       <v-card-text class="pt-5" style="height: 100%;">
         <v-row justify="center" class="fill-height">
-          <v-col v-if="!item || !isTransitionEnded" cols="12" class="py-5 text-center align-self-center" style="">
+          <v-col v-if="!editableItem || !isTransitionEnded" cols="12" class="py-5 text-center align-self-center" style="">
             <v-progress-circular :size="94" width="4" indeterminate color="secondary">
               Загрузка...
             </v-progress-circular>
@@ -49,296 +49,284 @@
             <v-form ref="editForm" lazy-validation @submit.prevent="saveItem">
               <v-container grid-list-md>
                 <v-row no-gutters>
-                  <slot name="body.prepend" :item="editableItem" :context="context" />
+                  <slot name="form.prepend" :item="editableItem" :context="context" />
                   <v-col
-                    :cols="breakpoints.cols"
-                    :sm="breakpoints.sm"
-                    :md="breakpoints.md"
-                    :xl="breakpoints.xl"
+                    v-for="field in filteredFields"
+                    :key="field.value"
+                    :class="field.class || 'px-1'"
+                    :cols="field.cols || 12"
+                    :sm="conditionalFunction(field.sm)"
+                    :md="conditionalFunction(field.md)"
+                    :xl="conditionalFunction(field.xl)"
                   >
-                    <v-row no-gutters>
-                      <slot name="form.prepend" :item="editableItem" :context="context" />
-
-                      <v-col
-                        v-for="field in filteredFields"
-                        :key="field.value"
-                        :class="field.class || 'px-1'"
-                        :cols="field.cols || 12"
-                        :sm="conditionalFunction(field.sm)"
-                        :md="conditionalFunction(field.md)"
-                        :xl="conditionalFunction(field.xl)"
-                      >
-                        <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
-                          <v-autocomplete
-                            v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint.smAndDown)"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :label="field.text"
-                            :items="field.options({item: editableItem, ...context})"
-                            :item-text="field.itemText"
-                            :item-value="field.itemValue"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint.smAndDown" no-gutters>
-                            <v-col cols="12" style="margin-bottom: -10px;">
-                              <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
-                                {{ field.text }}
-                              </v-subheader>
-                            </v-col>
-                            <v-col cols="12">
-                              <v-btn-toggle
-                                v-model="editableItem[field.value]"
-                                mandatory
-                                class="mb-2"
-                                style="width: 100%"
-                                :active-class="field.activeClass || 'select-field-toggle-btn-selected'"
-                                :rules="getRules(field)"
-                                :required="field.required"
-                                :label="field.text"
-                                :disabled="readonly || field.disabled"
-                                @input="onFieldValueChanged(field.onChange, $event)"
-                              >
-                                <v-row no-gutters>
-                                  <v-col
-                                    v-for="option in field.options({item: editableItem, ...context})"
-                                    :key="option[field.itemValue]"
-                                    :cols="field.optionCols || 6"
-                                    :sm="field.optionSm || 4"
-                                  >
-                                    <v-btn
-                                      :value="option[field.itemValue]"
-                                      text
-                                      block
-                                    >
-                                      {{ option[field.itemText] }}
-                                    </v-btn>
-                                  </v-col>
-                                </v-row>
-                              </v-btn-toggle>
-                            </v-col>
-                          </v-row>
-                          <v-radio-group
-                            v-else-if="field.type === 'radio'"
+                    <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
+                      <v-autocomplete
+                        v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint.smAndDown)"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :label="field.text"
+                        :items="field.options({item: editableItem, ...context})"
+                        :item-text="field.itemText"
+                        :item-value="field.itemValue"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint.smAndDown" no-gutters>
+                        <v-col cols="12" style="margin-bottom: -10px;">
+                          <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
+                            {{ field.text }}
+                          </v-subheader>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-btn-toggle
                             v-model="editableItem[field.value]"
                             mandatory
                             class="mb-2"
                             style="width: 100%"
-                            :active-class="field.activeClass"
+                            :active-class="field.activeClass || 'select-field-toggle-btn-selected'"
                             :rules="getRules(field)"
-                            :row="field.row"
                             :required="field.required"
                             :label="field.text"
                             :disabled="readonly || field.disabled"
                             @input="onFieldValueChanged(field.onChange, $event)"
                           >
-                            <v-radio
-                              v-for="option in field.options({item: editableItem, ...context})"
-                              :key="option[field.itemValue]"
-                              :label="option[field.itemText]"
-                              :value="option[field.itemValue]"
-                            />
-                          </v-radio-group>
-                          <external-data-autocomplete
-                            v-else-if="field.type === 'autocomplete'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :filter="field.filter"
-                            :placeholder="field.placeholder"
-                            :prepend-icon="field.prependIcon"
-                            :response-handler="field.responseHandler"
-                            :min-length="field.minLength"
-                            :url="field.url"
-                            :label="field.text"
-                            :item-text="field.itemText"
-                            :item-value="field.itemValue"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-switch
-                            v-else-if="field.type === 'switch'"
-                            v-model="editableItem[field.value]"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-text-field
-                            v-else-if="field.type === 'email'"
-                            v-model="editableItem[field.value]"
-                            :rules="[...getRules(field), emailRule]"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-text-field
-                            v-else-if="field.type === 'phone'"
-                            v-model="editableItem[field.value]"
-                            :rules="[...getRules(field), ]"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            prefix="+"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @keypress="isNumber($event)"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-text-field
-                            v-else-if="field.type === 'number'"
-                            v-model.number="editableItem[field.value]"
-                            type="number"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-textarea
-                            v-else-if="field.type === 'textArea'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-textarea
-                            v-else-if="field.type === 'radio'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <drag-and-drop-image-container
-                            v-else-if="field.type === 'image'"
-                            v-model="editableItem[field.value]"
-                            single
-                            :rules="getRules(field)"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            :url="field.uploadUrl || '/api/uploads'"
-                            :accepted-files="field.acceptedFiles"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <drag-and-drop-images-container
-                            v-else-if="field.type === 'images'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            :url="field.uploadUrl || '/api/uploads'"
-                            :accepted-files="field.acceptedFiles"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <html-editor
-                            v-else-if="field.type === 'html'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :label="field.text"
-                            :height="field.height"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <date-picker
-                            v-else-if="field.type === 'date'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <time-picker
-                            v-else-if="field.type === 'time'"
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-text-field
-                            v-else-if="field.type === 'slug'"
-                            v-model="editableItem[field.value]"
-                            :rules="[...getRules(field), slugRule]"
-                            :placeholder="field.placeholder"
-                            :required="field.required"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          >
-                            <template #append>
-                              <v-tooltip bottom>
-                                <template #activator="{on}">
-                                  <v-btn icon @click="setSlug(editableItem, field.value, field.basedOn || 'name')" v-on="on">
-                                    <v-icon>mdi-reply-outline</v-icon>
-                                  </v-btn>
-                                </template>
-                                Сгенерировать
-                              </v-tooltip>
+                            <v-row no-gutters>
+                              <v-col
+                                v-for="option in field.options({item: editableItem, ...context})"
+                                :key="option[field.itemValue]"
+                                :cols="field.optionCols || 6"
+                                :sm="field.optionSm || 4"
+                              >
+                                <v-btn
+                                  :value="option[field.itemValue]"
+                                  text
+                                  block
+                                >
+                                  {{ option[field.itemText] }}
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                          </v-btn-toggle>
+                        </v-col>
+                      </v-row>
+                      <v-radio-group
+                        v-else-if="field.type === 'radio'"
+                        v-model="editableItem[field.value]"
+                        mandatory
+                        class="mb-2"
+                        style="width: 100%"
+                        :active-class="field.activeClass"
+                        :rules="getRules(field)"
+                        :row="field.row"
+                        :required="field.required"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      >
+                        <v-radio
+                          v-for="option in field.options({item: editableItem, ...context})"
+                          :key="option[field.itemValue]"
+                          :label="option[field.itemText]"
+                          :value="option[field.itemValue]"
+                        />
+                      </v-radio-group>
+                      <external-data-autocomplete
+                        v-else-if="field.type === 'autocomplete'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :filter="field.filter"
+                        :placeholder="field.placeholder"
+                        :prepend-icon="field.prependIcon"
+                        :response-handler="field.responseHandler"
+                        :min-length="field.minLength"
+                        :url="field.url"
+                        :label="field.text"
+                        :item-text="field.itemText"
+                        :item-value="field.itemValue"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-switch
+                        v-else-if="field.type === 'switch'"
+                        v-model="editableItem[field.value]"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-text-field
+                        v-else-if="field.type === 'email'"
+                        v-model="editableItem[field.value]"
+                        :rules="[...getRules(field), emailRule]"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-text-field
+                        v-else-if="field.type === 'phone'"
+                        v-model="editableItem[field.value]"
+                        :rules="[...getRules(field), phoneRule]"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        prefix="+"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @keypress="isNumber($event)"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-text-field
+                        v-else-if="field.type === 'number'"
+                        v-model.number="editableItem[field.value]"
+                        type="number"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-textarea
+                        v-else-if="field.type === 'textArea'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-textarea
+                        v-else-if="field.type === 'radio'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <drag-and-drop-image-container
+                        v-else-if="field.type === 'image'"
+                        v-model="editableItem[field.value]"
+                        single
+                        :rules="getRules(field)"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        :url="field.uploadUrl || '/api/uploads'"
+                        :accepted-files="field.acceptedFiles"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <drag-and-drop-images-container
+                        v-else-if="field.type === 'images'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        :url="field.uploadUrl || '/api/uploads'"
+                        :accepted-files="field.acceptedFiles"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <html-editor
+                        v-else-if="field.type === 'html'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :label="field.text"
+                        :height="field.height"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <date-picker
+                        v-else-if="field.type === 'date'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <time-picker
+                        v-else-if="field.type === 'time'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-text-field
+                        v-else-if="field.type === 'slug'"
+                        v-model="editableItem[field.value]"
+                        :rules="[...getRules(field), slugRule]"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      >
+                        <template #append>
+                          <v-tooltip bottom>
+                            <template #activator="{on}">
+                              <v-btn icon @click="setSlug(editableItem, field.value, field.basedOn || 'name')" v-on="on">
+                                <v-icon>mdi-reply-outline</v-icon>
+                              </v-btn>
                             </template>
-                          </v-text-field>
-                          <v-text-field
-                            v-else-if="field.mask && field.mask.length"
-                            v-model="editableItem[field.value]"
-                            v-mask="field.mask"
-                            :placeholder="field.placeholder"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                          <v-text-field
-                            v-else
-                            v-model="editableItem[field.value]"
-                            :rules="getRules(field)"
-                            :required="field.required"
-                            :placeholder="field.placeholder"
-                            :label="field.text"
-                            :disabled="readonly || field.disabled"
-                            :outlined="field.outlined"
-                            @input="onFieldValueChanged(field.onChange, $event)"
-                          />
-                        </slot>
-                      </v-col>
-                      <slot name="form.append" :item="editableItem" :context="context" />
-                    </v-row>
+                            Сгенерировать
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
+                      <v-text-field
+                        v-else-if="field.mask && field.mask.length"
+                        v-model="editableItem[field.value]"
+                        v-mask="field.mask"
+                        :placeholder="field.placeholder"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-text-field
+                        v-else
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                    </slot>
                   </v-col>
-                  <slot name="body.append" :item="editableItem" :context="context" />
+                  <slot name="form.append" :item="editableItem" :context="context" />
                 </v-row>
               </v-container>
             </v-form>
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions v-if="item && !isMobile">
+      <v-card-actions v-if="editableItem && !isMobile">
         <v-spacer />
         <v-btn
           :disabled="isSaving"
@@ -365,6 +353,7 @@
 import { mask } from 'vue-the-mask'
 import EmailValidator from 'email-validator'
 import slugify from 'slugify'
+import { ObjectID } from 'bson'
 import DatePicker from './DatePicker'
 import DragAndDropImageContainer from './DragAndDropImageContainer'
 import DragAndDropImagesContainer from './DragAndDropImagesContainer'
@@ -397,7 +386,11 @@ export default {
       type: Array,
       required: true
     },
-    item: {
+    source: {
+      type: Object,
+      default: null
+    },
+    sourceArgs: {
       type: Object,
       default: null
     },
@@ -439,6 +432,11 @@ export default {
       type: Function,
       default: ({ item }) => {}
     },
+    defaultItem: {
+      type: Object,
+      required: false,
+      default: () => ({})
+    },
     context: {
       type: Object,
       required: false,
@@ -449,7 +447,6 @@ export default {
     return {
       editableItem: {},
       isSaving: false,
-      isAdded: false,
       isTransitionEnded: false,
       phoneRule: x => !x || x === x.replace(/[^0-9]*/g, '') || 'Неверный формат',
       emailRule: x => !x || EmailValidator.validate(x) || 'Неверный формат',
@@ -465,8 +462,10 @@ export default {
     }
   },
   watch: {
-    value (val) {
-      if (val) {
+    async value (isOpened) {
+      this.editableItem = null
+
+      if (isOpened) {
         this.isTransitionEnded = false
         if (this.isMobile) {
           setTimeout(() => { this.isTransitionEnded = true }, 300)
@@ -474,26 +473,32 @@ export default {
           this.isTransitionEnded = true
         }
         this.preOpen({ item: this.editableItem, ...this.context })
-      }
-    },
-    item: {
-      immediate: true,
-      handler (value) {
+
         if (this.$refs.editForm) {
           this.$refs.editForm.reset()
           this.$refs.editForm.resetValidation()
         }
 
-        this.editableItem = JSON.parse(JSON.stringify(value))
-        if (this.editableItem) {
-          this.fields.filter(field => field.default).forEach((field) => {
-            if (!this.editableItem[field.value]) {
-              this.editableItem[field.value] = field.default({ item: this.editableItem, ...this.context })
-            }
-          })
-
-          this.postOpen({ item: this.editableItem, ...this.context })
+        if (this.sourceArgs) {
+          if (this.source.url) {
+            this.editableItem = await this.$axios.$get(this.source.url(this.sourceArgs), { progress: false })
+          } else {
+            this.editableItem = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
+          }
+        } else {
+          this.editableItem = {
+            _id: (new ObjectID()).toString(),
+            ...this.defaultItem
+          }
         }
+
+        this.fields.filter(field => field.default).forEach((field) => {
+          if (!this.editableItem[field.value]) {
+            this.editableItem[field.value] = field.default({ item: this.editableItem, ...this.context })
+          }
+        })
+
+        this.postOpen({ item: this.editableItem, ...this.context })
       }
     }
   },
@@ -528,20 +533,34 @@ export default {
     onValueChanged (val) {
       this.$emit('input', val)
     },
-    saveItem () {
+    async saveItem () {
       if (!this.$refs.editForm.validate()) {
         return
       }
 
       this.isSaving = true
 
-      this.$emit('onSaved', {
-        item: this.preSave({ item: this.editableItem, ...this.context }),
-        done: () => {
-          this.onValueChanged(false)
-          this.isSaving = false
+      const savingItem = this.preSave({ item: this.editableItem, ...this.context })
+
+      if (this.source) {
+        if (this.sourceArgs) {
+          if (this.source.url) {
+            await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
+          } else if (this.source.patch) {
+            await this.$axios.$patch(this.source.patch.url(this.sourceArgs), this.source.patch.body({ item: savingItem }), { progress: false })
+          }
+        } else if (this.source.url) {
+          await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
+        } else if (this.source.patch) {
+          await this.$axios.$patch(this.source.patch.url(this.sourceArgs), this.source.patch.body({ item: savingItem }), { progress: false })
         }
-      })
+      }
+
+      this.$emit('onSaved', { item: savingItem, ...this.context })
+
+      this.isSaving = false
+
+      this.onValueChanged(false)
     },
     cancelSaving () {
       this.$emit('onCanceled')

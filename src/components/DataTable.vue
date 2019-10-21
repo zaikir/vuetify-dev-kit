@@ -19,9 +19,9 @@
       :class="['universal-table', fontSize]"
       :headers="tableHeaders"
       :options.sync="options"
-      :items="items"
-      :loading="loading"
+      :items="preShow(items.filter(x => !x.isRemoved))"
       :search="search"
+      :loading="isLoading"
       :footer-props="footerProps"
       :mobile-breakpoint="mobileBreakpoint"
       :sort-by="sortBy"
@@ -171,9 +171,6 @@
               </v-col>
             </v-row>
           </template>
-          <!-- <template v-else-if="header.display === 'action'">
-            <div :key="`action-${header.value}`" @click.prevent.stop="() => {}" />
-          </template> -->
           <template v-else>
             {{ item[header.value] || '&mdash;' }}
           </template>
@@ -243,19 +240,11 @@
     <edit-item-dialog
       v-if="canEdit || canAdd || canView"
       v-model="editItemDialog"
-      :item="processedItem"
-      :persistent="editDialogProps.persistent"
-      :max-width="editDialogProps.maxWidth"
-      :fields="editDialogProps.fields"
-      :title="editDialogProps.title"
-      :fullscreen="editDialogProps.fullscreen"
-      :flat="editDialogProps.flat"
+      :source="dialogSource"
+      :source-args="dialogSourceArgs"
+      v-bind="editDialogProps"
       :context="context"
       :readonly="canView"
-      :pre-save="editDialogProps.preSave"
-      :pre-open="editDialogProps.preOpen"
-      :post-open="editDialogProps.postOpen"
-      :breakpoints="editDialogProps.breakpoints"
       @onSaved="saveItem"
     >
       <template #body.prepend="{item, context}">
@@ -279,7 +268,7 @@
     </edit-item-dialog>
     <confirmation-dialog
       v-model="isConfirmationDialogOpened"
-      @confirm="deleteItem"
+      @confirm="deleteRow"
       @decline="isConfirmationDialogOpened = false"
     />
   </v-card>
@@ -305,24 +294,14 @@ export default {
       type: Array,
       required: true
     },
-    items: {
-      type: Array,
-      required: false,
-      default: () => []
-    },
-    filters: {
-      type: Array,
-      required: false,
-      default: () => []
+    source: {
+      type: Object,
+      required: true
     },
     tabs: {
       type: Array,
       required: false,
       default: () => []
-    },
-    totalItemsLength: {
-      type: Number,
-      default: -1
     },
     title: {
       type: String,
@@ -333,10 +312,6 @@ export default {
       default: false
     },
     dense: {
-      type: Boolean,
-      default: false
-    },
-    loading: {
       type: Boolean,
       default: false
     },
@@ -359,6 +334,18 @@ export default {
     canView: {
       type: Boolean,
       default: false
+    },
+    preShow: {
+      type: Function,
+      default: items => items
+    },
+    preFilter: {
+      type: Function,
+      default: ({ filter }) => filter
+    },
+    preDelete: {
+      type: Function,
+      default: ({ item }) => item
     },
     refresh: {
       type: Boolean,
@@ -410,27 +397,24 @@ export default {
     },
     context: {
       type: Object,
-
       default: () => ({})
-    },
-    preFilter: {
-      type: Function,
-
-      default: ({ filter }) => filter
     }
   },
   data () {
     return {
       editItemDialog: false,
       isAdded: false,
-      isRowLoading: false,
+      isLoading: false,
       search: '',
       options: {},
       isConfirmationDialogOpened: false,
       processedItem: null,
       selectedTab: null,
       totalCounts: {},
-      filterValues: {}
+      filterValues: {},
+      items: [],
+      totalItemsLength: -1,
+      dialogSourceArgs: null
     }
   },
   computed: {
@@ -442,6 +426,34 @@ export default {
         ...this.filteredHeaders,
         ...this.canDelete ? [this.deleteButtonProps] : []
       ]
+    },
+    filters () {
+      return this.headers.filter(x => x.filter).map(header => ({
+        text: header.text,
+        key: header.value,
+        ...header.filter
+      }))
+    },
+    dialogSource () {
+      return this.source.url
+        ? { url: ({ id }) => `${this.source.url}/${id}` }
+        : {
+          item: ({ id }) => this.items.find(({ _id }) => _id === id),
+          patch: {
+            url: ({ id }) => `${this.source.patch.url}/${id}`,
+            body: ({ item }) => {
+              const index = this.items.findIndex(x => x._id === item._id)
+              if (index === -1) {
+                return { op: 'replace', path: `${this.source.patch.path}`, value: [...this.items, item] }
+              } else {
+                const updatedItems = [...this.items]
+                updatedItems.splice(index, 1, { ...item })
+
+                return { op: 'replace', path: `${this.source.patch.path}`, value: updatedItems }
+              }
+            }
+          }
+        }
     }
   },
   watch: {
@@ -454,6 +466,7 @@ export default {
     },
     selectedTab () {
       if (this.isInitialized) {
+        this.options.page = 1
         this.updateSource(false)
       }
     },
@@ -492,28 +505,22 @@ export default {
         this.updateSource()
       }, 300)
     },
-    saveItem ({ item, done }) {
-      if (this.isAdded) {
-        this.$emit('itemAdded', {
-          item,
-          ...this.context,
-          done: () => {
-            this.updateSource()
-            done()
-          }
-        })
-      } else {
-        this.$emit('itemUpdated', {
-          item,
-          ...this.context,
-          done: () => {
-            this.updateSource()
-            done()
-          }
-        })
+    async saveItem ({ item }) {
+      if (!this.source.url) {
+        const index = this.items.findIndex(x => x._id === item._id)
+        this.items.splice(index, 1, { ...item })
       }
+
+      if (this.dialogSourceArgs && this.dialogSourceArgs.id) {
+        this.$emit('onItemUpdated', { item, ...this.context })
+      } else {
+        this.$emit('onItemCreated', { item, ...this.context })
+      }
+
+      this.dialogSourceArgs = null
+      await this.updateSource()
     },
-    updateSource (updateCounts = true) {
+    async updateSource (updateCounts = true) {
       const getFilterData = tab => ({
         id: tab.text,
         filter: {
@@ -522,61 +529,62 @@ export default {
         }
       })
 
-      this.$emit('updateSource', {
-        options: this.options,
-        search: this.search,
-        filter: this.preFilter({
-          filter: getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
-          ...this.context
-        })
+      const filter = this.preFilter({
+        filter: getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
+        ...this.context
       })
+
+      this.isLoading = true
+      if (this.source.url) {
+        const { page, itemsPerPage, sortBy = '', sortDesc = '' } = this.options
+
+        const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${this.search || ''}&columns=${[...this.headers.map(({ value }) => value), 'isRemoved'].join(',')}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
+
+        const { items, total } = await this.$axios.$get(`${this.source.url}${this.source.url.includes('?') ? '' : '?'}${query}`, { progress: false })
+
+        this.items = items
+        this.totalItemsLength = total
+      } else {
+        this.items = this.source.items
+      }
+
+      this.isLoading = false
 
       if (this.tabs && this.tabs.length && updateCounts) {
         this.totalCounts = {}
 
-        this.$emit('updateCounts', {
-          options: this.options,
-          search: this.search,
-          filters: this.tabs.map(
-            tab => ({
-              filter: this.preFilter({ filter: getFilterData(tab).filter, ...this.context }),
-              id: getFilterData(tab).id
-            })
-          ),
-          done: (counts) => {
-            this.totalCounts = counts.reduce((acc, item) => {
-              acc[item.id] = item.value
-              return acc
-            }, {})
-          }
-        })
+        const filters = this.tabs.map(
+          tab => ({
+            filter: this.preFilter({ filter: getFilterData(tab).filter, ...this.context }),
+            id: getFilterData(tab).id
+          })
+        )
+
+        if (this.source.url) {
+          const { totals } = await this.$axios.$post(`${this.source.url}/count${this.source.url.includes('?') ? '' : '?'}search=${this.search}`, {
+            filters: filters.map(({ filter }) => filter)
+          }, { progress: false })
+
+          const counts = totals.map((total, i) => ({
+            id: filters[i].id,
+            value: total
+          }))
+
+          this.totalCounts = counts.reduce((acc, item) => {
+            acc[item.id] = item.value
+            return acc
+          }, {})
+        } else {
+          throw new Error('Not implemented')
+        }
       }
     },
     addItem () {
-      this.processedItem = null
-
-      this.$emit('getItem', {
-        ...this.context,
-        done: (item) => {
-          this.$nextTick(() => { this.processedItem = item })
-        }
-      })
-
-      this.isAdded = true
+      this.dialogSourceArgs = null
       this.editItemDialog = true
     },
     editItem (row) {
-      this.processedItem = null
-
-      this.$emit('getItem', {
-        row,
-        ...this.context,
-        done: (item) => {
-          this.$nextTick(() => { this.processedItem = item })
-        }
-      })
-
-      this.isAdded = false
+      this.dialogSourceArgs = { id: row._id }
       this.editItemDialog = true
     },
     onDoubleClick (item) {
@@ -592,16 +600,27 @@ export default {
         this.isConfirmationDialogOpened = true
       })
     },
-    deleteItem () {
+    async deleteRow () {
       this.isConfirmationDialogOpened = false
 
-      this.$emit('itemDeleted', {
-        item: this.processedItem,
-        ...this.context,
-        done: () => {
-          this.updateSource()
+      this.isLoading = true
+
+      const item = this.preDelete({ item: this.processedItem, ...this.context })
+
+      if (item) {
+        if (this.source.url) {
+          await this.$axios.$delete(`${this.source.url}/${item._id}`, { progress: false })
+        } else {
+          const index = this.items.findIndex(({ _id }) => item._id === _id)
+          this.$set(this.items, index, { ...item, isRemoved: true })
         }
-      })
+
+        this.$emit('onItemDeleted', { item, ...this.context })
+      }
+
+      await this.updateSource()
+
+      this.isLoading = false
     },
     selectRow ($event = {}) {
       if (this.lastClickedElement && Object.is(this.lastClickedElement, $event)) {
@@ -625,9 +644,6 @@ export default {
       } else {
         return phoneNumber.formatInternational()
       }
-    },
-    setRowLoading (value) {
-      this.isRowLoading = value
     }
   }
 }

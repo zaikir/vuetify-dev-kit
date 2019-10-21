@@ -1,4 +1,3 @@
-// import { VueEditor } from 'vue2-editor'
 import DataTable from './src/components/DataTable'
 import EditItemDialog from './src/components/EditItemDialog'
 
