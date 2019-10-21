@@ -605,7 +605,7 @@ export default {
 
       this.isLoading = true
 
-      const item = this.preDelete({ item: this.processedItem, ...this.context })
+      const item = await this.preDelete({ item: this.processedItem, ...this.context })
 
       if (item) {
         if (this.source.url) {
