@@ -637,10 +637,10 @@ export default {
         }, 500)
       }
     },
-    formatPhoneNumber (phone = '', countryCode = '') {
-      const phoneNumber = parsePhoneNumberFromString('+' + countryCode + phone)
+    formatPhoneNumber (phone = '', countryCode = '', sign = '+') {
+      const phoneNumber = parsePhoneNumberFromString(sign + countryCode + phone)
       if (!phoneNumber) {
-        return phone.length ? '+' + phone : null
+        return phone.length ? sign + phone : null
       } else {
         return phoneNumber.formatInternational()
       }
