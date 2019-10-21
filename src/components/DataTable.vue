@@ -82,7 +82,7 @@
           <template v-if="header.display === 'phone'">
             <template v-if="item[header.value]">
               <a :key="`value-${header.value}`" itemprop="telephone" :href="`tel:${header.countryCode || ''}${item[header.value]}`">
-                {{ formatPhoneNumber(item[header.value], header.countryCode) }}
+                {{ formatPhoneNumber(item[header.value], header.countryCode, header.sign) }}
               </a>
             </template>
             <template v-else>
