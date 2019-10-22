@@ -30,13 +30,13 @@ export default {
       type: Function,
       required: true
     },
+    context: {
+      type: Object,
+      default: () => {}
+    },
     responseHandler: {
       type: Function,
       default: ({ items }) => items
-    },
-    filter: {
-      type: Function,
-      default: items => items
     },
     label: {
       type: String,
@@ -97,13 +97,13 @@ export default {
     }
   },
   watch: {
-    search (val = '') {
-      this.updateItems()
+    search (val) {
+      this.updateItems(val || '')
     }
   },
 
   created () {
-    this.updateItems()
+    this.updateItems('')
   },
   methods: {
     updateItems (val = '') {
@@ -119,7 +119,7 @@ export default {
       }
 
       this.timer = setTimeout(async () => {
-        this.items = this.filter(this.responseHandler(await this.$axios.$get(this.url(val))))
+        this.items = this.responseHandler(await this.$axios.$get(this.url({ query: val, ...this.context })))
         this.isLoading = false
       }, 300)
     },

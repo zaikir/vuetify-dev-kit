@@ -237,35 +237,41 @@
       </v-btn>
     </slot>
 
-    <edit-item-dialog
+    <slot
       v-if="canEdit || canAdd || canView"
-      v-model="editItemDialog"
-      :source="dialogSource"
-      :source-args="dialogSourceArgs"
-      v-bind="editDialogProps"
-      :context="context"
-      :readonly="canView"
-      @onSaved="saveItem"
+      name="editDialog"
+      :props="{...editDialogProps, value: editItemDialog, source: dialogSource, 'source-args': dialogSourceArgs, context, readonly: canView}"
+      :on="{onSaved: saveItem, input: $event => editItemDialog = $event}"
     >
-      <template #body.prepend="{item, context}">
-        <slot name="editForm.body.prepend" :item="item" :context="context" />
-      </template>
-      <template #body.append="{item, context}">
-        <slot name="editForm.body.append" :item="item" :context="context" />
-      </template>
-      <template #form.append="{item, context}">
-        <slot name="editForm.form.append" :item="item" :context="context" />
-      </template>
-      <template #form.prepend="{item, context}">
-        <slot name="editForm.form.prepend" :item="item" :context="context" />
-      </template>
-      <template
-        v-for="field in editDialogProps.fields"
-        v-slot:[`field.${field.value}`]="{item}"
+      <edit-item-dialog
+        v-model="editItemDialog"
+        :source="dialogSource"
+        :source-args="dialogSourceArgs"
+        v-bind="{ preSave: preSaveItem, ...editDialogProps }"
+        :context="context"
+        :readonly="canView"
+        @onSaved="saveItem"
       >
-        <slot :name="`field.${field.value}`" :item="item" :context="context" />
-      </template>
-    </edit-item-dialog>
+        <template #body.prepend="{item, context}">
+          <slot name="editForm.body.prepend" :item="item" :context="context" />
+        </template>
+        <template #body.append="{item, context}">
+          <slot name="editForm.body.append" :item="item" :context="context" />
+        </template>
+        <template #form.append="{item, context}">
+          <slot name="editForm.form.append" :item="item" :context="context" />
+        </template>
+        <template #form.prepend="{item, context}">
+          <slot name="editForm.form.prepend" :item="item" :context="context" />
+        </template>
+        <template
+          v-for="field in editDialogProps.fields"
+          v-slot:[`field.${field.value}`]="{item}"
+        >
+          <slot :name="`field.${field.value}`" :item="item" :context="context" />
+        </template>
+      </edit-item-dialog>
+    </slot>
     <confirmation-dialog
       v-model="isConfirmationDialogOpened"
       @confirm="deleteRow"
@@ -343,7 +349,11 @@ export default {
       type: Function,
       default: ({ filter }) => filter
     },
-    preDelete: {
+    preSaveItem: {
+      type: Function,
+      default: ({ item }) => item
+    },
+    preDeleteItem: {
       type: Function,
       default: ({ item }) => item
     },
@@ -605,7 +615,7 @@ export default {
 
       this.isLoading = true
 
-      const item = await this.preDelete({ item: this.processedItem, ...this.context })
+      const item = await this.preDeleteItem({ item: this.processedItem, ...this.context })
 
       if (item) {
         if (this.source.url) {
@@ -614,9 +624,9 @@ export default {
           const index = this.items.findIndex(({ _id }) => item._id === _id)
           this.$set(this.items, index, { ...item, isRemoved: true })
         }
-
-        this.$emit('onItemDeleted', { item, ...this.context })
       }
+
+      this.$emit('onItemDeleted', { item: this.processedItem, ...this.context })
 
       await this.updateSource()
 

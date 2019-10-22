@@ -143,6 +143,7 @@
                         :response-handler="field.responseHandler"
                         :min-length="field.minLength"
                         :url="field.url"
+                        :context="{ item: editableItem, ...context }"
                         :label="field.text"
                         :item-text="field.itemText"
                         :item-value="field.itemValue"
@@ -430,7 +431,7 @@ export default {
     },
     postOpen: {
       type: Function,
-      default: ({ item }) => {}
+      default: ({ item }) => item
     },
     defaultItem: {
       type: Object,
@@ -472,6 +473,7 @@ export default {
         } else {
           this.isTransitionEnded = true
         }
+
         this.preOpen({ item: this.editableItem, ...this.context })
 
         if (this.$refs.editForm) {
@@ -498,7 +500,7 @@ export default {
           }
         })
 
-        this.postOpen({ item: this.editableItem, ...this.context })
+        this.editableItem = await this.postOpen({ item: this.editableItem, ...this.context })
       }
     }
   },
@@ -540,9 +542,13 @@ export default {
 
       this.isSaving = true
 
-      const savingItem = this.preSave({ item: this.editableItem, ...this.context })
+      const savingItem = await this.preSave({
+        item: this.editableItem,
+        isCreation: !this.sourceArgs,
+        ...this.context
+      })
 
-      if (this.source) {
+      if (this.source && savingItem) {
         if (this.sourceArgs) {
           if (this.source.url) {
             await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
