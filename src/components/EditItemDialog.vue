@@ -11,6 +11,7 @@
     @input="onValueChanged"
   >
     <v-card
+      v-if="value"
       :flat="flat"
       class="edit-item-dialog"
       :class="{readonly}"
@@ -542,27 +543,29 @@ export default {
 
       this.isSaving = true
 
+      const isCreation = !this.sourceArgs
       const savingItem = await this.preSave({
         item: this.editableItem,
-        isCreation: !this.sourceArgs,
+        isCreation,
         ...this.context
       })
 
       if (this.source && savingItem) {
-        if (this.sourceArgs) {
-          if (this.source.url) {
+        if (this.source.url) {
+          if (isCreation) {
+            await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
+          } else {
             await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
-          } else if (this.source.patch) {
-            await this.$axios.$patch(this.source.patch.url(this.sourceArgs), this.source.patch.body({ item: savingItem }), { progress: false })
           }
-        } else if (this.source.url) {
-          await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
         } else if (this.source.patch) {
-          await this.$axios.$patch(this.source.patch.url(this.sourceArgs), this.source.patch.body({ item: savingItem }), { progress: false })
+          await this.$axios.$patch(
+            this.source.patch.url({ item: savingItem, isCreation, ...this.context }),
+            this.source.patch.body({ item: savingItem, isCreation, ...this.context }), { progress: false }
+          )
         }
       }
 
-      this.$emit('onSaved', { item: savingItem, ...this.context })
+      this.$emit('onSaved', { item: savingItem, isCreation, ...this.context })
 
       this.isSaving = false
 

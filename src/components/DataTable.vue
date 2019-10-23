@@ -240,7 +240,7 @@
     <slot
       v-if="canEdit || canAdd || canView"
       name="editDialog"
-      :props="{...editDialogProps, value: editItemDialog, source: dialogSource, 'source-args': dialogSourceArgs, context, readonly: canView}"
+      :props="{...editDialogProps, value: editItemDialog, source: dialogSource, 'source-args': dialogSourceArgs, context, readonly: canView, preSave: preSaveItem}"
       :on="{onSaved: saveItem, input: $event => editItemDialog = $event}"
     >
       <edit-item-dialog
@@ -385,9 +385,7 @@ export default {
       default: () => ({
         maxWidth: '500px',
         fields: [],
-        persistent: true,
-        preSave: () => {},
-        preOpen: () => {}
+        persistent: true
       })
     },
     fontSize: {
@@ -450,8 +448,8 @@ export default {
         : {
           item: ({ id }) => this.items.find(({ _id }) => _id === id),
           patch: {
-            url: ({ id }) => `${this.source.patch.url}/${id}`,
-            body: ({ item }) => {
+            url: ({ parent }) => `${this.source.patch.url}/${parent._id}`,
+            body: ({ item, isCreation }) => {
               const index = this.items.findIndex(x => x._id === item._id)
               if (index === -1) {
                 return { op: 'replace', path: `${this.source.patch.path}`, value: [...this.items, item] }
@@ -515,10 +513,14 @@ export default {
         this.updateSource()
       }, 300)
     },
-    async saveItem ({ item }) {
+    async saveItem ({ item, isCreation }) {
       if (!this.source.url) {
-        const index = this.items.findIndex(x => x._id === item._id)
-        this.items.splice(index, 1, { ...item })
+        if (!isCreation) {
+          const index = this.items.findIndex(x => x._id === item._id)
+          this.items.splice(index, 1, { ...item })
+        } else {
+          this.items.push({ ...item })
+        }
       }
 
       if (this.dialogSourceArgs && this.dialogSourceArgs.id) {
@@ -622,6 +624,18 @@ export default {
           await this.$axios.$delete(`${this.source.url}/${item._id}`, { progress: false })
         } else {
           const index = this.items.findIndex(({ _id }) => item._id === _id)
+
+          if (this.source.patch) {
+            const getBody = () => {
+              const updatedItems = [...this.items]
+              updatedItems.splice(index, 1, { ...item, isRemoved: true })
+
+              return { op: 'replace', path: `${this.source.patch.path}`, value: updatedItems }
+            }
+
+            await this.$axios.$patch(`${this.source.patch.url}/${this.context.parent._id}`, getBody(), { progress: false })
+          }
+
           this.$set(this.items, index, { ...item, isRemoved: true })
         }
       }

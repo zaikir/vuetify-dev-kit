@@ -36,7 +36,7 @@ export default {
     },
     responseHandler: {
       type: Function,
-      default: ({ items }) => items
+      default: items => items
     },
     label: {
       type: String,
