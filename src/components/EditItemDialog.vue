@@ -428,7 +428,7 @@ export default {
     },
     preOpen: {
       type: Function,
-      default: ({ item }) => {}
+      default: ({ item }) => item
     },
     postOpen: {
       type: Function,
@@ -475,25 +475,26 @@ export default {
           this.isTransitionEnded = true
         }
 
-        this.preOpen({ item: this.editableItem, ...this.context })
-
         if (this.$refs.editForm) {
           this.$refs.editForm.reset()
           this.$refs.editForm.resetValidation()
         }
 
+        let item = null
         if (this.sourceArgs) {
           if (this.source.url) {
-            this.editableItem = await this.$axios.$get(this.source.url(this.sourceArgs), { progress: false })
+            item = await this.$axios.$get(this.source.url(this.sourceArgs), { progress: false })
           } else {
-            this.editableItem = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
+            item = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
           }
         } else {
-          this.editableItem = {
-            _id: (new ObjectID()).toString(),
-            ...this.defaultItem
-          }
+          item = { _id: (new ObjectID()).toString(), ...this.defaultItem }
         }
+
+        this.editableItem = await this.preOpen({
+          item,
+          ...this.context
+        })
 
         this.fields.filter(field => field.default).forEach((field) => {
           if (!this.editableItem[field.value]) {
