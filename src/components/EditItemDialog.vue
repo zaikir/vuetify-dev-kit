@@ -20,7 +20,7 @@
         <v-btn icon dark @click="cancelSaving">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title v-if="title">
+        <v-toolbar-title v-if="title" style="width: 100%;">
           <slot name="title" :item="editableItem" :context="context">
             {{ title }}
           </slot>
@@ -416,6 +416,10 @@ export default {
       type: Boolean,
       default: true
     },
+    alwaysFullscreen: {
+      type: Boolean,
+      default: false
+    },
     readonly: {
       type: Boolean,
       default: false
@@ -464,7 +468,7 @@ export default {
       return this.fields.filter(field => !field.showIf || field.showIf({ item: this.editableItem, ...this.context }))
     },
     isMobile () {
-      return this.fullscreen && this.$vuetify.breakpoint.smAndDown
+      return this.fullscreen && (this.$vuetify.breakpoint.smAndDown || this.alwaysFullscreen)
     }
   },
   watch: {

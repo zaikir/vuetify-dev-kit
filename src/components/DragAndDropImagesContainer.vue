@@ -1,6 +1,6 @@
 <template>
-  <v-row no-gutters class="drag-and-drop-editor">
-    <v-col cols="12" style="margin-bottom: -5px;">
+  <v-row no-gutters class="drag-and-drop-editor mb-8">
+    <v-col cols="12" style="margin-bottom: 0px;">
       <v-subheader :class="'subtitle-2 pl-0'">
         {{ label }}
       </v-subheader>

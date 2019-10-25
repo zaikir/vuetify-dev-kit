@@ -1,6 +1,6 @@
 {
   "name": "vuetify-dev-kit",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "The development kit for projects on Vuetify",
   "main": "index.js",
   "scripts": {
