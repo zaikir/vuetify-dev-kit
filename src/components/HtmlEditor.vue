@@ -107,6 +107,11 @@ export default {
   watch: {
     content (val) {
       this.$emit('input', val)
+    },
+    value (val) {
+      if (this.content !== val) {
+        this.content = val
+      }
     }
   },
   mounted () {

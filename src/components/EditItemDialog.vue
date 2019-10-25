@@ -21,7 +21,9 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title v-if="title">
-          {{ title }}
+          <slot name="title" :item="editableItem" :context="context">
+            {{ title }}
+          </slot>
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items>
@@ -37,7 +39,9 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-title v-else-if="title" class="pb-0">
-        {{ title }}
+        <slot name="title" :item="editableItem" :context="context">
+          {{ title }}
+        </slot>
       </v-card-title>
       <v-card-text class="pt-5" style="height: 100%;">
         <v-row justify="center" class="fill-height">

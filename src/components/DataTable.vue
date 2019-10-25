@@ -252,6 +252,9 @@
         :readonly="canView"
         @onSaved="saveItem"
       >
+        <template #title="{item, context}">
+          <slot name="editForm.title" :item="item" :context="context" />
+        </template>
         <template #body.prepend="{item, context}">
           <slot name="editForm.body.prepend" :item="item" :context="context" />
         </template>
