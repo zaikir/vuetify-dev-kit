@@ -247,6 +247,16 @@
                         :accepted-files="field.acceptedFiles"
                         @input="onFieldValueChanged(field.onChange, $event)"
                       />
+                      <image-area-selector
+                        v-else-if="field.type === 'imageArea'"
+                        v-model="editableItem[field.value]"
+                        :url="(editableItem[field.basedOn || 'image'] || {}).url"
+                        :rules="getRules(field)"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
                       <html-editor
                         v-else-if="field.type === 'html'"
                         v-model="editableItem[field.value]"
@@ -276,6 +286,19 @@
                         :label="field.text"
                         :disabled="readonly || field.disabled"
                         :outlined="field.outlined"
+                        @input="onFieldValueChanged(field.onChange, $event)"
+                      />
+                      <v-combobox
+                        v-else-if="field.type === 'combobox'"
+                        v-model="editableItem[field.value]"
+                        :rules="getRules(field)"
+                        :required="field.required"
+                        :placeholder="field.placeholder"
+                        :items="field.items || []"
+                        :label="field.text"
+                        :disabled="readonly || field.disabled"
+                        :outlined="field.outlined"
+                        :multiple="field.multiple || true"
                         @input="onFieldValueChanged(field.onChange, $event)"
                       />
                       <v-text-field
@@ -366,6 +389,7 @@ import DragAndDropImagesContainer from './DragAndDropImagesContainer'
 import ExternalDataAutocomplete from './ExternalDataAutocomplete'
 import HtmlEditor from './HtmlEditor'
 import TimePicker from './TimePicker'
+import ImageAreaSelector from './ImageAreaSelector'
 
 export default {
   directives: {
@@ -377,7 +401,8 @@ export default {
     DragAndDropImagesContainer,
     HtmlEditor,
     ExternalDataAutocomplete,
-    TimePicker
+    TimePicker,
+    ImageAreaSelector
   },
   props: {
     title: {
