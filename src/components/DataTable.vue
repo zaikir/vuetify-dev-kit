@@ -18,7 +18,7 @@
       <v-spacer v-if="!title" />
     </v-card-title>
     <v-data-table
-      :class="['universal-table', fontSize]"
+      :class="{'universal-table': true, [fontSize]: true, 'can-sort': canSort}"
       :headers="tableHeaders"
       :options.sync="options"
       :items="preShow(items.filter(x => !x.isRemoved))"
@@ -27,6 +27,7 @@
       :hide-default-footer="isMobileView"
       :footer-props="footerProps"
       :mobile-breakpoint="mobileBreakpoint"
+      :disable-sort="!canSort"
       :sort-by="sortBy"
       :sort-desc="sortDesc"
       :dense="dense"
@@ -354,6 +355,10 @@ export default {
     canView: {
       type: Boolean,
       default: false
+    },
+    canSort: {
+      type: Boolean,
+      default: true
     },
     mobileView: {
       type: Boolean,
@@ -789,6 +794,10 @@ export default {
 
   .v-card.mobile .universal-table {
     background-color: transparent !important;
+  }
+
+  .v-card.mobile .universal-table:not(.can-sort) .v-data-table-header-mobile {
+    display: none;
   }
 
 </style>
