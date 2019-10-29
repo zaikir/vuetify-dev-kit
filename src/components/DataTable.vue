@@ -1,8 +1,10 @@
 <template>
-  <v-card :flat="flat">
+  <v-card :flat="flat || isMobileView" :class="{ mobile: isMobileView }" :color="isMobileView ? 'transparent' : ''">
     <v-card-title v-if="title || canSearch">
       <slot name="title">
-        <h3>{{ title }}</h3>
+        <h3 style="word-break: break-word;">
+          {{ title }}
+        </h3>
       </slot>
       <v-spacer v-if="title" />
       <v-text-field
@@ -22,6 +24,7 @@
       :items="preShow(items.filter(x => !x.isRemoved))"
       :search="search"
       :loading="isLoading"
+      :hide-default-footer="isMobileView"
       :footer-props="footerProps"
       :mobile-breakpoint="mobileBreakpoint"
       :sort-by="sortBy"
@@ -37,6 +40,7 @@
       @update:sort-by="$emit('update:sort-by', $event)"
       @update:sort-desc="$emit('update:sort-desc', $event)"
       @click:row="selectRow"
+      @page-count="pageCount = $event"
     >
       <template v-slot:top>
         <filters-collection
@@ -76,7 +80,11 @@
           </v-tab>
         </v-tabs>
       </template>
-
+      <template v-if="isMobileView" #item="{ item, isSelected }">
+        <v-card class="my-4 mx-1 pa-2" @click="selectRow(item)">
+          <slot name="mobile-item" :item="item" :context="context" />
+        </v-card>
+      </template>
       <template v-for="header in filteredHeaders" v-slot:[`item.${header.value}`]="{item}">
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
@@ -222,6 +230,9 @@
         </div>
       </template>
     </v-data-table>
+    <div v-if="isMobileView" class="text-center pt-2">
+      <v-pagination v-model="options.page" :length="pageCount" />
+    </div>
     <div v-if="canAdd && addButtonProps.type === 'fixed'" style="height:50px" />
     <slot v-if="canAdd && addButtonProps.type === 'fixed'" name="button.add">
       <v-btn
@@ -344,6 +355,10 @@ export default {
       type: Boolean,
       default: false
     },
+    mobileView: {
+      type: Boolean,
+      default: false
+    },
     preShow: {
       type: Function,
       default: items => items
@@ -425,7 +440,8 @@ export default {
       filterValues: {},
       items: [],
       totalItemsLength: -1,
-      dialogSourceArgs: null
+      dialogSourceArgs: null,
+      pageCount: 0
     }
   },
   computed: {
@@ -444,6 +460,9 @@ export default {
         key: header.value,
         ...header.filter
       }))
+    },
+    isMobileView () {
+      return this.$vuetify.breakpoint.xsOnly && this.mobileView
     },
     dialogSource () {
       return this.source.url
@@ -762,6 +781,14 @@ export default {
 
   .universal-table .v-data-table__mobile-row__cell {
     padding-left: 5px;
+  }
+
+  .universal-table .v-card.mobile {
+    background-color: transparent !important;
+  }
+
+  .v-card.mobile .universal-table {
+    background-color: transparent !important;
   }
 
 </style>
