@@ -268,7 +268,7 @@
           <slot name="editForm.form.prepend" :item="item" :context="context" />
         </template>
         <template
-          v-for="field in editDialogProps.fields"
+          v-for="field in flattenFields(editDialogProps.fields)"
           v-slot:[`field.${field.value}`]="{item}"
         >
           <slot :name="`field.${field.value}`" :item="item" :context="context" />
@@ -670,6 +670,16 @@ export default {
         return phone.length ? sign + phone : null
       } else {
         return phoneNumber.formatInternational()
+      }
+    },
+    flattenFields (fields) {
+      if (!fields.length && fields.length !== 0) {
+        return fields.layouts.reduce((acc, layout, id) => {
+          acc.push(...layout.fields)
+          return acc
+        }, [])
+      } else {
+        return fields
       }
     }
   }
