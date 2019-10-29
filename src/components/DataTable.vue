@@ -82,7 +82,7 @@
         </v-tabs>
       </template>
       <template v-if="isMobileView" #item="{ item, isSelected }">
-        <v-card class="my-4 mx-1 pa-2" @click="selectRow(item)">
+        <v-card class="my-4 mx-1 pa-2" @click="onDoubleClick(item)">
           <slot name="mobile-item" :item="item" :context="context" />
         </v-card>
       </template>
