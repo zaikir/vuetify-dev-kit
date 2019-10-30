@@ -249,10 +249,12 @@ export default {
       const isFieldActive = field => !field.showIf || field.showIf({ item: this.editableItem, ...this.context })
 
       if (!this.fields.length) {
+        const layouts = this.fields.layouts.filter(isFieldActive)
+
         return {
           type: this.fields.type,
-          layouts: this.fields.layouts.map(({ fields, ...rest }) => rest),
-          fields: this.fields.layouts.reduce((acc, layout, id) => {
+          layouts: layouts.map(({ fields, ...rest }) => rest),
+          fields: layouts.reduce((acc, layout, id) => {
             acc.push(...layout.fields.filter(isFieldActive).map(field => ({ ...field, layoutId: id })))
             return acc
           }, [])
