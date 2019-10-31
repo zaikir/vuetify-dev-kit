@@ -129,6 +129,12 @@
           <template v-else-if="header.display === 'checkbox'">
             <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
           </template>
+          <template v-else-if="header.display === 'combobox'">
+            {{ item[header.value] && item[header.value].length ? item[header.value].join(', ') :'&mdash;' }}
+          </template>
+          <template v-else-if="header.display === 'date'">
+            {{ item[header.value] ? moment(item[header.value]).format(header.format || 'DD.MM.YYYY') :'&mdash;' }}
+          </template>
           <template v-else-if="header.display === 'image'">
             <v-img
               v-if="item[header.value]"
@@ -298,6 +304,7 @@
 <script>
 
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import moment from 'moment'
 import EditItemDialog from './EditItemDialog'
 import ConfirmationDialog from './ConfirmationDialog'
 import FiltersCollection from './FiltersCollection'
@@ -527,6 +534,9 @@ export default {
     }, 300)
   },
   methods: {
+    moment (date) {
+      return moment(date)
+    },
     openLink (url) {
       window.open(url, '_blank')
     },
