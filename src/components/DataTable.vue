@@ -160,7 +160,7 @@
           <template v-else-if="header.display === 'images'">
             <v-row no-gutters>
               <v-col
-                v-for="(image, i) in item[header.value]"
+                v-for="(image, i) in item[header.value].filter(x => !x.isRemoved)"
                 :key="i"
                 cols="auto"
               >
