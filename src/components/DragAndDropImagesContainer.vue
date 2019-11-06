@@ -158,8 +158,9 @@ export default {
       if (moved) {
         const oldItems = [...this.value]
 
+        const fromElement = oldItems.filter(x => !x.isRemoved)[moved.oldIndex]
         const newElement = oldItems.filter(x => !x.isRemoved)[moved.newIndex]
-        const oldIndex = oldItems.indexOf(moved.element)
+        const oldIndex = oldItems.indexOf(fromElement)
         const newIndex = oldItems.indexOf(newElement)
 
         const temp = oldItems[oldIndex]
