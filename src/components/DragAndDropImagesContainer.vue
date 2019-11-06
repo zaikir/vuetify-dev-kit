@@ -38,7 +38,7 @@
       </vue-dropzone>
     </v-col>
     <v-col cols="12">
-      <draggable :list="value" group="people" class="row" :disabled="disabled" @change="onReordered">
+      <draggable :list="value.filter(x => !x.isRemoved)" group="people" class="row" :disabled="disabled" @change="onReordered">
         <v-col v-for="(file, i) in value.filter(x => !x.isRemoved)" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
             <v-card flat tile class="d-flex file-card">
@@ -157,7 +157,6 @@ export default {
 
       if (moved) {
         const oldItems = [...this.value]
-
         const fromElement = oldItems.filter(x => !x.isRemoved)[moved.oldIndex]
         const newElement = oldItems.filter(x => !x.isRemoved)[moved.newIndex]
         const oldIndex = oldItems.indexOf(fromElement)
