@@ -38,7 +38,7 @@
       </vue-dropzone>
     </v-col>
     <v-col cols="12">
-      <v-row>
+      <draggable :list="value" group="people" class="row" :disabled="disabled" @change="onReordered">
         <v-col v-for="(file, i) in value.filter(x => !x.isRemoved)" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
             <v-card flat tile class="d-flex file-card">
@@ -73,7 +73,7 @@
             </v-card>
           </v-hover>
         </v-col>
-      </v-row>
+      </draggable>
     </v-col>
     <confirmation-dialog
       v-model="isConfirmationDialogOpened"
@@ -85,12 +85,14 @@
 <script>
 
 import VueDropzone from 'nuxt-dropzone'
+import draggable from 'vuedraggable'
 import ConfirmationDialog from './ConfirmationDialog'
 
 export default {
   components: {
     VueDropzone,
-    ConfirmationDialog
+    ConfirmationDialog,
+    draggable
   },
   props: {
     value: {
@@ -150,6 +152,23 @@ export default {
     }
   },
   methods: {
+    onReordered (event) {
+      const { moved } = event || {}
+
+      if (moved) {
+        const oldItems = [...this.value]
+
+        const newElement = oldItems.filter(x => !x.isRemoved)[moved.newIndex]
+        const oldIndex = oldItems.indexOf(moved.element)
+        const newIndex = oldItems.indexOf(newElement)
+
+        const temp = oldItems[oldIndex]
+        oldItems[oldIndex] = oldItems[newIndex]
+        oldItems[newIndex] = temp
+
+        this.$emit('input', oldItems)
+      }
+    },
     removeFile () {
       this.processedItem.isRemoved = true
       this.isConfirmationDialogOpened = false

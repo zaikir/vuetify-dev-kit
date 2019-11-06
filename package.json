@@ -1,6 +1,6 @@
 {
   "name": "vuetify-dev-kit",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "The development kit for projects on Vuetify",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,8 @@
     "nuxt-dropzone": "^1.0.4",
     "slugify": "^1.3.5",
     "vue-cropperjs": "^4.0.1",
-    "vue-the-mask": "^0.11.1"
+    "vue-the-mask": "^0.11.1",
+    "vuedraggable": "^2.23.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.1.2",
