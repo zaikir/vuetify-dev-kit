@@ -295,7 +295,7 @@ export default {
             item = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
           }
         } else {
-          item = { _id: (new ObjectID()).toString(), ...this.defaultItem }
+          item = { _id: (new ObjectID()).toString(), _isNew: true, ...this.defaultItem }
         }
 
         this.editableItem = await this.preOpen({
