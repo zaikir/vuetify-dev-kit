@@ -370,7 +370,7 @@ export default {
       this.$set(item, fieldName, slugify(item[basedOnField]).toLowerCase())
     },
     getRules ({ rules = [], required }) {
-      return [...rules, ...required ? [x => !!x || 'Введите значение'] : []]
+      return [...rules, ...this.conditionalFunction(required) ? [x => !!x || 'Введите значение'] : []]
     },
     onFieldValueChanged (func, newValue) {
       if (func) {
