@@ -78,6 +78,39 @@ export default {
         content_css: [],
         images_upload_url: '/api/uploads',
         automatic_uploads: false,
+        file_picker_callback: (cb, value, meta) => {
+          const input = document.createElement('input')
+          input.setAttribute('type', 'file')
+
+          const that = this
+          input.onchange = function () {
+            const file = this.files[0]
+
+            const formData = new FormData()
+            formData.append('file', file, file.name)
+
+            const xhr = new XMLHttpRequest()
+            xhr.withCredentials = false
+            xhr.open('POST', that.uploadUrl)
+
+            xhr.onload = () => {
+              if (xhr.status !== 200) {
+                throw new Error('HTTP error')
+              }
+
+              cb(that.uploadFileHandler(JSON.parse(xhr.responseText)), {
+                title: file.name,
+                text: file.name,
+                alt: file.name,
+                target: '_blank'
+              })
+            }
+
+            xhr.send(formData)
+          }
+
+          input.click()
+        },
         images_upload_handler: (blobInfo, success, failure) => {
           const xhr = new XMLHttpRequest()
           xhr.withCredentials = false
