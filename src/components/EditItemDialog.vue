@@ -28,14 +28,53 @@
         <v-spacer />
         <v-toolbar-items>
           <v-btn
-            v-if="!readonly"
+            v-if="!readonly && closeOnSave"
             dark
             icon
             :loading="isSaving"
-            @click="saveItem"
+            @click="saveItem(true)"
           >
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
+          <v-speed-dial
+            v-if="!readonly && !closeOnSave"
+            v-model="saveButtonFab"
+            direction="bottom"
+          >
+            <template v-slot:activator>
+              <v-btn
+                v-model="saveButtonFab"
+                dark
+                icon
+                :loading="isSaving"
+              >
+                <v-icon v-if="saveButtonFab">
+                  mdi-close
+                </v-icon>
+                <v-icon v-else>
+                  mdi-content-save
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-btn
+              fab
+              dark
+              small
+              color="green"
+              @click="saveItem(true)"
+            >
+              <v-icon>mdi-content-save</v-icon>
+            </v-btn>
+            <v-btn
+              fab
+              dark
+              small
+              color="indigo"
+              @click="saveItem(false)"
+            >
+              <v-icon>mdi-exit-to-app</v-icon>
+            </v-btn>
+          </v-speed-dial>
         </v-toolbar-items>
       </v-toolbar>
       <v-card-title v-else-if="title" class="pb-0">
@@ -51,7 +90,7 @@
             </v-progress-circular>
           </v-col>
           <v-col v-else cols="12">
-            <v-form ref="editForm" lazy-validation @submit.prevent="saveItem">
+            <v-form ref="editForm" lazy-validation @submit.prevent="saveItem(true)">
               <template v-if="fieldsData.type === 'normal'">
                 <v-container grid-list-md>
                   <v-row no-gutters>
@@ -133,6 +172,14 @@
         </v-row>
       </v-card-text>
       <v-card-actions v-if="editableItem && !isMobile">
+        <v-btn
+          v-if="!readonly && !closeOnSave"
+          color="primary"
+          :loading="isSaving"
+          @click="saveItem(false)"
+        >
+          Сохранить и выйти
+        </v-btn>
         <v-spacer />
         <v-btn
           :disabled="isSaving"
@@ -143,12 +190,44 @@
         </v-btn>
         <v-btn
           v-if="!readonly"
+          v-model="saveButtonFab"
           color="primary"
           :loading="isSaving"
-          @click="saveItem"
+          @click="saveItem(true)"
         >
           Сохранить
         </v-btn>
+        <!-- <v-speed-dial
+          v-model="saveButtonFab"
+          open-on-hover
+          class="ml-2"
+        >
+          <template v-slot:activator>
+            <v-btn
+              v-if="!readonly"
+              v-model="saveButtonFab"
+              color="primary"
+              :loading="isSaving"
+              @click="saveItem"
+            >
+              Сохранить
+            </v-btn>
+          </template>
+          <v-tooltip left>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                fab
+                dark
+                small
+                color="info"
+                v-on="on"
+              >
+                <v-icon>mdi-exit-to-app</v-icon>
+              </v-btn>
+            </template>
+            <span>Сохранить и выйти</span>
+          </v-tooltip>
+        </v-speed-dial> -->
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -208,6 +287,10 @@ export default {
       type: Boolean,
       default: false
     },
+    closeOnSave: {
+      type: Boolean,
+      default: true
+    },
     breakpoints: {
       type: Object,
       default: () => ({
@@ -239,6 +322,7 @@ export default {
   },
   data () {
     return {
+      saveButtonFab: false,
       editableItem: {},
       isSaving: false,
       isTransitionEnded: false
@@ -328,7 +412,7 @@ export default {
     onValueChanged (val) {
       this.$emit('input', val)
     },
-    async saveItem () {
+    async saveItem (preventExit) {
       if (!this.$refs.editForm.validate()) {
         return
       }
@@ -357,11 +441,13 @@ export default {
         }
       }
 
-      this.$emit('onSaved', { item: savingItem, isCreation, ...this.context })
+      this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })
 
       this.isSaving = false
 
-      this.onValueChanged(false)
+      if (this.closeOnSave || !preventExit) {
+        this.onValueChanged(false)
+      }
     },
     cancelSaving () {
       this.$emit('onCanceled')
@@ -386,5 +472,10 @@ export default {
     display: flex;
     flex-direction: column;
     text-align: left;
+  }
+
+  .edit-item-dialog .v-speed-dial {
+    display: flex;
+    align-items: center;
   }
 </style>

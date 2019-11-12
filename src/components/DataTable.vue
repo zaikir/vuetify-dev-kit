@@ -550,7 +550,7 @@ export default {
         this.updateSource()
       }, 300)
     },
-    async saveItem ({ item, isCreation }) {
+    async saveItem ({ item, isCreation, isClose }) {
       if (!this.source.url) {
         if (!isCreation) {
           const index = this.items.findIndex(x => x._id === item._id)
@@ -566,7 +566,10 @@ export default {
         this.$emit('onItemCreated', { item, ...this.context })
       }
 
-      this.dialogSourceArgs = null
+      if (isClose) {
+        this.dialogSourceArgs = null
+      }
+
       await this.updateSource()
     },
     async updateSource (updateCounts = true) {
