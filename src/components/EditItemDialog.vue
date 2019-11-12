@@ -305,7 +305,7 @@ export default {
 
         this.fieldsData.fields.filter(field => field.default).forEach((field) => {
           if (!this.editableItem[field.value]) {
-            this.editableItem[field.value] = field.default({ item: this.editableItem, ...this.context })
+            this.$set(this.editableItem, field.value, field.default({ item: this.editableItem, ...this.context }))
           }
         })
 
