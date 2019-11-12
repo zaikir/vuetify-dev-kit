@@ -11,7 +11,7 @@
     <template v-slot:activator="{ on }">
       <v-text-field
         v-model="dateFormatted"
-        v-mask="'##.##.####'"
+        v-mask="shortYear ? '##.##.##' : '##.##.####'"
         :label="label"
         :rules="[...getRules(rules, required), isDateValid]"
         prepend-icon="event"
@@ -70,6 +70,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    shortYear: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
@@ -87,6 +92,13 @@ export default {
   },
 
   computed: {
+    displayFormat () {
+      if (this.shortYear) {
+        return 'DD.MM.YY'
+      } else {
+        return 'DD.MM.YYYY'
+      }
+    },
     dateValue () {
       return moment(this.value || new Date()).toISOString(true).substr(0, 10)
     }
@@ -96,7 +108,7 @@ export default {
     value: {
       handler (val) {
         if (val) {
-          this.dateFormatted = moment(this.value).format('DD.MM.YYYY')
+          this.dateFormatted = moment(this.value).format(this.displayFormat)
         }
       },
       immediate: true
@@ -115,16 +127,34 @@ export default {
       }
     },
     tryToParseDate (str = '') {
-      const parsedDate = moment(str.trim(), 'DD.MM.YYYY')
-      if (!str.length || str.trim().length !== 10 || !parsedDate.isValid()) {
+      const processString = (s) => {
+        if (!this.shortYear) {
+          return s
+        }
+
+        const parts = str.split('.')
+        if (parts.length !== 3) {
+          return ''
+        }
+
+        return [parts[0], parts[1], '20' + parts[2]].join('.')
+      }
+
+      const processedString = processString(str)
+      const parsedDate = moment(processedString.trim(), 'DD.MM.YYYY')
+      if (!processedString.length || processedString.trim().length !== 10 || !parsedDate.isValid()) {
         return false
       }
 
-      return parsedDate.startOf('day').toISOString()
+      if (this.shortYear && parsedDate > moment()) {
+        return parsedDate.subtract(100, 'years').startOf('day').toISOString()
+      } else {
+        return parsedDate.startOf('day').toISOString()
+      }
     },
     handleInput (val) {
       const date = moment(val, 'YYYY-MM-DD')
-      this.dateFormatted = date.format('DD.MM.YYYY')
+      this.dateFormatted = date.format(this.displayFormat)
 
       this.$nextTick(() => {
         this.$emit('input', date.startOf('day').toISOString())

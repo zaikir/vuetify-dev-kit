@@ -220,6 +220,7 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :short-year="field.shortYear"
     @input="onFieldValueChanged(field.onChange, $event)"
   />
   <time-picker
