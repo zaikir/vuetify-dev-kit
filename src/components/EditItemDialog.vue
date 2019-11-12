@@ -310,6 +310,10 @@ export default {
         })
 
         this.editableItem = await this.postOpen({ item: this.editableItem, ...this.context })
+
+        if (this.$refs.editForm) {
+          this.$refs.editForm.resetValidation()
+        }
       }
     }
   },
