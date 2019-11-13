@@ -391,6 +391,10 @@ export default {
       type: Boolean,
       default: false
     },
+    addItemTrigger: {
+      type: Boolean,
+      default: false
+    },
     hideHeader: {
       type: Boolean,
       default: false
@@ -505,6 +509,13 @@ export default {
       }
 
       this.$emit('update:refresh', false)
+    },
+    addItemTrigger (val) {
+      if (val) {
+        this.addItem()
+      }
+
+      this.$emit('update:addItemTrigger', false)
     },
     selectedTab () {
       if (this.isInitialized) {
