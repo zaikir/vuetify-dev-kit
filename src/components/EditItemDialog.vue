@@ -167,6 +167,36 @@
                   </v-tab-item>
                 </v-tabs>
               </template>
+              <template v-else-if="fieldsData.type === 'columns'">
+                <v-row no-gutters>
+                  <v-col v-for="(layout,layoutId) in fieldsData.layouts" :key="layout.name" v-bind="layout.breakpoints || { cols: 12 }" :class="layout.class || {}"  :style="layout.style || ''">
+                    <v-container grid-list-md>
+                      <v-row no-gutters>
+                        <slot name="form.prepend" :item="editableItem" :context="context" />
+                        <v-col
+                          v-for="field in fieldsData.fields.filter(x => x.layoutId === layoutId)"
+                          :key="field.value"
+                          :class="field.class || 'px-1'"
+                          :cols="field.cols || 12"
+                          :sm="conditionalFunction(field.sm)"
+                          :md="conditionalFunction(field.md)"
+                          :xl="conditionalFunction(field.xl)"
+                        >
+                          <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
+                            <dynamic-field
+                              :field="field"
+                              :readonly="readonly"
+                              :editable-item="editableItem"
+                              :context="context"
+                            />
+                          </slot>
+                        </v-col>
+                        <slot name="form.append" :item="editableItem" :context="context" />
+                      </v-row>
+                    </v-container>
+                  </v-col>
+                </v-row>
+              </template>
             </v-form>
           </v-col>
         </v-row>

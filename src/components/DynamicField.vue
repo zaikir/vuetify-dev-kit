@@ -1,6 +1,6 @@
 <template>
   <v-autocomplete
-    v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint.smAndDown)"
+    v-if="field.type === 'select' && (!field.mobile || !$vuetify.breakpoint[field.breakpoint || 'smAndDown'])"
     v-model="editableItem[field.value]"
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
@@ -13,7 +13,7 @@
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
   />
-  <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint.smAndDown" no-gutters>
+  <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint[field.breakpoint || 'smAndDown']" no-gutters>
     <v-col cols="12" style="margin-bottom: -10px;">
       <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
         {{ field.text }}
