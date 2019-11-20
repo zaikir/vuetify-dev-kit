@@ -6,6 +6,23 @@
           {{ title }}
         </h3>
       </slot>
+      <v-tooltip v-if="canAdd && addButtonProps.type === 'title'" bottom>
+        <template #activator="{on}">
+          <v-btn
+            fab
+            color="primary"
+            x-small
+            class="elevation-0 ml-3"
+            @click="addItem"
+            v-on="on"
+          >
+            <v-icon>
+              {{ addButtonProps.icon }}
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ addButtonProps.tooltip || 'Создать' }}
+      </v-tooltip>
       <v-spacer v-if="title" />
       <v-text-field
         v-if="canSearch"
@@ -24,7 +41,7 @@
       :items="preShow(items.filter(x => !x.isRemoved))"
       :search="search"
       :loading="isLoading"
-      :hide-default-footer="isMobileView"
+      :hide-default-footer="isMobileView || hideFooter"
       :footer-props="footerProps"
       :mobile-breakpoint="mobileBreakpoint"
       :disable-sort="!canSort"
@@ -396,6 +413,10 @@ export default {
       default: false
     },
     hideHeader: {
+      type: Boolean,
+      default: false
+    },
+    hideFooter: {
       type: Boolean,
       default: false
     },

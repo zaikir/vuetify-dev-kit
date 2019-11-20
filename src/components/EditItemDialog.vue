@@ -13,8 +13,7 @@
     <v-card
       v-if="value"
       :flat="flat"
-      class="edit-item-dialog"
-      :class="{readonly}"
+      :class="'edit-item-dialog ' + (readonly ? 'readonly' : '') + ' ' + classes"
     >
       <v-toolbar v-if="isMobile" dark color="primary" style="z-index: 1;">
         <v-btn icon dark @click="cancelSaving">
@@ -102,6 +101,7 @@
                       :cols="field.cols || 12"
                       :sm="conditionalFunction(field.sm)"
                       :md="conditionalFunction(field.md)"
+                      :lg="conditionalFunction(field.lg)"
                       :xl="conditionalFunction(field.xl)"
                     >
                       <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
@@ -150,6 +150,7 @@
                           :cols="field.cols || 12"
                           :sm="conditionalFunction(field.sm)"
                           :md="conditionalFunction(field.md)"
+                          :lg="conditionalFunction(field.lg)"
                           :xl="conditionalFunction(field.xl)"
                         >
                           <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
@@ -180,6 +181,7 @@
                           :cols="field.cols || 12"
                           :sm="conditionalFunction(field.sm)"
                           :md="conditionalFunction(field.md)"
+                          :lg="conditionalFunction(field.lg)"
                           :xl="conditionalFunction(field.xl)"
                         >
                           <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
@@ -296,6 +298,10 @@ export default {
     maxWidth: {
       type: String,
       default: '500px'
+    },
+    classes: {
+      type: String,
+      default: ''
     },
     persistent: {
       type: Boolean,
