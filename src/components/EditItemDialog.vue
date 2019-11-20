@@ -22,7 +22,7 @@
         </v-btn>
         <v-toolbar-title v-if="title" style="width: 100%;">
           <slot name="title" :item="editableItem" :context="context">
-            {{ title }}
+            {{ conditionalFunction(title) }}
           </slot>
         </v-toolbar-title>
         <v-spacer />
@@ -79,7 +79,7 @@
       </v-toolbar>
       <v-card-title v-else-if="title" class="pb-0">
         <slot name="title" :item="editableItem" :context="context">
-          {{ title }}
+          {{ conditionalFunction(title) }}
         </slot>
       </v-card-title>
       <v-card-text class="pt-5" style="height: 100%;">
@@ -169,7 +169,7 @@
               </template>
               <template v-else-if="fieldsData.type === 'columns'">
                 <v-row no-gutters>
-                  <v-col v-for="(layout,layoutId) in fieldsData.layouts" :key="layout.name" v-bind="layout.breakpoints || { cols: 12 }" :class="layout.class || {}"  :style="layout.style || ''">
+                  <v-col v-for="(layout,layoutId) in fieldsData.layouts" :key="layout.name" v-bind="layout.breakpoints || { cols: 12 }" :class="layout.class || {}" :style="layout.style || ''">
                     <v-container grid-list-md>
                       <v-row no-gutters>
                         <slot name="form.prepend" :item="editableItem" :context="context" />
@@ -274,7 +274,7 @@ export default {
   },
   props: {
     title: {
-      type: String,
+      type: [String, Function],
       default: null
     },
     value: {
