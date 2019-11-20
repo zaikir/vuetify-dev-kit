@@ -204,14 +204,6 @@
         </v-row>
       </v-card-text>
       <v-card-actions v-if="editableItem && !isMobile">
-        <v-btn
-          v-if="!readonly && !closeOnSave"
-          color="primary"
-          :loading="isSaving"
-          @click="saveItem(false)"
-        >
-          Сохранить и выйти
-        </v-btn>
         <v-spacer />
         <v-btn
           :disabled="isSaving"
@@ -228,6 +220,14 @@
           @click="saveItem(true)"
         >
           Сохранить
+        </v-btn>
+        <v-btn
+          v-if="!readonly && !closeOnSave"
+          color="primary"
+          :loading="isSaving"
+          @click="saveItem(false)"
+        >
+          Сохранить и выйти
         </v-btn>
         <!-- <v-speed-dial
           v-model="saveButtonFab"
