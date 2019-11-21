@@ -215,7 +215,9 @@
               {{ deleteButtonProps.icon }}
             </v-icon>
           </v-btn>
-          {{lastClickedElement}}
+          Clicks: {{ clickCounts }}<br>
+          Double clicks: {{ doubleClickCounts }}<br>
+          {{ lastClickedElement }}
         </slot>
       </template>
       <template v-if="canAdd && addButtonProps.type === 'append'" v-slot:body.append="{ headers }">
@@ -480,7 +482,9 @@ export default {
       totalItemsLength: -1,
       dialogSourceArgs: null,
       pageCount: 0,
-      lastClickedElement: null
+      lastClickedElement: null,
+      clickCounts: 0,
+      doubleClickCounts: 0
     }
   },
   computed: {
@@ -721,7 +725,9 @@ export default {
       this.isLoading = false
     },
     selectRow ($event = {}) {
+      this.clickCounts += 1
       if (this.lastClickedElement && Object.is(this.lastClickedElement, $event)) {
+        this.doubleClickCounts += 1
         this.onDoubleClick($event)
         this.lastClickedElement = null
       } else {
