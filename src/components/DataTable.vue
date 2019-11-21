@@ -738,7 +738,7 @@ export default {
         this.lastClickedElement = $event
         this.doubleClickTimeout = setTimeout(() => {
           this.lastClickedElement = null
-        }, 500)
+        }, 1000)
       }
     },
     formatPhoneNumber (phone = '', countryCode = '', sign = '+') {
