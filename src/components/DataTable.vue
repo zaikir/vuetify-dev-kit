@@ -57,7 +57,7 @@
       no-results-text="Нет результатов"
       @update:sort-by="$emit('update:sort-by', $event)"
       @update:sort-desc="$emit('update:sort-desc', $event)"
-      @click:row.native="selectRow"
+      @click:row="selectRow"
       @page-count="pageCount = $event"
     >
       <template v-slot:top>
@@ -99,7 +99,7 @@
         </v-tabs>
       </template>
       <template v-if="isMobileView" #item="{ item, isSelected }">
-        <v-card class="my-4 mx-1 pa-2" @click.native="onDoubleClick(item)">
+        <v-card class="my-4 mx-1 pa-2" @click="onDoubleClick(item)">
           <slot name="mobile-item" :item="item" :context="context" />
         </v-card>
       </template>
@@ -215,6 +215,7 @@
               {{ deleteButtonProps.icon }}
             </v-icon>
           </v-btn>
+          {{lastClickedElement}}
         </slot>
       </template>
       <template v-if="canAdd && addButtonProps.type === 'append'" v-slot:body.append="{ headers }">
@@ -478,7 +479,8 @@ export default {
       items: [],
       totalItemsLength: -1,
       dialogSourceArgs: null,
-      pageCount: 0
+      pageCount: 0,
+      lastClickedElement: null
     }
   },
   computed: {
