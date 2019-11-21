@@ -361,7 +361,8 @@ export default {
       saveButtonFab: false,
       editableItem: {},
       isSaving: false,
-      isTransitionEnded: false
+      isTransitionEnded: false,
+      isSaved: false
     }
   },
   computed: {
@@ -393,6 +394,7 @@ export default {
   watch: {
     async value (isOpened) {
       this.editableItem = null
+      this.isSaved = false
 
       if (isOpened) {
         this.isTransitionEnded = false
@@ -455,7 +457,7 @@ export default {
 
       this.isSaving = true
 
-      const isCreation = !this.sourceArgs
+      const isCreation = !this.sourceArgs && !this.isSaved
       const savingItem = await this.preSave({
         item: this.editableItem,
         isCreation,
@@ -480,6 +482,7 @@ export default {
       this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })
 
       this.isSaving = false
+      this.isSaved = true
 
       if (this.closeOnSave || !preventExit) {
         this.onValueChanged(false)
