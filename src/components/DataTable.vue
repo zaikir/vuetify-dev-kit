@@ -217,7 +217,9 @@
           </v-btn>
           Clicks: {{ clickCounts }}<br>
           Double clicks: {{ doubleClickCounts }}<br>
-          {{ lastClickedElement }}
+          First object: {{ firstObj }}<br>
+          Second object: {{ secondObj }}<br>
+          Is equal: {{ isEqual }}<br>
         </slot>
       </template>
       <template v-if="canAdd && addButtonProps.type === 'append'" v-slot:body.append="{ headers }">
@@ -484,7 +486,10 @@ export default {
       pageCount: 0,
       lastClickedElement: null,
       clickCounts: 0,
-      doubleClickCounts: 0
+      doubleClickCounts: 0,
+      firstObj: null,
+      secondObj: null,
+      isEqual: false
     }
   },
   computed: {
@@ -726,7 +731,11 @@ export default {
     },
     selectRow ($event = {}) {
       this.clickCounts += 1
-      if (this.lastClickedElement && Object.is(this.lastClickedElement, $event)) {
+      this.firstObj = JSON.stringify(this.lastClickedElement)
+      this.secondObj = JSON.stringify($event)
+      const isEqual = this.firstObj === this.secondObj
+
+      if (this.lastClickedElement && isEqual) {
         this.doubleClickCounts += 1
         this.onDoubleClick($event)
         this.lastClickedElement = null
