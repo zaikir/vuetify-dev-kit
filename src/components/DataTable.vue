@@ -215,11 +215,6 @@
               {{ deleteButtonProps.icon }}
             </v-icon>
           </v-btn>
-          Clicks: {{ clickCounts }}<br>
-          Double clicks: {{ doubleClickCounts }}<br>
-          First object: {{ firstObj }}<br>
-          Second object: {{ secondObj }}<br>
-          Is equal: {{ isEqual }}<br>
         </slot>
       </template>
       <template v-if="canAdd && addButtonProps.type === 'append'" v-slot:body.append="{ headers }">
@@ -483,13 +478,7 @@ export default {
       items: [],
       totalItemsLength: -1,
       dialogSourceArgs: null,
-      pageCount: 0,
-      lastClickedElement: null,
-      clickCounts: 0,
-      doubleClickCounts: 0,
-      firstObj: null,
-      secondObj: null,
-      isEqual: false
+      pageCount: 0
     }
   },
   computed: {
@@ -730,13 +719,7 @@ export default {
       this.isLoading = false
     },
     selectRow ($event = {}) {
-      this.clickCounts += 1
-      this.firstObj = JSON.stringify(this.lastClickedElement)
-      this.secondObj = JSON.stringify($event)
-      const isEqual = this.firstObj === this.secondObj
-
-      if (this.lastClickedElement && isEqual) {
-        this.doubleClickCounts += 1
+      if (this.$vuetify.breakpoint.xsOnly || (this.lastClickedElement && Object.is(this.lastClickedElement, $event))) {
         this.onDoubleClick($event)
         this.lastClickedElement = null
       } else {
@@ -747,7 +730,7 @@ export default {
         this.lastClickedElement = $event
         this.doubleClickTimeout = setTimeout(() => {
           this.lastClickedElement = null
-        }, 1000)
+        }, 500)
       }
     },
     formatPhoneNumber (phone = '', countryCode = '', sign = '+') {
