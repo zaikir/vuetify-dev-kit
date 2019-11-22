@@ -7,6 +7,7 @@
         :color="value ? activeColor : color"
         background-color="backgroundColor"
         @click="handleInput(!value)"
+        v-on="on"
       >
         <v-icon>
           {{ value ? activeIcon : disabledIcon }}
