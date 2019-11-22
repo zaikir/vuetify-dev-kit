@@ -135,10 +135,11 @@
             <div v-if="header.type === 'action'" :key="`action-${header.value}`" @click.prevent.stop="() => {}">
               <custom-checkbox
                 v-model="item[header.value]"
+                v-bind="header"
                 :disabled="header.disabled"
                 :color="header.color"
                 :background-color="header.backgroundColor"
-                v-bind="header"
+                :tooltip="conditionalFunction(header.tooltip)"
                 @input="header.onClick({ item, ...context })"
               />
             </div>
@@ -574,6 +575,13 @@ export default {
     }, 300)
   },
   methods: {
+    conditionalFunction (value) {
+      if (value && typeof value === 'function') {
+        return value({ item: this.editableItem, ...this.context })
+      } else {
+        return value
+      }
+    },
     moment (date) {
       return moment(date)
     },

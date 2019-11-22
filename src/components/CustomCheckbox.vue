@@ -1,15 +1,20 @@
 <template>
-  <v-btn
-    icon
-    :disabled="disabled"
-    :color="value ? activeColor : color"
-    background-color="backgroundColor"
-    @click="handleInput(!value)"
-  >
-    <v-icon>
-      {{ value ? activeIcon : disabledIcon }}
-    </v-icon>
-  </v-btn>
+  <v-tooltip bottom>
+    <template #activator="{on}">
+      <v-btn
+        icon
+        :disabled="disabled"
+        :color="value ? activeColor : color"
+        background-color="backgroundColor"
+        @click="handleInput(!value)"
+      >
+        <v-icon>
+          {{ value ? activeIcon : disabledIcon }}
+        </v-icon>
+      </v-btn>
+    </template>
+    {{ tooltip || '' }}
+  </v-tooltip>
 </template>
 <script>
 export default {
@@ -41,6 +46,10 @@ export default {
     disabledIcon: {
       type: String,
       default: 'mdi-star-outline'
+    },
+    tooltip: {
+      type: String,
+      default: ''
     }
   },
   methods: {
