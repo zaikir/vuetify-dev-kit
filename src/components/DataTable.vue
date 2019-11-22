@@ -138,10 +138,18 @@
                 :disabled="header.disabled"
                 :color="header.color"
                 :background-color="header.backgroundColor"
+                v-bind="header"
                 @input="header.onClick({ item, ...context })"
               />
             </div>
-            <custom-checkbox v-else v-model="item[header.value]" flat disabled :color="header.color" />
+            <custom-checkbox
+              v-else
+              v-model="item[header.value]"
+              v-bind="header"
+              flat
+              disabled
+              :color="header.color"
+            />
           </template>
           <template v-else-if="header.display === 'checkbox'">
             <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
