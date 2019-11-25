@@ -119,6 +119,7 @@
               </template>
               <template v-else-if="fieldsData.type === 'tabs'">
                 <v-tabs
+                  v-model="selectedTab"
                   background-color="white"
                   color="black"
                   class="my-2"
@@ -126,21 +127,26 @@
                   style="width: 100%"
                   :vertical="$vuetify.breakpoint.xsOnly"
                 >
-                  <v-tab
-                    v-for="layout in fieldsData.layouts"
-                    :key="layout.name"
-                    ripple
-                  >
-                    <v-icon v-if="layout.icon" class="mr-3">
-                      {{ layout.icon }}
-                    </v-icon>
-                    {{ layout.name }}
-                  </v-tab>
+                  <template v-if="!isMobile">
+                    <v-tab
+                      v-for="layout in fieldsData.layouts"
+                      :key="layout.name"
+                      ripple
+                    >
+                      <v-icon v-if="layout.icon" class="mr-3">
+                        {{ layout.icon }}
+                      </v-icon>
+                      {{ layout.name }}
+                    </v-tab>
+                  </template>
                   <v-tab-item
                     v-for="(layout, layoutId) in fieldsData.layouts"
                     :key="layout.name"
                   >
                     <v-container grid-list-md>
+                      <h2 v-if="isMobile" class="mb-3">
+                        {{ layout.name }}
+                      </h2>
                       <v-row no-gutters>
                         <slot name="form.prepend" :item="editableItem" :context="context" />
                         <v-col
@@ -203,6 +209,33 @@
           </v-col>
         </v-row>
       </v-card-text>
+      <v-card-actions v-if="isMobile && fieldsData.layouts && fieldsData.layouts.length" class="pa-0">
+        <v-toolbar
+          dark
+          color="transparent"
+          style="z-index: 1;"
+        >
+          <v-toolbar-items style="width: 100%">
+            <div class="d-flex justify-space-around align-center" style="width: 100%">
+              <v-btn
+                v-for="(layout, index) in fieldsData.layouts"
+                :key="layout.name"
+                :color="selectedTab === index ? 'primary' : 'secondary'"
+                dark
+                icon
+                class="ml-0"
+                @click="selectedTab = index"
+              >
+                <div class="d-flex flex-column justify-center align-center">
+                  <v-icon>
+                    {{ layout.icon }}
+                  </v-icon>
+                </div>
+              </v-btn>
+            </div>
+          </v-toolbar-items>
+        </v-toolbar>
+      </v-card-actions>
       <v-card-actions v-if="editableItem && !isMobile">
         <v-spacer />
         <v-btn
@@ -362,12 +395,13 @@ export default {
       editableItem: {},
       isSaving: false,
       isTransitionEnded: false,
-      isSaved: false
+      isSaved: false,
+      selectedTab: 0
     }
   },
   computed: {
     fieldsData () {
-      const isFieldActive = field => !field.showIf || field.showIf({ item: this.editableItem, ...this.context })
+      const isFieldActive = field => !field.showIf || field.showIf({ item: this.editableItem || {}, ...this.context })
 
       if (!this.fields.length) {
         const layouts = this.fields.layouts.filter(isFieldActive)

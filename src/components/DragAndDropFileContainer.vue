@@ -76,11 +76,11 @@
               />
               <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 200px;">
                 <span class="subtitle-2">{{ file.name }}</span>
-                <span class="caption">{{ formatDate(file.created) }}</span>
+                <!-- <span class="caption">{{ formatDate(file.created) }}</span> -->
                 <v-spacer />
                 <v-tooltip bottom>
                   <template #activator="{on}">
-                    <v-btn class="ml-1" icon x-small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
+                    <v-btn class="ml-auto" icon x-small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </template>
