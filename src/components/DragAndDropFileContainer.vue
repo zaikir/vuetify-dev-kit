@@ -5,7 +5,7 @@
         {{ label }}
       </v-subheader>
     </v-col>
-    <v-col v-if="!disabled" cols="12">
+    <v-col v-if="!value && !disabled" cols="12">
       <vue-dropzone
         id="drop-zone"
         :options="dropzoneOptions"
@@ -38,43 +38,91 @@
       </vue-dropzone>
     </v-col>
     <v-col cols="12">
-      <draggable :list="value.filter(x => !x.isRemoved)" group="people" class="row" :disabled="disabled" @change="onReordered">
-        <v-col v-for="(file, i) in value.filter(x => !x.isRemoved)" :key="i" cols="auto">
+      <v-row v-if="value">
+        <v-col v-for="(file, i) in [value]" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
-            <v-card flat tile class="d-flex file-card">
+            <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)" @click="openLink(file.url)">
               <v-img
                 v-if="isImage(file.type)"
                 :src="file.url"
-                aspect-ratio="1"
-                width="100"
+                class="white--text align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                width="200"
+                height="150"
+              />
+              <v-img
+                v-else-if="file.type === '.pdf'"
+                src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg"
+                class="white--text align-end"
+                width="200"
                 contain
-                class="white"
-                @click="openLink(file.url)"
-              >
-                <div
-                  v-if="hover && !disabled"
-                  class="d-flex justify-end"
-                  style="height: 100%;"
-                >
-                  <v-btn icon @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular indeterminate color="black" />
-                  </v-row>
-                </template>
-              </v-img>
+                height="150"
+              />
+              <v-img
+                v-else-if="file.type === '.doc' || file.type === '.docx'"
+                src="https://upload.wikimedia.org/wikipedia/commons/f/fb/.docx_icon.svg"
+                class="white--text align-end"
+                width="200"
+                contain
+                height="150"
+              />
+              <v-img
+                v-else
+                src="https://www.svgrepo.com/show/94277/blank-file.svg"
+                class="white--text align-end"
+                width="200"
+                contain
+                height="150"
+              />
+              <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 200px;">
+                <span class="subtitle-2">{{ file.name }}</span>
+                <span class="caption">{{ formatDate(file.created) }}</span>
+                <v-spacer />
+                <v-tooltip bottom>
+                  <template #activator="{on}">
+                    <v-btn class="ml-1" icon x-small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                  Удалить
+                </v-tooltip>
+              </v-card-title>
             </v-card>
           </v-hover>
         </v-col>
-      </draggable>
+      </v-row>
     </v-col>
+    <v-dialog
+      v-model="isEditDialogOpened"
+      persistent
+      width="290px"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark dense>
+          <v-toolbar-title class="headline font-weight-medium">
+            Параметры файла
+          </v-toolbar-title>
+        </v-toolbar>
+        <v-card-text>
+          <v-form ref="editFileForm" lazy-validation @submit.prevent="saveFile">
+            <v-container grid-list-md>
+              <v-row no-gutters>
+                <v-text-field v-model="newFileName" label="Название файла" :rules="[x => !!x || 'Введите значение']" />
+              </v-row>
+            </v-container>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            @click="saveFile"
+          >
+            Сохранить
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <confirmation-dialog
       v-model="isConfirmationDialogOpened"
       @confirm="removeFile"
@@ -85,20 +133,19 @@
 <script>
 
 import VueDropzone from 'nuxt-dropzone'
-import draggable from 'vuedraggable'
+import moment from 'moment'
 import ConfirmationDialog from './ConfirmationDialog'
 
 export default {
   components: {
     VueDropzone,
-    ConfirmationDialog,
-    draggable
+    ConfirmationDialog
   },
   props: {
     value: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => []
+      default: null
     },
     url: {
       type: String,
@@ -139,7 +186,9 @@ export default {
     return {
       isLoading: false,
       isConfirmationDialogOpened: false,
-      processedItem: null
+      processedItem: null,
+      newFileName: '',
+      isEditDialogOpened: false
     }
   },
   computed: {
@@ -152,28 +201,14 @@ export default {
     }
   },
   methods: {
-    onReordered (event) {
-      const { moved } = event || {}
-
-      if (moved) {
-        const oldItems = [...this.value]
-        const fromElement = oldItems.filter(x => !x.isRemoved)[moved.oldIndex]
-        const newElement = oldItems.filter(x => !x.isRemoved)[moved.newIndex]
-        const oldIndex = oldItems.indexOf(fromElement)
-        const newIndex = oldItems.indexOf(newElement)
-
-        const temp = oldItems[oldIndex]
-        oldItems[oldIndex] = oldItems[newIndex]
-        oldItems[newIndex] = temp
-
-        this.$emit('input', oldItems)
-      }
+    formatDate (date) {
+      return date ? moment(date).format('DD.MM.YYYY') : ''
     },
     removeFile () {
       this.processedItem.isRemoved = true
       this.isConfirmationDialogOpened = false
 
-      this.$emit('input', [...this.value])
+      this.$emit('input', null)
     },
     openLink (url) {
       window.open(url, '_blank')
@@ -184,10 +219,23 @@ export default {
     startUploading (file, response) {
       this.isLoading = true
     },
-    successfullyUploaded (file, response) {
-      this.isLoading = false
+    saveFile () {
+      if (!this.$refs.editFileForm.validate()) {
+        return
+      }
 
-      this.$emit('input', [...this.value, response])
+      this.isLoading = false
+      this.$emit('input', {
+        ...this.response,
+        name: this.newFileName,
+        created: moment().toDate()
+      })
+      this.isEditDialogOpened = false
+    },
+    successfullyUploaded (file, response) {
+      this.response = response
+      this.newFileName = file.name
+      this.isEditDialogOpened = true
     }
   }
 }
@@ -216,8 +264,8 @@ export default {
   }
 
   .drag-and-drop-editor .v-sheet {
-    border: thin solid rgba(165, 165, 165, 0.671);
-    border-radius: 6px !important;
+    /* border: thin solid rgba(165, 165, 165, 0.671);
+    border-radius: 6px !important; */
   }
 
  .drag-and-drop-editor .dz-preview,

@@ -168,8 +168,8 @@
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
   />
-  <drag-and-drop-image-container
-    v-else-if="field.type === 'image'"
+  <drag-and-drop-file-container
+    v-else-if="field.type === 'image' || field.type === 'file'"
     v-model="editableItem[field.value]"
     single
     :rules="getRules(field)"
@@ -180,8 +180,8 @@
     :accepted-files="field.acceptedFiles"
     @input="onFieldValueChanged(field.onChange, $event)"
   />
-  <drag-and-drop-images-container
-    v-else-if="field.type === 'images'"
+  <drag-and-drop-files-container
+    v-else-if="field.type === 'images' || field.type === 'files'"
     v-model="editableItem[field.value]"
     :rules="getRules(field)"
     :label="field.text"
@@ -313,8 +313,8 @@ import slugify from 'slugify'
 import EmailValidator from 'email-validator'
 import { mask } from 'vue-the-mask'
 import DatePicker from './DatePicker'
-import DragAndDropImageContainer from './DragAndDropImageContainer'
-import DragAndDropImagesContainer from './DragAndDropImagesContainer'
+import DragAndDropFileContainer from './DragAndDropFileContainer'
+import DragAndDropFilesContainer from './DragAndDropFilesContainer'
 import ExternalDataAutocomplete from './ExternalDataAutocomplete'
 import HtmlEditor from './HtmlEditor'
 import TimePicker from './TimePicker'
@@ -326,8 +326,8 @@ export default {
   },
   components: {
     DatePicker,
-    DragAndDropImageContainer,
-    DragAndDropImagesContainer,
+    DragAndDropFileContainer,
+    DragAndDropFilesContainer,
     HtmlEditor,
     ExternalDataAutocomplete,
     TimePicker,
