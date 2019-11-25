@@ -78,9 +78,9 @@
                 <span class="subtitle-2">{{ file.name }}</span><br>
                 <!-- <span class="caption">{{ formatDate(file.created) }}</span> -->
                 <v-spacer />
-                <v-tooltip bottom>
+                <v-tooltip v-if="!disabled" bottom>
                   <template #activator="{on}">
-                    <v-btn class="ml-auto" icon x-small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
+                    <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </template>
