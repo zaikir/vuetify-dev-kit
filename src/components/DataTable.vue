@@ -140,7 +140,7 @@
                 :disabled="header.disabled"
                 :color="header.color"
                 :background-color="header.backgroundColor"
-                @input="header.onClick({ item, ...context })"
+                @input="onCustomActionClicked(header, item)"
               />
             </div>
             <custom-checkbox
@@ -493,7 +493,7 @@ export default {
   },
   computed: {
     filteredHeaders () {
-      return this.headers.filter(header => !header.showIf || header.showIf({ ...this.context }))
+      return this.headers.filter(header => !header.showIf || header.showIf({ tab: this.selectedTab, ...this.context }))
     },
     tableHeaders () {
       return [
@@ -576,6 +576,12 @@ export default {
     }, 300)
   },
   methods: {
+    async onCustomActionClicked (header, item) {
+      const result = await header.onClick({ item, ...this.context })
+      if ((result || {}).action === 'reload') {
+        this.updateSource()
+      }
+    },
     conditionalFunction (value, item) {
       if (value && typeof value === 'function') {
         return value({ item, ...this.context })
