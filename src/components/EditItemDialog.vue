@@ -110,7 +110,11 @@
                           :readonly="readonly"
                           :editable-item="editableItem"
                           :context="context"
-                        />
+                        >
+                          <template #label>
+                            <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
+                          </template>
+                        </dynamic-field>
                       </slot>
                     </v-col>
                     <slot name="form.append" :item="editableItem" :context="context" />
@@ -165,7 +169,11 @@
                               :readonly="readonly"
                               :editable-item="editableItem"
                               :context="context"
-                            />
+                            >
+                              <template #label>
+                                <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
+                              </template>
+                            </dynamic-field>
                           </slot>
                         </v-col>
                         <slot name="form.append" :item="editableItem" :context="context" />
@@ -196,7 +204,11 @@
                               :readonly="readonly"
                               :editable-item="editableItem"
                               :context="context"
-                            />
+                            >
+                              <template #label>
+                                <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
+                              </template>
+                            </dynamic-field>
                           </slot>
                         </v-col>
                         <slot name="form.append" :item="editableItem" :context="context" />

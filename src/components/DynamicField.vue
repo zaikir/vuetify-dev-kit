@@ -12,7 +12,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-autocomplete>
   <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint[field.breakpoint || 'smAndDown']" no-gutters>
     <v-col cols="12" style="margin-bottom: -10px;">
       <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
@@ -32,6 +36,9 @@
         :disabled="readonly || conditionalFunction(field.disabled)"
         @input="onFieldValueChanged(field.onChange, $event)"
       >
+        <template #label>
+          <slot name="label" :item="editableItem" :context="context" />
+        </template>
         <v-row no-gutters>
           <v-col
             v-for="option in field.options({item: editableItem, ...context})"
@@ -71,6 +78,9 @@
       :label="option[field.itemText]"
       :value="option[field.itemValue]"
     />
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
   </v-radio-group>
   <external-data-autocomplete
     v-else-if="field.type === 'autocomplete'"
@@ -90,7 +100,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </external-data-autocomplete>
   <v-switch
     v-else-if="field.type === 'switch'"
     v-model="editableItem[field.value]"
@@ -100,7 +114,11 @@
     :required="conditionalFunction(field.required)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-switch>
   <v-text-field
     v-else-if="field.type === 'email'"
     v-model="editableItem[field.value]"
@@ -111,7 +129,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-text-field
     v-else-if="field.type === 'phone'"
     v-model="editableItem[field.value]"
@@ -124,7 +146,11 @@
     :outlined="field.outlined"
     @keypress="isNumber($event)"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-text-field
     v-else-if="field.type === 'number'"
     v-model.number="editableItem[field.value]"
@@ -140,7 +166,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-text-field
     v-else-if="field.type === 'integer'"
     v-model.number="editableItem[field.value]"
@@ -155,7 +185,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-textarea
     v-else-if="field.type === 'textArea'"
     v-model="editableItem[field.value]"
@@ -167,7 +201,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-textarea>
   <drag-and-drop-file-container
     v-else-if="field.type === 'image' || field.type === 'file'"
     v-model="editableItem[field.value]"
@@ -179,7 +217,11 @@
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </drag-and-drop-file-container>
   <drag-and-drop-files-container
     v-else-if="field.type === 'images' || field.type === 'files'"
     v-model="editableItem[field.value]"
@@ -190,7 +232,11 @@
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </drag-and-drop-files-container>
   <image-area-selector
     v-else-if="field.type === 'imageArea'"
     v-model="editableItem[field.value]"
@@ -200,7 +246,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </image-area-selector>
   <html-editor
     v-else-if="field.type === 'html'"
     v-model="editableItem[field.value]"
@@ -211,7 +261,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </html-editor>
   <date-picker
     v-else-if="field.type === 'date'"
     v-model="editableItem[field.value]"
@@ -222,7 +276,11 @@
     :outlined="field.outlined"
     :short-year="field.shortYear"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </date-picker>
   <time-picker
     v-else-if="field.type === 'time'"
     v-model="editableItem[field.value]"
@@ -232,7 +290,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </time-picker>
   <v-combobox
     v-else-if="field.type === 'combobox'"
     v-model="editableItem[field.value]"
@@ -247,7 +309,11 @@
     :outlined="field.outlined"
     :multiple="field.multiple || true"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-combobox>
   <v-text-field
     v-else-if="field.type === 'slug'"
     v-model="editableItem[field.value]"
@@ -282,7 +348,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-text-field
     v-else-if="field.computed"
     v-bind="field"
@@ -293,7 +363,11 @@
     disabled
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
   <v-text-field
     v-else
     v-model="editableItem[field.value]"
@@ -305,7 +379,11 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
-  />
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
+  </v-text-field>
 </template>
 
 <script>

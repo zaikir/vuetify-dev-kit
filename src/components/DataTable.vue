@@ -318,6 +318,12 @@
         >
           <slot :name="`field.${field.value}`" :item="item" :context="context" />
         </template>
+        <template
+          v-for="field in flattenFields(editDialogProps.fields)"
+          v-slot:[`label.${field.value}`]="{item}"
+        >
+          <slot :name="`label.${field.value}`" :item="item" :context="context" />
+        </template>
       </edit-item-dialog>
     </slot>
     <confirmation-dialog
