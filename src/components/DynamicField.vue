@@ -7,10 +7,12 @@
     :label="field.text"
     :items="field.options({item: editableItem, ...context})"
     :item-text="field.itemText"
-    :multiple="field.multiple"
+    :multiple="conditionalFunction(field.multiple)"
     :item-value="field.itemValue"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -18,11 +20,9 @@
     </template>
   </v-autocomplete>
   <v-row v-else-if="field.type === 'select' && field.mobile && $vuetify.breakpoint[field.breakpoint || 'smAndDown']" no-gutters>
-    <v-col cols="12" style="margin-bottom: -10px;">
-      <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'">
-        {{ field.text }}
-      </v-subheader>
-    </v-col>
+    <v-subheader :class="field.subHeaderClass || 'subtitle-2 pl-0'" style="height: 23px;font-weight: 400;margin-bottom: 3px;margin-top: -5px;">
+      {{ field.text }}
+    </v-subheader>
     <v-col cols="12">
       <v-btn-toggle
         v-model="editableItem[field.value]"
@@ -33,6 +33,7 @@
         :rules="getRules(field)"
         :required="conditionalFunction(field.required)"
         :label="field.text"
+        :multiple="conditionalFunction(field.multiple)"
         :disabled="readonly || conditionalFunction(field.disabled)"
         @input="onFieldValueChanged(field.onChange, $event)"
       >
@@ -44,14 +45,20 @@
             v-for="option in field.options({item: editableItem, ...context})"
             :key="option[field.itemValue]"
             :cols="field.optionCols || 6"
-            :sm="field.optionSm || 4"
+            :sm="field.optionSm"
+            :md="field.optionMd"
+            :lg="field.optionLg"
           >
             <v-btn
-              :value="option[field.itemValue]"
+              :value="option[field.itemValue || 'value']"
               text
+              class="mx-2 px-2"
+              :class="{dense: field.dense, dark: field.dark}"
               block
+              :disabled="readonly || conditionalFunction(field.disabled)"
+              :rounded="field.rounded"
             >
-              {{ option[field.itemText] }}
+              {{ option[field.itemText || 'text'] }}
             </v-btn>
           </v-col>
         </v-row>
@@ -99,6 +106,8 @@
     :item-value="field.itemValue"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -128,6 +137,8 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -144,6 +155,7 @@
     prefix="+"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :suffix="conditionalFunction(field.suffix)"
     @keypress="isNumber($event)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
@@ -163,6 +175,8 @@
     :min="field.min"
     :max="field.max"
     :step="field.step"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
@@ -182,6 +196,8 @@
     :required="conditionalFunction(field.required)"
     :placeholder="field.placeholder"
     :label="field.text"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
@@ -198,6 +214,8 @@
     :placeholder="field.placeholder"
     :label="field.text"
     :counter="field.counter"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field.onChange, $event)"
@@ -307,7 +325,9 @@
     :dense="field.dense"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    :multiple="field.multiple || true"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
+    :multiple="conditionalFunction(field.multiple)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -323,6 +343,8 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #append>
@@ -347,6 +369,8 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -362,6 +386,8 @@
     :label="field.text"
     disabled
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>
@@ -378,6 +404,8 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    :prefix="conditionalFunction(field.prefix)"
+    :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field.onChange, $event)"
   >
     <template #label>

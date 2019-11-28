@@ -771,14 +771,18 @@ export default {
       }
     },
     flattenFields (fields) {
-      if (!fields.length && fields.length !== 0) {
-        return fields.layouts.reduce((acc, layout, id) => {
-          acc.push(...layout.fields)
-          return acc
-        }, [])
-      } else {
-        return fields
+      function getFields (layout) {
+        if (!layout.length && layout.length !== 0) {
+          return layout.layouts.reduce((acc, nestedLayout, id) => {
+            acc.push(...getFields(nestedLayout.fields))
+            return acc
+          }, [])
+        } else {
+          return layout
+        }
       }
+
+      return getFields(fields)
     }
   }
 }

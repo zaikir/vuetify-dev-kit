@@ -90,138 +90,30 @@
           </v-col>
           <v-col v-else cols="12">
             <v-form ref="editForm" lazy-validation @submit.prevent="saveItem(true)">
-              <template v-if="fieldsData.type === 'normal'">
-                <v-container grid-list-md>
-                  <v-row no-gutters>
-                    <slot name="form.prepend" :item="editableItem" :context="context" />
-                    <v-col
-                      v-for="field in fieldsData.fields"
-                      :key="field.value"
-                      :class="field.class || 'px-1'"
-                      :cols="field.cols || 12"
-                      :sm="conditionalFunction(field.sm)"
-                      :md="conditionalFunction(field.md)"
-                      :lg="conditionalFunction(field.lg)"
-                      :xl="conditionalFunction(field.xl)"
-                    >
-                      <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
-                        <dynamic-field
-                          :field="field"
-                          :readonly="readonly"
-                          :editable-item="editableItem"
-                          :context="context"
-                        >
-                          <template #label>
-                            <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
-                          </template>
-                        </dynamic-field>
-                      </slot>
-                    </v-col>
-                    <slot name="form.append" :item="editableItem" :context="context" />
-                  </v-row>
-                </v-container>
-              </template>
-              <template v-else-if="fieldsData.type === 'tabs'">
-                <v-tabs
-                  v-model="selectedTab"
-                  background-color="white"
-                  color="black"
-                  class="my-2"
-                  grow
-                  style="width: 100%"
-                  :vertical="$vuetify.breakpoint.xsOnly"
+              <dynamic-fields-layout
+                :editable-item="editableItem"
+                :context="context"
+                :fields-data="fieldsData"
+                :readonly="readonly"
+              >
+                <template
+                  v-for="field in flattenFields"
+                  v-slot:[`label.${field.value}`]="{item}"
                 >
-                  <template v-if="!isMobile">
-                    <v-tab
-                      v-for="layout in fieldsData.layouts"
-                      :key="layout.name"
-                      ripple
-                    >
-                      <v-icon v-if="layout.icon" class="mr-3">
-                        {{ layout.icon }}
-                      </v-icon>
-                      {{ layout.name }}
-                    </v-tab>
-                  </template>
-                  <v-tab-item
-                    v-for="(layout, layoutId) in fieldsData.layouts"
-                    :key="layout.name"
-                  >
-                    <v-container grid-list-md>
-                      <h2 v-if="isMobile" class="mb-3">
-                        {{ layout.name }}
-                      </h2>
-                      <v-row no-gutters>
-                        <slot name="form.prepend" :item="editableItem" :context="context" />
-                        <v-col
-                          v-for="field in fieldsData.fields.filter(x => x.layoutId === layoutId)"
-                          :key="field.value"
-                          :class="field.class || 'px-1'"
-                          :cols="field.cols || 12"
-                          :sm="conditionalFunction(field.sm)"
-                          :md="conditionalFunction(field.md)"
-                          :lg="conditionalFunction(field.lg)"
-                          :xl="conditionalFunction(field.xl)"
-                        >
-                          <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
-                            <dynamic-field
-                              :field="field"
-                              :readonly="readonly"
-                              :editable-item="editableItem"
-                              :context="context"
-                            >
-                              <template #label>
-                                <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
-                              </template>
-                            </dynamic-field>
-                          </slot>
-                        </v-col>
-                        <slot name="form.append" :item="editableItem" :context="context" />
-                      </v-row>
-                    </v-container>
-                  </v-tab-item>
-                </v-tabs>
-              </template>
-              <template v-else-if="fieldsData.type === 'columns'">
-                <v-row no-gutters>
-                  <v-col v-for="(layout,layoutId) in fieldsData.layouts" :key="layout.name" v-bind="layout.breakpoints || { cols: 12 }" :class="layout.class || {}" :style="layout.style || ''">
-                    <v-container grid-list-md>
-                      <v-row no-gutters>
-                        <slot name="form.prepend" :item="editableItem" :context="context" />
-                        <v-col
-                          v-for="field in fieldsData.fields.filter(x => x.layoutId === layoutId)"
-                          :key="field.value"
-                          :class="field.class || 'px-1'"
-                          :cols="field.cols || 12"
-                          :sm="conditionalFunction(field.sm)"
-                          :md="conditionalFunction(field.md)"
-                          :lg="conditionalFunction(field.lg)"
-                          :xl="conditionalFunction(field.xl)"
-                        >
-                          <slot :name="`field.${field.value}`" :item="editableItem" :context="context">
-                            <dynamic-field
-                              :field="field"
-                              :readonly="readonly"
-                              :editable-item="editableItem"
-                              :context="context"
-                            >
-                              <template #label>
-                                <slot :name="`label.${field.value}`" :item="editableItem" :context="context" />
-                              </template>
-                            </dynamic-field>
-                          </slot>
-                        </v-col>
-                        <slot name="form.append" :item="editableItem" :context="context" />
-                      </v-row>
-                    </v-container>
-                  </v-col>
-                </v-row>
-              </template>
+                  <slot :name="`label.${field.value}`" :item="item" :context="context" />
+                </template>
+                <template
+                  v-for="field in flattenFields"
+                  v-slot:[`field.${field.value}`]="{item}"
+                >
+                  <slot :name="`field.${field.value}`" :item="editableItem" :context="context" />
+                </template>
+              </dynamic-fields-layout>
             </v-form>
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions v-if="isMobile && fieldsData.layouts && fieldsData.layouts.length" class="pa-0">
+      <v-card-actions v-if="isMobile && fieldsData.layouts && fieldsData.layouts.length && fieldsData.type === 'tabs'" class="pa-0">
         <v-toolbar
           dark
           color="transparent"
@@ -274,37 +166,6 @@
         >
           Сохранить и выйти
         </v-btn>
-        <!-- <v-speed-dial
-          v-model="saveButtonFab"
-          open-on-hover
-          class="ml-2"
-        >
-          <template v-slot:activator>
-            <v-btn
-              v-if="!readonly"
-              v-model="saveButtonFab"
-              color="primary"
-              :loading="isSaving"
-              @click="saveItem"
-            >
-              Сохранить
-            </v-btn>
-          </template>
-          <v-tooltip left>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                fab
-                dark
-                small
-                color="info"
-                v-on="on"
-              >
-                <v-icon>mdi-exit-to-app</v-icon>
-              </v-btn>
-            </template>
-            <span>Сохранить и выйти</span>
-          </v-tooltip>
-        </v-speed-dial> -->
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -313,12 +174,8 @@
 <script>
 
 import { ObjectID } from 'bson'
-import DynamicField from './DynamicField'
 
 export default {
-  components: {
-    DynamicField
-  },
   props: {
     title: {
       type: [String, Function],
@@ -412,26 +269,46 @@ export default {
     }
   },
   computed: {
-    fieldsData () {
-      const isFieldActive = field => !field.showIf || field.showIf({ item: this.editableItem || {}, ...this.context })
-
-      if (!this.fields.length) {
-        const layouts = this.fields.layouts.filter(isFieldActive)
-
-        return {
-          type: this.fields.type,
-          layouts: layouts.map(({ fields, ...rest }) => rest),
-          fields: layouts.reduce((acc, layout, id) => {
-            acc.push(...layout.fields.filter(isFieldActive).map(field => ({ ...field, layoutId: id })))
+    flattenFields () {
+      function getFields (layout) {
+        if (!layout.length && layout.length !== 0) {
+          return layout.layouts.reduce((acc, nestedLayout, id) => {
+            acc.push(...getFields(nestedLayout.fields))
             return acc
           }, [])
-        }
-      } else {
-        return {
-          type: 'normal',
-          fields: this.fields.filter(isFieldActive)
+        } else {
+          return layout
         }
       }
+
+      return getFields(this.fields)
+    },
+    fieldsData () {
+      const isActive = field =>
+        !field.showIf || field.showIf({ item: this.editableItem || {}, ...this.context })
+
+      function getFieldsData (layout) {
+        if (layout.layouts && layout.layouts.length) {
+          const layouts = layout.layouts.filter(isActive)
+
+          return {
+            type: layout.type,
+            layouts: layouts.map(nestedLayout => getFieldsData(nestedLayout))
+            // fields: layouts.reduce((acc, nestedLayout, id) => {
+            //   acc.push(...getFieldsData(nestedLayout).map(field => ({ ...field, layoutId: id })))
+            //   return acc
+            // }, [])
+          }
+        } else {
+          return {
+            type: 'normal',
+            fields: layout.fields.filter(isActive)
+          }
+        }
+      }
+
+      const res = getFieldsData(this.fields)
+      return res
     },
     isMobile () {
       return this.fullscreen && (this.$vuetify.breakpoint.smAndDown || this.alwaysFullscreen)
@@ -471,7 +348,7 @@ export default {
           ...this.context
         })
 
-        this.fieldsData.fields.filter(field => field.default).forEach((field) => {
+        this.flattenFields.filter(field => field.default).forEach((field) => {
           if (!this.editableItem[field.value]) {
             this.$set(this.editableItem, field.value, field.default({ item: this.editableItem, ...this.context }))
           }
@@ -547,6 +424,15 @@ export default {
     background-color: rgb(181, 255, 121);
   }
 
+  .select-field-toggle-btn-selected.dark {
+    background-color: rgb(31, 31, 31);
+    color: #fff !important;
+  }
+
+  .select-field-toggle-btn-selected.v-btn--disabled {
+    background-color: gray;
+  }
+
   .edit-item-dialog.readonly .theme--light.v-input--is-disabled .v-label,
   .edit-item-dialog.readonly .theme--light.v-input--is-disabled input,
   .edit-item-dialog.readonly .theme--light.v-input--is-disabled textarea {
@@ -562,5 +448,10 @@ export default {
   .edit-item-dialog .v-speed-dial {
     display: flex;
     align-items: center;
+  }
+
+  .edit-item-dialog .v-btn.dense {
+    height: auto !important;
+    padding: 7px  !important;
   }
 </style>
