@@ -563,4 +563,9 @@ export default {
     display: flex;
     align-items: center;
   }
+
+  .edit-item-dialog .v-btn.dense {
+    height: auto !important;
+    padding: 7px  !important;
+  }
 </style>
