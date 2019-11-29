@@ -441,6 +441,7 @@ export default {
     async value (isOpened) {
       this.editableItem = null
       this.isSaved = false
+      this.selectedTab = 0
 
       if (isOpened) {
         this.isTransitionEnded = false
