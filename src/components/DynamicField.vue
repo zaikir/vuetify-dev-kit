@@ -13,7 +13,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -35,7 +35,7 @@
         :label="field.text"
         :multiple="conditionalFunction(field.multiple)"
         :disabled="readonly || conditionalFunction(field.disabled)"
-        @input="onFieldValueChanged(field.onChange, $event)"
+        @input="onFieldValueChanged(field, $event)"
       >
         <template #label>
           <slot name="label" :item="editableItem" :context="context" />
@@ -77,7 +77,7 @@
     :required="conditionalFunction(field.required)"
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <v-radio
       v-for="option in field.options({item: editableItem, ...context})"
@@ -108,7 +108,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -122,7 +122,7 @@
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -139,7 +139,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -157,7 +157,7 @@
     :outlined="field.outlined"
     :suffix="conditionalFunction(field.suffix)"
     @keypress="isNumber($event)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^0-9]/g, ''))"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -166,20 +166,17 @@
   <v-text-field
     v-else-if="field.type === 'number'"
     v-model.number="editableItem[field.value]"
+    type="text"
     v-bind="field"
-    type="number"
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :placeholder="field.placeholder"
     :label="field.text"
-    :min="field.min"
-    :max="field.max"
-    :step="field.step"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/,/g, '.'))"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -188,10 +185,6 @@
   <v-text-field
     v-else-if="field.type === 'integer'"
     v-model.number="editableItem[field.value]"
-    type="number"
-    step="1"
-    :min="field.min"
-    :max="field.max"
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :placeholder="field.placeholder"
@@ -200,7 +193,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9]/g, ''))"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -218,7 +211,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -234,7 +227,7 @@
     :outlined="field.outlined"
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -249,7 +242,7 @@
     :outlined="field.outlined"
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -263,7 +256,7 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -278,7 +271,7 @@
     :height="field.height"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -293,7 +286,7 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :short-year="field.shortYear"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -307,7 +300,7 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -328,7 +321,7 @@
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
     :multiple="conditionalFunction(field.multiple)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -345,7 +338,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #append>
       <v-tooltip bottom>
@@ -371,7 +364,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -388,7 +381,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -406,7 +399,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
-    @input="onFieldValueChanged(field.onChange, $event)"
+    @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -479,9 +472,17 @@ export default {
     getRules ({ rules = [], required }) {
       return [...rules, ...this.conditionalFunction(required) ? [x => !!x || 'Введите значение'] : []]
     },
-    onFieldValueChanged (func, newValue) {
-      if (func) {
-        func({ value: newValue, item: this.editableItem, ...this.context })
+    onFieldValueChanged (field, newValue, processor = x => x) {
+      const processedValue = processor(newValue)
+      if (processedValue !== newValue) {
+        this.editableItem[field.value] = ''
+        this.$nextTick(() => {
+          this.editableItem[field.value] = processedValue
+        })
+      }
+
+      if (field.onChange) {
+        field.onChange({ value: processedValue, item: this.editableItem, ...this.context })
       }
     },
     isNumber (evt) {
