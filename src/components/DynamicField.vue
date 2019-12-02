@@ -163,28 +163,31 @@
       <slot name="label" :item="editableItem" :context="context" />
     </template>
   </v-text-field>
-  <v-text-field
-    v-else-if="field.type === 'number'"
-    v-model.number="editableItem[field.value]"
-    type="text"
-    v-bind="field"
-    :rules="getRules(field)"
-    :required="conditionalFunction(field.required)"
-    :placeholder="field.placeholder"
-    :label="field.text"
-    :prefix="conditionalFunction(field.prefix)"
-    :suffix="conditionalFunction(field.suffix)"
-    :disabled="readonly || conditionalFunction(field.disabled)"
-    :outlined="field.outlined"
-    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/,/g, '.'))"
-  >
-    <template #label>
-      <slot name="label" :item="editableItem" :context="context" />
-    </template>
+  <v-text-field v-else-if="field.type === 'number'"
+      v-model.number="editableItem[field.value]"
+      v-bind="field"
+      type="text"
+      :step="field.step || 0.01"
+      :min="field.min"
+      :max="field.max"
+      :rules="getRules(field)"
+      :required="conditionalFunction(field.required)"
+      :placeholder="field.placeholder"
+      :label="field.text"
+      :prefix="conditionalFunction(field.prefix)"
+      :suffix="conditionalFunction(field.suffix)"
+      :disabled="readonly || conditionalFunction(field.disabled)"
+      :outlined="field.outlined"
+      @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/[\.\,]/g, '.'))"
+    >
+      <template #label>
+        <slot name="label" :item="editableItem" :context="context" />
+      </template>
   </v-text-field>
   <v-text-field
     v-else-if="field.type === 'integer'"
     v-model.number="editableItem[field.value]"
+    type="text"
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :placeholder="field.placeholder"
@@ -193,7 +196,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
-    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9]/g, ''))"
+    @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^0-9]/g, ''))"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
@@ -475,7 +478,7 @@ export default {
     onFieldValueChanged (field, newValue, processor = x => x) {
       const processedValue = processor(newValue)
       if (processedValue !== newValue) {
-        this.editableItem[field.value] = ''
+        this.editableItem[field.value] = ' '
         this.$nextTick(() => {
           this.editableItem[field.value] = processedValue
         })
