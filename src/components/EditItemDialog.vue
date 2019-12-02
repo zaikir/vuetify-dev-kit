@@ -427,14 +427,19 @@ export default {
         }
 
         let item = null
-        if (this.sourceArgs) {
-          if (this.source.url) {
-            item = await this.$axios.$get(this.source.url(this.sourceArgs), { progress: false })
+        try {
+          if (this.sourceArgs) {
+            if (this.source.url) {
+              item = await this.$axios.$get(this.source.url(this.sourceArgs), { progress: false })
+            } else {
+              item = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
+            }
           } else {
-            item = JSON.parse(JSON.stringify(this.source.item(this.sourceArgs)))
+            item = { _id: (new ObjectID()).toString(), _isNew: true, ...this.defaultItem }
           }
-        } else {
-          item = { _id: (new ObjectID()).toString(), _isNew: true, ...this.defaultItem }
+        } catch (err) {
+          this.onValueChanged(false)
+          return
         }
 
         this.editableItem = await this.preOpen({
@@ -481,19 +486,24 @@ export default {
         ...this.context
       })
 
-      if (this.source && savingItem) {
-        if (this.source.url) {
-          if (isCreation) {
-            await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
-          } else {
-            await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
+      try {
+        if (this.source && savingItem) {
+          if (this.source.url) {
+            if (isCreation) {
+              await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
+            } else {
+              await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
+            }
+          } else if (this.source.patch) {
+            await this.$axios.$patch(
+              this.source.patch.url({ item: savingItem, isCreation, ...this.context }),
+              this.source.patch.body({ item: savingItem, isCreation, ...this.context }), { progress: false }
+            )
           }
-        } else if (this.source.patch) {
-          await this.$axios.$patch(
-            this.source.patch.url({ item: savingItem, isCreation, ...this.context }),
-            this.source.patch.body({ item: savingItem, isCreation, ...this.context }), { progress: false }
-          )
         }
+      } catch (err) {
+        this.isSaving = false
+        return
       }
 
       this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })

@@ -119,7 +119,14 @@ export default {
       }
 
       this.timer = setTimeout(async () => {
-        this.items = this.responseHandler(await this.$axios.$get(this.url({ query: val, ...this.context })))
+        let items
+        try {
+          items = await this.$axios.$get(this.url({ query: val, ...this.context }))
+        } catch (err) {
+          items = []
+        }
+
+        this.items = this.responseHandler(items)
         this.isLoading = false
       }, 300)
     },

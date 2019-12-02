@@ -647,21 +647,23 @@ export default {
         ...this.context
       })
 
-      this.isLoading = true
-      if (this.source.url) {
-        const { page, itemsPerPage, sortBy = '', sortDesc = '' } = this.options
+      try {
+        this.isLoading = true
+        if (this.source.url) {
+          const { page, itemsPerPage, sortBy = '', sortDesc = '' } = this.options
 
-        const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${this.search || ''}&columns=${[...this.headers.map(({ value }) => value), 'isRemoved'].join(',')}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
+          const query = `sortBy=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPerPage=${itemsPerPage}&search=${this.search || ''}&columns=${[...this.headers.map(({ value }) => value), 'isRemoved'].join(',')}${filter ? `&filter=${JSON.stringify(filter)}` : ''}`
 
-        const { items, total } = await this.$axios.$get(`${this.source.url}${this.source.url.includes('?') ? '' : '?'}${query}`, { progress: false })
+          const { items, total } = await this.$axios.$get(`${this.source.url}${this.source.url.includes('?') ? '' : '?'}${query}`, { progress: false })
 
-        this.items = items
-        this.totalItemsLength = total
-      } else {
-        this.items = this.source.items
+          this.items = items
+          this.totalItemsLength = total
+        } else {
+          this.items = this.source.items
+        }
+      } finally {
+        this.isLoading = false
       }
-
-      this.isLoading = false
 
       if (this.tabs && this.tabs.length && updateCounts) {
         this.totalCounts = {}
@@ -673,22 +675,26 @@ export default {
           })
         )
 
-        if (this.source.url) {
-          const { totals } = await this.$axios.$post(`${this.source.url}/count${this.source.url.includes('?') ? '' : '?'}search=${this.search}`, {
-            filters: filters.map(({ filter }) => filter)
-          }, { progress: false })
+        try {
+          if (this.source.url) {
+            const { totals } = await this.$axios.$post(`${this.source.url}/count${this.source.url.includes('?') ? '' : '?'}search=${this.search}`, {
+              filters: filters.map(({ filter }) => filter)
+            }, { progress: false })
 
-          const counts = totals.map((total, i) => ({
-            id: filters[i].id,
-            value: total
-          }))
+            const counts = totals.map((total, i) => ({
+              id: filters[i].id,
+              value: total
+            }))
 
-          this.totalCounts = counts.reduce((acc, item) => {
-            acc[item.id] = item.value
-            return acc
-          }, {})
-        } else {
-          throw new Error('Not implemented')
+            this.totalCounts = counts.reduce((acc, item) => {
+              acc[item.id] = item.value
+              return acc
+            }, {})
+          } else {
+            throw new Error('Not implemented')
+          }
+        } catch (err) {
+          console.error(err)
         }
       }
     },
@@ -720,25 +726,30 @@ export default {
 
       const item = await this.preDeleteItem({ item: this.processedItem, ...this.context })
 
-      if (item) {
-        if (this.source.url) {
-          await this.$axios.$delete(`${this.source.url}/${item._id}`, { progress: false })
-        } else {
-          const index = this.items.findIndex(({ _id }) => item._id === _id)
+      try {
+        if (item) {
+          if (this.source.url) {
+            await this.$axios.$delete(`${this.source.url}/${item._id}`, { progress: false })
+          } else {
+            const index = this.items.findIndex(({ _id }) => item._id === _id)
 
-          if (this.source.patch) {
-            const getBody = () => {
-              const updatedItems = [...this.items]
-              updatedItems.splice(index, 1, { ...item, isRemoved: true })
+            if (this.source.patch) {
+              const getBody = () => {
+                const updatedItems = [...this.items]
+                updatedItems.splice(index, 1, { ...item, isRemoved: true })
 
-              return { op: 'replace', path: `${this.source.patch.path}`, value: updatedItems }
+                return { op: 'replace', path: `${this.source.patch.path}`, value: updatedItems }
+              }
+
+              await this.$axios.$patch(`${this.source.patch.url}/${this.context.parent._id}`, getBody(), { progress: false })
             }
 
-            await this.$axios.$patch(`${this.source.patch.url}/${this.context.parent._id}`, getBody(), { progress: false })
+            this.$set(this.items, index, { ...item, isRemoved: true })
           }
-
-          this.$set(this.items, index, { ...item, isRemoved: true })
         }
+      } catch (err) {
+        this.isLoading = false
+        return
       }
 
       this.$emit('onItemDeleted', { item: this.processedItem, ...this.context })
