@@ -133,8 +133,8 @@
                 >
                   <template v-if="!isMobile">
                     <v-tab
-                      v-for="layout in fieldsData.layouts"
-                      :key="layout.name"
+                      v-for="(layout, index) in fieldsData.layouts"
+                      :key="index"
                       ripple
                     >
                       <v-icon v-if="layout.icon" class="mr-3">
