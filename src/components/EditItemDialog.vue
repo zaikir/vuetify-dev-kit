@@ -145,7 +145,8 @@
                   </template>
                   <v-tab-item
                     v-for="(layout, layoutId) in fieldsData.layouts"
-                    :key="layout.name"
+                    :key="layoutId"
+                    :value="layoutId"
                   >
                     <v-container grid-list-md>
                       <h2 v-if="isMobile" class="mb-3">
@@ -231,7 +232,7 @@
             <div class="d-flex justify-space-around align-center" style="width: 100%">
               <v-btn
                 v-for="(layout, index) in fieldsData.layouts"
-                :key="layout.name"
+                :key="index"
                 :color="selectedTab === index ? 'primary' : 'secondary'"
                 dark
                 icon
@@ -274,37 +275,6 @@
         >
           Сохранить и выйти
         </v-btn>
-        <!-- <v-speed-dial
-          v-model="saveButtonFab"
-          open-on-hover
-          class="ml-2"
-        >
-          <template v-slot:activator>
-            <v-btn
-              v-if="!readonly"
-              v-model="saveButtonFab"
-              color="primary"
-              :loading="isSaving"
-              @click="saveItem"
-            >
-              Сохранить
-            </v-btn>
-          </template>
-          <v-tooltip left>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                fab
-                dark
-                small
-                color="info"
-                v-on="on"
-              >
-                <v-icon>mdi-exit-to-app</v-icon>
-              </v-btn>
-            </template>
-            <span>Сохранить и выйти</span>
-          </v-tooltip>
-        </v-speed-dial> -->
       </v-card-actions>
     </v-card>
   </v-dialog>
