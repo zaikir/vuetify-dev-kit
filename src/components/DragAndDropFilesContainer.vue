@@ -38,7 +38,7 @@
       </vue-dropzone>
     </v-col>
     <v-col cols="12">
-      <draggable :list="value.filter(x => !x.isRemoved)" group="people" class="row" :disabled="disabled" @change="onReordered">
+      <draggable :list="value.filter(x => !x.isRemoved)" group="people" class="row" :disabled="disabled || $vuetify.breakpoint.smAndDown" @change="onReordered">
         <v-col v-for="(file, i) in value.filter(x => !x.isRemoved)" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
             <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)" @click="openLink(file)" @click.middle="openLink(file, true)">
