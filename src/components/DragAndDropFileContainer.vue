@@ -41,7 +41,7 @@
       <v-row v-if="value">
         <v-col v-for="(file, i) in [value]" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
-            <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)"  @click="openLink(file)" @click.middle="openLink(file, true)">
+            <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)" @click="openLink(file)" @click.middle="openLink(file, true)">
               <v-img
                 v-if="isImage(file.type)"
                 :src="file.url"
@@ -103,7 +103,7 @@
             {{ processedItem.name }}
           </v-toolbar-title>
           <v-spacer />
-          <v-btn icon dark @click="isFileModalOpened = false">
+          <v-btn icon dark @click="isFileModalOpened = false; processedItem = null;">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>

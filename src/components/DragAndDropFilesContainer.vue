@@ -103,7 +103,7 @@
             {{ processedItem.name }}
           </v-toolbar-title>
           <v-spacer />
-          <v-btn icon dark @click="isFileModalOpened = false">
+          <v-btn icon dark @click="isFileModalOpened = false;processedItem = null">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
