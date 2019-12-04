@@ -163,26 +163,27 @@
       <slot name="label" :item="editableItem" :context="context" />
     </template>
   </v-text-field>
-  <v-text-field v-else-if="field.type === 'number'"
-      v-model.number="editableItem[field.value]"
-      v-bind="field"
-      type="text"
-      :step="field.step || 0.01"
-      :min="field.min"
-      :max="field.max"
-      :rules="getRules(field)"
-      :required="conditionalFunction(field.required)"
-      :placeholder="field.placeholder"
-      :label="field.text"
-      :prefix="conditionalFunction(field.prefix)"
-      :suffix="conditionalFunction(field.suffix)"
-      :disabled="readonly || conditionalFunction(field.disabled)"
-      :outlined="field.outlined"
-      @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/[\.\,]/g, '.'))"
-    >
-      <template #label>
-        <slot name="label" :item="editableItem" :context="context" />
-      </template>
+  <v-text-field
+v-else-if="field.type === 'number'"
+                v-model.number="editableItem[field.value]"
+                v-bind="field"
+                type="text"
+                :step="field.step || 0.01"
+                :min="field.min"
+                :max="field.max"
+                :rules="getRules(field)"
+                :required="conditionalFunction(field.required)"
+                :placeholder="field.placeholder"
+                :label="field.text"
+                :prefix="conditionalFunction(field.prefix)"
+                :suffix="conditionalFunction(field.suffix)"
+                :disabled="readonly || conditionalFunction(field.disabled)"
+                :outlined="field.outlined"
+                @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/[\.\,]/g, '.'))"
+  >
+    <template #label>
+      <slot name="label" :item="editableItem" :context="context" />
+    </template>
   </v-text-field>
   <v-text-field
     v-else-if="field.type === 'integer'"
@@ -242,6 +243,7 @@
     :rules="getRules(field)"
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
+    :modal="conditionalFunction(field.modal)"
     :outlined="field.outlined"
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"

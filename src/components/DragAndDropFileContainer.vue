@@ -41,7 +41,7 @@
       <v-row v-if="value">
         <v-col v-for="(file, i) in [value]" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
-            <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)" @click="openLink(file.url)">
+            <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)"  @click="openLink(file)" @click.middle="openLink(file, true)">
               <v-img
                 v-if="isImage(file.type)"
                 :src="file.url"
@@ -92,6 +92,28 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-dialog
+      v-model="isFileModalOpened"
+      persistent
+      fullscreen
+    >
+      <v-card v-if="processedItem" v-resize="onWindowResized">
+        <v-toolbar dark color="primary" style="z-index: 1;" dense>
+          <v-toolbar-title style="width: 100%;" class="ml-5">
+            {{ processedItem.name }}
+          </v-toolbar-title>
+          <v-spacer />
+          <v-btn icon dark @click="isFileModalOpened = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text class="pa-0 d-flex align-center justify-center" :class="{'pa-1':isImage(processedItem.type)}" :style="`height: ${windowSize.height - 50}px`">
+          <v-img v-if="isImage(processedItem.type)" :src="processedItem.url" max-width="100%" max-height="100%" contain />
+          <object v-else-if="processedItem.type === '.pdf'" :data="processedItem.url" type="application/pdf" width="100%" height="100%" />
+          <object v-else :data="processedItem.url" width="100%" height="100%" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-dialog
       v-model="isEditDialogOpened"
       persistent
@@ -188,7 +210,9 @@ export default {
       isConfirmationDialogOpened: false,
       processedItem: null,
       newFileName: '',
-      isEditDialogOpened: false
+      isEditDialogOpened: false,
+      isFileModalOpened: false,
+      windowSize: {}
     }
   },
   computed: {
@@ -200,7 +224,13 @@ export default {
       }
     }
   },
+  mounted () {
+    this.windowSize = { width: window.innerWidth, height: window.innerHeight }
+  },
   methods: {
+    onWindowResized () {
+      this.windowSize = { width: window.innerWidth, height: window.innerHeight }
+    },
     formatDate (date) {
       return date ? moment(date).format('DD.MM.YYYY') : ''
     },
@@ -210,8 +240,13 @@ export default {
 
       this.$emit('input', null)
     },
-    openLink (url) {
-      window.open(url, '_blank')
+    openLink (file, modal) {
+      if (!modal) {
+        this.processedItem = file
+        this.isFileModalOpened = true
+      } else {
+        window.open(file.url, '_blank')
+      }
     },
     isImage (type) {
       return type === '.png' || type === '.jpg' || type === '.jpeg' || type === '.gif'
