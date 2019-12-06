@@ -8,6 +8,7 @@
     :fullscreen="isMobile"
     :hide-overlay="isMobile"
     :transition="isMobile ? 'dialog-bottom-transition' : ''"
+    :retain-focus="false"
     @input="onValueChanged"
   >
     <v-card
@@ -548,9 +549,5 @@ export default {
   .edit-item-dialog .v-btn.dense {
     height: auto !important;
     padding: 7px  !important;
-  }
-
-  .v-dialog__content {
-    z-index: 203 !important;
   }
 </style>
