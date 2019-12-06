@@ -549,4 +549,8 @@ export default {
     height: auto !important;
     padding: 7px  !important;
   }
+
+  .v-dialog__content {
+    z-index: 203 !important;
+  }
 </style>
