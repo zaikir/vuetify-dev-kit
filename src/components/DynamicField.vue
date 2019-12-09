@@ -123,6 +123,7 @@
     :required="conditionalFunction(field.required)"
     :outlined="field.outlined"
     @input="onFieldValueChanged(field, $event)"
+    @change="onFieldValueChanged(field, $event)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
