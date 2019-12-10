@@ -374,6 +374,7 @@ export default {
   },
   data () {
     return {
+      isMobile: false,
       saveButtonFab: false,
       editableItem: {},
       isSaving: false,
