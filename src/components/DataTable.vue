@@ -540,6 +540,11 @@ export default {
     }
   },
   watch: {
+    preFilter () {
+      if (this.isInitialized) {
+        this.updateSource(false)
+      }
+    },
     refresh (val) {
       if (val) {
         this.updateSource()

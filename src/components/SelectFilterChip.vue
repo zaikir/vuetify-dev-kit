@@ -69,12 +69,13 @@ export default {
       return this.filter.options().find(option => this.filter.optionValue(option) === this.value)
     },
     filteredOptions () {
-      return [
-        ...this.filter.options()
-          .filter(option => this.filter.optionText(option).toLowerCase().includes(this.search.toLowerCase())),
-        ...this.filter.options()
-          .filter(option => !this.filter.optionText(option).toLowerCase().includes(this.search.toLowerCase()))
-      ]
+      return this.filter.options()
+      // return [
+      //   ...this.filter.options()
+      //     .filter(option => this.filter.optionText(option).toLowerCase().includes(this.search.toLowerCase())),
+      //   ...this.filter.options()
+      //     .filter(option => !this.filter.optionText(option).toLowerCase().includes(this.search.toLowerCase()))
+      // ]
     }
   },
   watch: {

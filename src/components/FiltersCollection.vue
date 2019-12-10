@@ -66,6 +66,7 @@ export default {
       return this.selectedFiltersTexts.map(filterText => this.attachHelpersToFilter(this.findFilterByText(filterText)))
     },
     filtersValuesMap () {
+      // console.log(this.filtersValues)
       return this.filtersValues.reduce((acc, item) => {
         acc[item.text] = item
         return acc
@@ -73,6 +74,9 @@ export default {
     }
   },
   watch: {
+    filters () {
+      this.selectedFiltersTexts = this.filters.filter(x => x.selected).map(x => x.text)
+    },
     selectedFiltersTexts () {
       if (this.selectedFiltersTexts.length < this.filtersValues.length) {
         this.filtersValues = this.filtersValues
@@ -96,6 +100,9 @@ export default {
       },
       deep: true
     }
+  },
+  mounted () {
+    this.selectedFiltersTexts = this.filters.filter(x => x.selected).map(x => x.text)
   },
   methods: {
     findFilterByText (text) {
