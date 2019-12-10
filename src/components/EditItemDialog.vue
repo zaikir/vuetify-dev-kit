@@ -403,9 +403,6 @@ export default {
           fields: this.fields.filter(isFieldActive)
         }
       }
-    },
-    isMobile () {
-      return this.fullscreen && (this.$vuetify.breakpoint.smAndDown || this.alwaysFullscreen)
     }
   },
   watch: {
@@ -461,6 +458,9 @@ export default {
         }
       }
     }
+  },
+  mounted () {
+    this.isMobile = this.fullscreen && (this.$vuetify.breakpoint.smAndDown || this.alwaysFullscreen)
   },
   methods: {
     conditionalFunction (value) {
