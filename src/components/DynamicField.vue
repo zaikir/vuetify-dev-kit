@@ -291,6 +291,7 @@
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :label="field.text"
+    :prepend-icon="field.prependIcon"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :short-year="field.shortYear"

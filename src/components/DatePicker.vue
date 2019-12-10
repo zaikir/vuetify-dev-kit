@@ -14,7 +14,7 @@
         v-mask="shortYear ? '##.##.##' : '##.##.####'"
         :label="label"
         :rules="[...getRules(rules, required), isDateValid]"
-        prepend-icon="event"
+        :prepend-icon="prependIcon"
         :required="required"
         :outlined="outlined"
         :disabled="disabled"
@@ -65,6 +65,10 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    prependIcon: {
+      type: String,
+      default: 'event'
     },
     outlined: {
       type: Boolean,
