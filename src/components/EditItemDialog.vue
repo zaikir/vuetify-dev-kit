@@ -21,7 +21,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title v-if="title" style="width: 100%;">
-          <slot name="title" :item="editableItem" :context="context">
+          <slot name="title" :item="editableItem" :context="context" :saveItem="saveItem">
             {{ conditionalFunction(title) }}
           </slot>
         </v-toolbar-title>
@@ -78,7 +78,7 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-title v-else-if="title" class="pb-0">
-        <slot name="title" :item="editableItem" :context="context">
+        <slot name="title" :item="editableItem" :context="context" :saveItem="saveItem">
           {{ conditionalFunction(title) }}
         </slot>
       </v-card-title>
