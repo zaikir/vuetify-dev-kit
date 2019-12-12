@@ -7,5 +7,16 @@ export default ({
     Vue.component('DataTable', DataTable)
     Vue.component('EditItemDialog', EditItemDialog)
     Vue.component('ConfirmationDialog', ConfirmationDialog)
+
+    if (window) {
+      window.addEventListener('dragover', function (e) {
+        e = e || event
+        e.preventDefault()
+      }, false)
+      window.addEventListener('drop', function (e) {
+        e = e || event
+        e.preventDefault()
+      }, false)
+    }
   }
 })
