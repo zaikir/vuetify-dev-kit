@@ -476,7 +476,7 @@ export default {
     },
     async saveItem (preventExit) {
       if (!this.$refs.editForm.validate()) {
-        return
+        return false
       }
 
       this.isSaving = true
@@ -505,7 +505,7 @@ export default {
         }
       } catch (err) {
         this.isSaving = false
-        return
+        return false
       }
 
       this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })
@@ -516,6 +516,8 @@ export default {
       if (this.closeOnSave || !preventExit) {
         this.onValueChanged(false)
       }
+
+      return true
     },
     cancelSaving () {
       this.$emit('onCanceled')
