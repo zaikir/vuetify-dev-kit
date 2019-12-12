@@ -148,7 +148,6 @@
                     v-for="(layout, layoutId) in fieldsData.layouts"
                     :key="layoutId"
                     :value="layoutId"
-                    eager
                   >
                     <v-container grid-list-md>
                       <h2 v-if="isMobile" class="mb-3">
