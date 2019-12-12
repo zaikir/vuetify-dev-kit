@@ -1,6 +1,6 @@
 {
   "name": "vuetify-dev-kit",
-  "version": "2.0.66",
+  "version": "2.0.67",
   "description": "The development kit for projects on Vuetify",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,7 @@
   "dependencies": {
     "@tinymce/tinymce-vue": "^3.0.1",
     "bson": "^4.0.2",
+    "deep-equal": "^1.1.1",
     "email-validator": "^2.0.4",
     "libphonenumber-js": "^1.7.25",
     "moment": "^2.24.0",

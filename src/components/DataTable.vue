@@ -338,6 +338,7 @@
 
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import moment from 'moment'
+import deepEqual from 'deep-equal'
 import EditItemDialog from './EditItemDialog'
 import ConfirmationDialog from './ConfirmationDialog'
 import FiltersCollection from './FiltersCollection'
@@ -540,9 +541,20 @@ export default {
     }
   },
   watch: {
-    preFilter () {
+    preFilter (newFunc, oldFunc) {
       if (this.isInitialized) {
-        this.updateSource(false)
+        const oldFilterValue = oldFunc({
+          filter: this.getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
+          ...this.context
+        })
+        const newFilterValue = newFunc({
+          filter: this.getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
+          ...this.context
+        })
+
+        if (!deepEqual(oldFilterValue, newFilterValue)) {
+          this.updateSource(false)
+        }
       }
     },
     refresh (val) {
@@ -638,17 +650,18 @@ export default {
 
       await this.updateSource()
     },
-    async updateSource (updateCounts = true) {
-      const getFilterData = tab => ({
+    getFilterData (tab) {
+      return {
         id: tab.text,
         filter: {
           ...this.filterValues,
           ...tab.filter || {}
         }
-      })
-
+      }
+    },
+    async updateSource (updateCounts = true) {
       const filter = this.preFilter({
-        filter: getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
+        filter: this.getFilterData(this.selectedTab !== null ? this.tabs[this.selectedTab] : {}).filter,
         ...this.context
       })
 
@@ -675,8 +688,8 @@ export default {
 
         const filters = this.tabs.map(
           tab => ({
-            filter: this.preFilter({ filter: getFilterData(tab).filter, ...this.context }),
-            id: getFilterData(tab).id
+            filter: this.preFilter({ filter: this.getFilterData(tab).filter, ...this.context }),
+            id: this.getFilterData(tab).id
           })
         )
 
