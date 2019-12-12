@@ -148,6 +148,7 @@
                     v-for="(layout, layoutId) in fieldsData.layouts"
                     :key="layoutId"
                     :value="layoutId"
+                    eager
                   >
                     <v-container grid-list-md>
                       <h2 v-if="isMobile" class="mb-3">
@@ -476,6 +477,14 @@ export default {
     },
     async saveItem (preventExit) {
       if (!this.$refs.editForm.validate()) {
+        if (this.fieldsData.type === 'tabs') {
+          const error = this.$refs.editForm.inputs.filter(x => x.hasError)[0] || {}
+          const tabIndex = this.fieldsData.layouts.findIndex((x, id) =>
+            this.fieldsData.fields.filter(x => x.layoutId === id).find(field => field.text === error.label)
+          )
+
+          this.selectedTab = tabIndex || 0
+        }
         return false
       }
 
