@@ -214,7 +214,8 @@ export default {
       processedItem: null,
       newFileName: '',
       isFileModalOpened: false,
-      windowSize: {}
+      windowSize: {},
+      queue: []
     }
   },
   computed: {
@@ -287,9 +288,12 @@ export default {
       this.isEditDialogOpened = false
     },
     successfullyUploaded (file, response) {
-      this.response = response
-      this.newFileName = file.name
-      this.isEditDialogOpened = true
+      this.isLoading = false
+      this.$emit('input', [...this.value, {
+        ...response,
+        name: file.name,
+        created: moment().toDate()
+      }])
     }
   }
 }

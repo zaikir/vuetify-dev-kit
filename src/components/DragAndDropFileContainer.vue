@@ -268,9 +268,15 @@ export default {
       this.isEditDialogOpened = false
     },
     successfullyUploaded (file, response) {
-      this.response = response
-      this.newFileName = file.name
-      this.isEditDialogOpened = true
+      // this.response = response
+      // this.newFileName = file.name
+      // this.isEditDialogOpened = true
+
+      this.$emit('input', {
+        ...response,
+        name: file.name,
+        created: moment().toDate()
+      })
     }
   }
 }
