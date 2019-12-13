@@ -13,6 +13,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -33,6 +34,7 @@
         :rules="getRules(field)"
         :required="conditionalFunction(field.required)"
         :label="field.text"
+        dense
         :multiple="conditionalFunction(field.multiple)"
         :disabled="readonly || conditionalFunction(field.disabled)"
         @input="onFieldValueChanged(field, $event)"
@@ -76,6 +78,7 @@
     :row="field.row"
     :required="conditionalFunction(field.required)"
     :label="field.text"
+    dense
     :disabled="readonly || conditionalFunction(field.disabled)"
     @input="onFieldValueChanged(field, $event)"
   >
@@ -106,6 +109,7 @@
     :item-value="field.itemValue"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
     @input="onFieldValueChanged(field, $event)"
@@ -122,6 +126,7 @@
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event)"
     @change="onFieldValueChanged(field, $event)"
   >
@@ -140,6 +145,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -157,6 +163,7 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @keypress="isNumber($event)"
     @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^0-9]/g, ''))"
   >
@@ -180,6 +187,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^-0-9\,\.]/g, '').replace(/[\.\,]/g, '.'))"
   >
     <template #label>
@@ -198,6 +206,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event, val => (val || '').replace(/[^0-9]/g, ''))"
   >
     <template #label>
@@ -218,6 +227,7 @@
     :suffix="conditionalFunction(field.suffix)"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -234,6 +244,7 @@
     :outlined="field.outlined"
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -250,6 +261,7 @@
     :outlined="field.outlined"
     :url="field.uploadUrl || '/api/uploads'"
     :accepted-files="field.acceptedFiles"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -264,6 +276,7 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -279,6 +292,7 @@
     :height="field.height"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -295,6 +309,7 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :short-year="field.shortYear"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -309,6 +324,7 @@
     :label="field.text"
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -324,7 +340,7 @@
     :items="field.items || []"
     :label="field.text"
     :chips="field.chips"
-    :dense="field.dense"
+    dense
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
@@ -347,6 +363,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #append>
@@ -373,6 +390,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -390,6 +408,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
@@ -408,6 +427,7 @@
     :outlined="field.outlined"
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
+    dense
     @input="onFieldValueChanged(field, $event)"
   >
     <template #label>
