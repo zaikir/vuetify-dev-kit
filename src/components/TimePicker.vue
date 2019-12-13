@@ -8,6 +8,7 @@
     <template v-slot:activator="{ on }">
       <v-text-field
         v-model="time"
+        dense
         :label="label"
         :rules="[...getRules(rules, required)]"
         prepend-icon="access_time"
@@ -19,6 +20,7 @@
       v-if="isOpened && !disabled"
       v-model="time"
       format="24hr"
+      dense
     >
       <v-spacer />
       <v-btn text color="primary" @click="isOpened = false">

@@ -1,6 +1,7 @@
 
 <template>
   <v-dialog
+    dense
     :value="value"
     scrollable
     :persistent="persistent"

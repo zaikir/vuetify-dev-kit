@@ -7,6 +7,7 @@
     offset-y
     max-width="290px"
     min-width="290px"
+    dense
   >
     <template v-slot:activator="{ on }">
       <v-text-field
@@ -18,6 +19,7 @@
         :required="required"
         :outlined="outlined"
         :disabled="disabled"
+        dense
         v-on="on"
         @input="tryToSetDate"
       />
@@ -27,6 +29,7 @@
       no-title
       locale="ru"
       first-day-of-week="1"
+      dense
       @input="handleInput"
     />
   </v-menu>

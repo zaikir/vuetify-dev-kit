@@ -35,6 +35,7 @@
       <v-spacer v-if="!title" />
     </v-card-title>
     <v-data-table
+      dense
       :class="{'universal-table': true, [fontSize]: true, 'can-sort': canSort}"
       :headers="tableHeaders"
       :options.sync="options"
@@ -47,7 +48,6 @@
       :disable-sort="!canSort"
       :sort-by="sortBy"
       :sort-desc="sortDesc"
-      :dense="dense"
       :server-items-length="totalItemsLength"
       locale="ru"
       must-sort

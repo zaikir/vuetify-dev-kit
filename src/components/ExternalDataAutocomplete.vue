@@ -15,6 +15,7 @@
     :placeholder="placeholder"
     :prepend-icon="prependIcon"
     autocomplete="off"
+    dense
     @input="handleInput"
   />
 </template>
