@@ -5,6 +5,7 @@
         v-model="selectedFiltersTexts"
         :items="filters"
         chips
+        dense
         class="filter-selection"
         :height="44"
         clearable

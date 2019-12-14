@@ -1,7 +1,7 @@
 <template>
-  <v-row no-gutters class="drag-and-drop-editor mb-8">
+  <v-row no-gutters class="drag-and-drop-editor mb-2">
     <v-col cols="12" style="margin-bottom: 0px;">
-      <v-subheader :class="'subtitle-2 pl-0'">
+      <v-subheader :class="'subtitle-2 pl-0'" style="height: 24px;">
         {{ label }}
       </v-subheader>
     </v-col>
@@ -47,34 +47,34 @@
                 :src="file.url"
                 class="white--text align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                width="200"
-                height="150"
+                width="150"
+                height="100"
               />
               <v-img
                 v-else-if="file.type === '.pdf'"
                 src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg"
                 class="white--text align-end"
-                width="200"
+                width="150"
                 contain
-                height="150"
+                height="100"
               />
               <v-img
                 v-else-if="file.type === '.doc' || file.type === '.docx'"
                 src="https://upload.wikimedia.org/wikipedia/commons/f/fb/.docx_icon.svg"
                 class="white--text align-end"
-                width="200"
+                width="150"
                 contain
-                height="150"
+                height="100"
               />
               <v-img
                 v-else
                 src="https://www.svgrepo.com/show/94277/blank-file.svg"
                 class="white--text align-end"
-                width="200"
+                width="150"
                 contain
-                height="150"
+                height="100"
               />
-              <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 200px;">
+              <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 150px;">
                 <span class="subtitle-2">{{ file.name }}</span>
                 <!-- <span class="caption">{{ formatDate(file.created) }}</span> -->
                 <v-spacer />
@@ -220,7 +220,7 @@ export default {
       return {
         dictDefaultMessage: 'Перетащите сюда файл',
         url: this.url,
-        thumbnailWidth: 200
+        thumbnailWidth: 150
       }
     }
   },

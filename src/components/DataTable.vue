@@ -27,6 +27,7 @@
       <v-text-field
         v-if="canSearch"
         v-model="search"
+        dense
         append-icon="search"
         label="Поиск"
         single-line

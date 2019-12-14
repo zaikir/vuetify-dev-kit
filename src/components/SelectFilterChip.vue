@@ -22,6 +22,7 @@
           spellcheck="false"
           class="pr-2"
           autofocus
+          dense
           label="Поиск"
           style="margin-bottom:-30px;"
           @focus="$event.target.select()"

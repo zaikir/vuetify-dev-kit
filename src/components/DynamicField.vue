@@ -71,8 +71,8 @@
     v-else-if="field.type === 'radio'"
     v-model="editableItem[field.value]"
     mandatory
-    class="mb-2"
-    style="width: 100%"
+    :class="field.class"
+    style="width: 100%;margin-top: 0px;"
     :active-class="field.activeClass"
     :rules="getRules(field)"
     :row="field.row"
