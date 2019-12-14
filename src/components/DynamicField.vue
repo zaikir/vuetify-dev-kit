@@ -102,6 +102,7 @@
     :prepend-icon="field.prependIcon"
     :response-handler="field.responseHandler"
     :min-length="field.minLength"
+    :multiple="field.multiple"
     :url="field.url"
     :context="{ item: editableItem, ...context }"
     :label="field.text"

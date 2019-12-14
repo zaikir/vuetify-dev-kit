@@ -14,6 +14,7 @@
     :search-input.sync="search"
     :placeholder="placeholder"
     :prepend-icon="prependIcon"
+    :multiple="multiple"
     autocomplete="off"
     dense
     @input="handleInput"
@@ -23,7 +24,7 @@
 export default {
   props: {
     value: {
-      type: String,
+      type: [String, Array],
       required: false,
       default: null
     },
@@ -56,6 +57,11 @@ export default {
       type: Array,
       required: false,
       default: () => []
+    },
+    multiple: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     required: {
       type: Boolean,
