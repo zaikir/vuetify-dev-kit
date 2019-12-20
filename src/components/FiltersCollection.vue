@@ -1,12 +1,12 @@
 <template>
-  <v-row class="filters-collection mt-2 mb-5">
+  <v-row class="filters-collection mt-1" :class="{mobile: $vuetify.breakpoint.xsOnly}">
     <v-col cols="auto">
       <v-select
         v-model="selectedFiltersTexts"
         :items="filters"
         chips
         dense
-        class="filter-selection"
+        class="filter-selection ml-sm-2"
         :height="44"
         clearable
         label="Фильтры"
@@ -144,5 +144,9 @@ export default {
 <style scoped>
   .filters-collection .filter-selection {
     height: 44px !important;
+  }
+
+  .filters-collection.mobile {
+    justify-content: center;
   }
 </style>
