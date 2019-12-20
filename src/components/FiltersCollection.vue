@@ -29,7 +29,7 @@
         </template>
       </v-select>
     </v-col>
-    <v-col v-for="filter in selectedFilters" :key="filter.text" cols="auto" class="mb-2 mb-md-0">
+    <v-col v-for="filter in selectedFilters" :key="filter.text" cols="auto" class="py-1 py-sm-2 mb-0 mb-md-0">
       <select-filter-chip
         v-if="filter.type === 'select'"
         v-model="filtersValuesMap[filter.text].value"
