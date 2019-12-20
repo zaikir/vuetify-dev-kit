@@ -541,10 +541,18 @@ export default {
     background-color: rgb(181, 255, 121);
   }
 
-  .edit-item-dialog.readonly .theme--light.v-input--is-disabled .v-label,
+  .edit-item-dialog.readonly .theme--light.v-text-field.v-input--is-disabled .v-text-field__suffix {
+    color: rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .edit-item-dialog.readonly .theme--light.v-icon--disabled {
+    color: rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .edit-item-dialog.readonly .theme--light.v-input--is-disabled .v-label--active,
   .edit-item-dialog.readonly .theme--light.v-input--is-disabled input,
   .edit-item-dialog.readonly .theme--light.v-input--is-disabled textarea {
-    color: rgba(0, 0, 0, 0.5) !important;
+    color: rgba(0, 0, 0, 0.8) !important;
   }
 
   .edit-item-dialog .v-tabs--vertical {
