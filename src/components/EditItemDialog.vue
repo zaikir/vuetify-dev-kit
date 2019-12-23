@@ -542,13 +542,13 @@ export default {
   }
 
   .edit-item-dialog.readonly .v-text-field.v-input--is-disabled .v-text-field__suffix {
-    color: rgba(0, 0, 0, 0.8) !important;
+    color: rgba(0, 0, 0, 1.0) !important;
     background: none !important;
     opacity: 1 !important;
   }
 
   .edit-item-dialog.readonly .v-icon--disabled {
-    color: rgba(0, 0, 0, 0.8) !important;
+    color: rgba(0, 0, 0, 1.0) !important;
     background: none !important;
     opacity: 1 !important;
   }
@@ -557,7 +557,7 @@ export default {
   .edit-item-dialog.readonly .v-input--is-disabled input,
   .edit-item-dialog.readonly .v-input--is-disabled textarea,
   .edit-item-dialog.readonly input[disabled] {
-    color: rgba(0, 0, 0, 0.8) !important;
+    color: rgba(0, 0, 0, 1.0) !important;
     background: none !important;
     opacity: 1 !important;
   }
