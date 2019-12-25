@@ -229,6 +229,7 @@
           dark
           color="transparent"
           style="z-index: 1;"
+          height="70"
         >
           <v-toolbar-items style="width: 100%">
             <div class="d-flex justify-space-around align-center" style="width: 100%">
@@ -238,6 +239,7 @@
                 :color="selectedTab === index ? 'primary' : 'secondary'"
                 dark
                 icon
+                large
                 class="ml-0"
                 @click="selectedTab = index"
               >
