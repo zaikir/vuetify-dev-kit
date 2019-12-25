@@ -577,4 +577,12 @@ export default {
     height: auto !important;
     padding: 7px  !important;
   }
+
+  .edit-item-dialog .v-form {
+    height: 100%;
+  }
+
+  .edit-item-dialog .v-form .v-tabs {
+    height: 100%;
+  }
 </style>
