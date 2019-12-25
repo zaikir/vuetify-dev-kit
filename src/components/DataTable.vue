@@ -108,7 +108,7 @@
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
             <template v-if="item[header.value]">
-              <a :key="`value-${header.value}`" itemprop="telephone" :href="`tel:${header.countryCode || ''}${item[header.value]}`">
+              <a @click.stop="() => {}" :key="`value-${header.value}`" itemprop="telephone" :href="`tel://${header.countryCode || ''}${item[header.value]}`">
                 {{ formatPhoneNumber(item[header.value], header.countryCode, header.sign) }}
               </a>
             </template>
@@ -118,7 +118,7 @@
           </template>
           <template v-else-if="header.display === 'email'">
             <template v-if="item[header.value]">
-              <a :key="`value-${header.value}`" itemprop="email" :href="`mailto:${item[header.value]}`">
+              <a @click.stop="() => {}" :key="`value-${header.value}`" itemprop="email" :href="`mailto://${item[header.value]}`">
                 {{ item[header.value] }}
               </a>
             </template>
@@ -155,7 +155,7 @@
             />
           </template>
           <template v-else-if="header.display === 'checkbox'">
-            <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled />
+            <v-checkbox class="checkbox" :input-value="item[header.value]" value disabled @click.stop="() => {}" />
           </template>
           <template v-else-if="header.display === 'combobox'">
             {{ item[header.value] && item[header.value].length ? item[header.value].join(', ') :'&mdash;' }}
@@ -172,7 +172,7 @@
               contain
               eager
               class="image"
-              @click="openLink(item[header.value].url)"
+              @click.stop="openLink(item[header.value].url)"
             >
               <template v-slot:placeholder>
                 <v-row
@@ -199,7 +199,7 @@
                   contain
                   eager
                   :class="`image ${header.padding}`"
-                  @click="openLink(image.url)"
+                  @click.stop="openLink(image.url)"
                 >
                   <template v-slot:placeholder>
                     <v-row
@@ -221,7 +221,7 @@
       </template>
       <template v-if="canDelete" :slot="`item.${deleteButtonProps.value}`" slot-scope="{item}">
         <slot :name="`button.${deleteButtonProps.value}`" :item="item">
-          <v-btn icon @click="removeRow(item)">
+          <v-btn icon @click.stop="removeRow(item)">
             <v-icon>
               {{ deleteButtonProps.icon }}
             </v-icon>
