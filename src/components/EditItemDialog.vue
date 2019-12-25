@@ -228,7 +228,7 @@
         <v-toolbar
           dark
           color="transparent"
-          style="z-index: 1;"
+          style="z-index: 1; overflow-x: auto;"
           height="70"
         >
           <v-toolbar-items style="width: 100%">
