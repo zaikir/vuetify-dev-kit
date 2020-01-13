@@ -347,7 +347,7 @@
     :prefix="conditionalFunction(field.prefix)"
     :suffix="conditionalFunction(field.suffix)"
     :multiple="conditionalFunction(field.multiple)"
-    @input="onFieldValueChanged(field, $event)"
+    @input="onFieldValueChanged(field, $event, field.itemType === 'number' ? val => (val || []).map(x => (x || '').replace(/[^-0-9\,\.]/g, '').replace(/[\.\,]/g, '.')) : undefined)"
   >
     <template #label>
       <slot name="label" :item="editableItem" :context="context" />
