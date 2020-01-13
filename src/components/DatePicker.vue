@@ -19,6 +19,7 @@
         :required="required"
         :outlined="outlined"
         :disabled="disabled"
+        :placeholder="placeholder"
         dense
         v-on="on"
         @input="tryToSetDate"
@@ -50,6 +51,11 @@ export default {
       default: null
     },
     label: {
+      type: String,
+      required: false,
+      default: null
+    },
+    placeholder: {
       type: String,
       required: false,
       default: null
@@ -116,6 +122,8 @@ export default {
       handler (val) {
         if (val) {
           this.dateFormatted = moment(this.value).format(this.displayFormat)
+        } else {
+          this.dateFormatted = ''
         }
       },
       immediate: true

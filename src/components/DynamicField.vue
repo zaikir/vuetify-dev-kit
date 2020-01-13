@@ -310,6 +310,7 @@
     :disabled="readonly || conditionalFunction(field.disabled)"
     :outlined="field.outlined"
     :short-year="field.shortYear"
+    :placeholder="field.placeholder"
     dense
     @input="onFieldValueChanged(field, $event)"
   >
