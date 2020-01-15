@@ -2,13 +2,14 @@
   <v-menu v-model="showMenu" right offset-y offset-overflow :close-on-content-click="false">
     <template v-slot:activator="{ on }">
       <v-chip
-        close
         style="margin-top: 8px;"
         v-on="on"
-        @click:close="close"
       >
         <strong>{{ filter.text }}</strong>&nbsp;
         <span>: {{ filter.optionText(selectedOption) }}</span>
+        <v-avatar right>
+          <v-icon>mdi-chevron-down</v-icon>
+        </v-avatar>
       </v-chip>
     </template>
     <v-card flat>
