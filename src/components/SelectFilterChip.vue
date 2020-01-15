@@ -8,7 +8,7 @@
         <strong>{{ filter.text }}</strong>&nbsp;
         <span>: {{ filter.optionText(selectedOption) }}</span>
         <v-avatar right>
-          <v-icon>mdi-chevron-down</v-icon>
+          <v-icon>{{showMenu ? 'mdi-chevron-up' : 'mdi-chevron-down'}}</v-icon>
         </v-avatar>
       </v-chip>
     </template>
