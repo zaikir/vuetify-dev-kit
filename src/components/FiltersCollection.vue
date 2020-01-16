@@ -36,15 +36,24 @@
         :filter="filter"
         @close="deleteFilter(filter.text)"
       />
+      <text-filter-chip
+        v-else-if="filter.type === 'text'"
+        v-model="filtersValuesMap[filter.text].value"
+        :filter="filter"
+        @close="deleteFilter(filter.text)"
+      />
     </v-col>
   </v-row>
 </template>
 
 <script>
 import SelectFilterChip from './SelectFilterChip'
+import TextFilterChip from './TextFilterChip'
+
 export default {
   components: {
-    SelectFilterChip
+    SelectFilterChip,
+    TextFilterChip
   },
   props: {
     value: {
