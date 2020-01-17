@@ -5,6 +5,14 @@
         <h3 style="word-break: break-word;">
           {{ title }}
         </h3>
+        <v-tooltip v-if="canExport" bottom>
+          <template #activator="{on}">
+            <v-btn v-on="on" icon :href="`${source.url}?export=true`" large class="ml-1" target="_blank">
+              <v-icon>mdi-export</v-icon>
+            </v-btn>
+          </template>
+          Экспортировать
+        </v-tooltip>
       </slot>
       <v-tooltip v-if="canAdd && addButtonProps.type === 'title'" bottom>
         <template #activator="{on}">
@@ -395,6 +403,10 @@ export default {
       default: false
     },
     canView: {
+      type: Boolean,
+      default: false
+    },
+    canExport: {
       type: Boolean,
       default: false
     },
