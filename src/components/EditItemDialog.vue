@@ -239,7 +239,6 @@
                 :color="selectedTab === index ? 'primary' : 'secondary'"
                 dark
                 text
-                large
                 style="height: 100%;"
                 class="ml-0"
                 @click="selectedTab = index"
