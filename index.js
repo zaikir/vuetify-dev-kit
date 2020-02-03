@@ -23,4 +23,3 @@
 // import withHasuraDataTable from './src/withHasuraDataTable'
 export { default as withHasuraDataTable } from './src/withHasuraDataTable'
 export { default as withDoubleClickEventDataTable } from './src/withDoubleClickEventDataTable'
-export { default as withLocalizationDataTable } from './src/withLocalizationDataTable'
