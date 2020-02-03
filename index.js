@@ -21,5 +21,6 @@
 //   }
 // })
 // import withHasuraDataTable from './src/withHasuraDataTable'
-export { default as withHasuraDataTable } from './src/withHasuraDataTable'
 export { default as withDoubleClickEventDataTable } from './src/withDoubleClickEventDataTable'
+export { default as withHasuraDataTable } from './src/withHasuraDataTable'
+export { default as withHasuraEditForm } from './src/withHasuraEditForm'
