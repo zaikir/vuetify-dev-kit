@@ -17,7 +17,7 @@ export default ({ Form, fields }) => {
         type: Object,
         default: () => ({})
       },
-      gaps: {
+      gapped: {
         type: Boolean,
         default: false
       },
@@ -73,7 +73,7 @@ export default ({ Form, fields }) => {
       }, [
         renderComponents(createElement, componentsTree, this.clone, { dense }, {
           ...this.defaultClasses,
-          ...this.gaps && {
+          ...this.gapped && {
             'mb-1': true
           }
         })
