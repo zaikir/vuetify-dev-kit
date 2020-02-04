@@ -21,15 +21,22 @@ const replaceAliases = (props) => {
   return props
 }
 
-function buildElement (createElement, field, parent = {}, globalProps = {}) {
+function buildElement (field, merger, parent = {}, globalProps = {}) {
+  const __merger = merger || ((component, params, children) => ({
+    component,
+    params,
+    children
+  }))
+
   const type = field.type || 'text'
+
   // eslint-disable-next-line import/namespace
   const element = FieldsMap[type]
   if (!element) {
     throw new Error(`Element "${type}" is not implemented`)
   }
 
-  const children = field.fields && field.fields.map(x => buildElement(createElement, x, field, globalProps))
+  const children = field.fields && field.fields.map(x => buildElement(x, __merger, field, globalProps))
 
   const buildProps = fieldType => replaceAliases(
     deleteKeys(
@@ -45,10 +52,10 @@ function buildElement (createElement, field, parent = {}, globalProps = {}) {
     class: buildClasses(fieldType)
   })
 
-  const node = createElement(element, buildNodeParams(type), children)
+  const node = __merger(element, buildNodeParams(type), children)
   switch (parent.type) {
     case 'row': {
-      return createElement(VCol, buildNodeParams('col'), [node])
+      return __merger(VCol, buildNodeParams('col'), [node])
     }
     default: {
       return node

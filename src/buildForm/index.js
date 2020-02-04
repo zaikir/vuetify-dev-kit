@@ -1,5 +1,5 @@
 import { VForm } from 'vuetify/lib/components'
-import { fieldMapper } from './utils'
+import { fieldCompiler, renderComponents } from './utils'
 
 export default ({ Form, fields }) => {
   if (typeof fields !== 'object') {
@@ -8,8 +8,9 @@ export default ({ Form, fields }) => {
 
   const __fields = fields.length ? { type: 'row', fields } : fields
 
+  const componentsTree = fieldCompiler(__fields)
   return {
-    name: 'WithHasuraEditForm',
+    name: 'GenericForm',
     methods: {
       submit () {
         if (!this.$refs.editForm.validate()) {
@@ -27,7 +28,6 @@ export default ({ Form, fields }) => {
     },
     render (createElement) {
       const dense = this.$attrs.dense === undefined ? true : this.$attrs.dense
-      const children = fieldMapper(createElement, __fields, undefined, { dense })
 
       return createElement(Form || VForm, {
         props: {
@@ -47,7 +47,9 @@ export default ({ Form, fields }) => {
             event.preventDefault()
           }
         }
-      }, [children])
+      }, [
+        renderComponents(createElement, componentsTree, { dense })
+      ])
     }
   }
 }
