@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ZaidulinKirill/vuetify-development-kit#readme",
   "dependencies": {
     "@tinymce/tinymce-vue": "^3.0.1",
+    "clone": "^2.1.2",
     "email-validator": "^2.0.4",
     "graphql-tag": "^2.10.1",
     "libphonenumber-js": "^1.7.25",

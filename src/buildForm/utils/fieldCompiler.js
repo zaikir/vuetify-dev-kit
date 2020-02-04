@@ -38,9 +38,14 @@ function buildElement (field, merger, parent = {}, globalProps = {}) {
 
   const children = field.fields && field.fields.map(x => buildElement(x, __merger, field, globalProps))
 
+  const isContainerType = fieldType => ['row', 'col'].includes(fieldType)
   const buildProps = fieldType => replaceAliases(
     deleteKeys(
-      { ...globalProps, ...defaultProps[fieldType] || {}, ...field },
+      {
+        ...globalProps,
+        ...defaultProps[fieldType] || {},
+        ...field
+      },
       'class', 'value'
     )
   )
@@ -49,7 +54,9 @@ function buildElement (field, merger, parent = {}, globalProps = {}) {
 
   const buildNodeParams = fieldType => ({
     props: buildProps(fieldType),
-    class: buildClasses(fieldType)
+    class: buildClasses(fieldType),
+    ...!isContainerType(fieldType) ? { __bindToModel: true } : {},
+    __value: field.value
   })
 
   const node = __merger(element, buildNodeParams(type), children)

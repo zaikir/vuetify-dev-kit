@@ -1,4 +1,5 @@
 import { VForm } from 'vuetify/lib/components'
+import clone from 'clone'
 import { fieldCompiler, renderComponents } from './utils'
 
 export default ({ Form, fields }) => {
@@ -11,13 +12,32 @@ export default ({ Form, fields }) => {
   const componentsTree = fieldCompiler(__fields)
   return {
     name: 'GenericForm',
+    props: {
+      value: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    data () {
+      return {
+        clone: {}
+      }
+    },
+    watch: {
+      value: {
+        handler (val) {
+          this.clone = clone(val)
+        },
+        immediate: true
+      }
+    },
     methods: {
       submit () {
         if (!this.$refs.editForm.validate()) {
           return
         }
 
-        this.$emit('submit')
+        this.$emit('input', this.clone)
       },
       reset () {
         if (this.$refs.editForm) {
@@ -31,16 +51,11 @@ export default ({ Form, fields }) => {
 
       return createElement(Form || VForm, {
         props: {
-          lazyValidation: true,
-          ...this.$attrs
-        },
-        scopedSlots: {
-          ...this.$scopedSlots
+          lazyValidation: true
         },
         class: 'py-2',
         ref: 'editForm',
         on: {
-          ...this.$listeners,
           submit: (event) => {
             this.submit()
 
@@ -48,7 +63,7 @@ export default ({ Form, fields }) => {
           }
         }
       }, [
-        renderComponents(createElement, componentsTree, { dense })
+        renderComponents(createElement, componentsTree, this.clone, { dense })
       ])
     }
   }
