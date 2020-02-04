@@ -17,6 +17,10 @@ export default ({ Form, fields }) => {
         type: Object,
         default: () => ({})
       },
+      gaps: {
+        type: Boolean,
+        default: false
+      },
       defaultClasses: {
         type: Object,
         default: () => ({})
@@ -67,7 +71,12 @@ export default ({ Form, fields }) => {
           }
         }
       }, [
-        renderComponents(createElement, componentsTree, this.clone, { dense }, this.defaultClasses)
+        renderComponents(createElement, componentsTree, this.clone, { dense }, {
+          ...this.defaultClasses,
+          ...this.gaps && {
+            'mb-1': true
+          }
+        })
       ])
     }
   }
