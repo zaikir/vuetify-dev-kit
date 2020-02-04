@@ -10,10 +10,15 @@ const deleteKeys = (obj, ...keys) => {
   return copy
 }
 
-const replaceAliases = (obj) => {
-  return Object.assign({}, ...Object.entries(obj).map(([key, value]) => ({
-    [propsAliases[key] || key]: value
-  })))
+const replaceAliases = (props) => {
+  const aliases = Object.keys(propsAliases)
+  aliases.forEach((alias) => {
+    if (props[alias] !== undefined) {
+      propsAliases[alias](props, props[alias])
+    }
+  })
+
+  return props
 }
 
 function buildElement (createElement, field, parent = {}, globalProps = {}) {
@@ -26,10 +31,12 @@ function buildElement (createElement, field, parent = {}, globalProps = {}) {
 
   const children = field.fields && field.fields.map(x => buildElement(createElement, x, field, globalProps))
 
-  const buildProps = fieldType => replaceAliases(deleteKeys(
-    { ...globalProps, ...defaultProps[fieldType] || {}, ...field },
-    'class', 'value'
-  ))
+  const buildProps = fieldType => replaceAliases(
+    deleteKeys(
+      { ...globalProps, ...defaultProps[fieldType] || {}, ...field },
+      'class', 'value'
+    )
+  )
 
   const buildClasses = fieldType => ({ ...defaultClasses[fieldType] || {}, ...field.class || {} })
 
