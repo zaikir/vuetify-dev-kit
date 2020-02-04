@@ -12,7 +12,7 @@ function buildElement (createElement, node, model, globalProps = {}, globalClass
     on: {
       ...node.params.on,
       input (event) {
-        if (!event.target) {
+        if (event && !event.target) {
           model[node.params.__value] = event
         }
       }
