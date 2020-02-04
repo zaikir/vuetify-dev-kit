@@ -16,6 +16,10 @@ export default ({ Form, fields }) => {
       value: {
         type: Object,
         default: () => ({})
+      },
+      defaultClasses: {
+        type: Object,
+        default: () => ({})
       }
     },
     data () {
@@ -63,7 +67,7 @@ export default ({ Form, fields }) => {
           }
         }
       }, [
-        renderComponents(createElement, componentsTree, this.clone, { dense })
+        renderComponents(createElement, componentsTree, this.clone, { dense }, this.defaultClasses)
       ])
     }
   }

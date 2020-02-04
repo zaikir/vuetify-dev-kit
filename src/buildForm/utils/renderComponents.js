@@ -1,5 +1,5 @@
-function buildElement (createElement, node, model, globalProps = {}) {
-  const children = node.children && node.children.map(x => buildElement(createElement, x, model, globalProps))
+function buildElement (createElement, node, model, globalProps = {}, globalClasses = {}) {
+  const children = node.children && node.children.map(x => buildElement(createElement, x, model, globalProps, globalClasses))
 
   return createElement(node.component, {
     ...node.params,
@@ -8,6 +8,7 @@ function buildElement (createElement, node, model, globalProps = {}) {
       ...node.params.props,
       ...node.params.__bindToModel && { value: model[node.params.__value] }
     },
+    class: globalClasses,
     on: {
       ...node.params.on,
       input (event) {
