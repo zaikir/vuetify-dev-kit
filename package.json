@@ -1,6 +1,6 @@
 {
   "name": "vuetify-dev-kit",
-  "version": "3.0.0",
+  "version": "3.0.0.alpha.1",
   "description": "The development kit for projects on Vuetify",
   "main": "index.js",
   "scripts": {
@@ -42,7 +42,6 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^5.2.3",
-    "eslint-plugin-vuetify": "^1.0.0-beta.3",
-    "vuetify": "^2.2.8"
+    "eslint-plugin-vuetify": "^1.0.0-beta.3"
   }
 }
