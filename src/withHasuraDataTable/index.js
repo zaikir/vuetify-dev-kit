@@ -44,11 +44,6 @@ export default (Table, { source, fields, ...params } = {}) => {
     components: {
       VDataTable
     },
-    props: {
-      onError: {
-        type: Function
-      }
-    },
     apollo: {
       items: {
         query,

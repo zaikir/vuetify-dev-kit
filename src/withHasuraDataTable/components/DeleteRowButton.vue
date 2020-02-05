@@ -1,21 +1,16 @@
 <template>
-  <v-tooltip left>
-    <template #activator="{on}">
-      <v-hover left>
-        <template #default="{hover}">
-          <v-btn icon :color="hover ? 'error': ''" v-on="on" @click="removeRow">
-            <v-icon>{{ hover ? 'mdi-delete-forever' : 'delete' }}</v-icon>
-          </v-btn>
-        </template>
-      </v-hover>
+  <v-hover left>
+    <template #default="{hover}">
+      <v-btn icon :color="hover ? 'error': ''" @click="removeRow">
+        <v-icon>{{ hover ? 'mdi-delete-forever' : 'delete' }}</v-icon>
+        <confirmation-dialog
+          v-model="isDeleteDialogOpened"
+          @confirm="confirm"
+          @decline="isDeleteDialogOpened = false"
+        />
+      </v-btn>
     </template>
-    Удалить
-    <confirmation-dialog
-      v-model="isDeleteDialogOpened"
-      @confirm="confirm"
-      @decline="isDeleteDialogOpened = false"
-    />
-  </v-tooltip>
+  </v-hover>
 </template>
 <script>
 import ConfirmationDialog from '../../shared/components/ConfirmationDialog'
