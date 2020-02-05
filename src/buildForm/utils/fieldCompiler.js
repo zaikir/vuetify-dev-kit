@@ -1,4 +1,4 @@
-import { VCol } from 'vuetify/lib'
+import { VCol, VTextField } from 'vuetify/lib'
 import FieldsMap from '../fields'
 import defaultProps from '../fields/props'
 import defaultClasses from '../fields/classes'
@@ -31,10 +31,7 @@ function buildElement (field, merger, parent = {}, globalProps = {}) {
   const type = field.type || 'text'
 
   // eslint-disable-next-line import/namespace
-  const element = FieldsMap[type]
-  if (!element) {
-    throw new Error(`Element "${type}" is not implemented`)
-  }
+  const element = FieldsMap[type] || VTextField
 
   const children = field.fields && field.fields.map(x => buildElement(x, __merger, field, globalProps))
 
