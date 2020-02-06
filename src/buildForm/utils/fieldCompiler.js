@@ -2,24 +2,8 @@ import { VCol, VTextField } from 'vuetify/lib'
 import FieldsMap from '../fields'
 import defaultProps from '../fields/props'
 import defaultClasses from '../fields/classes'
-import propsAliases from '../fields/propsAliases'
-
-const deleteKeys = (obj, ...keys) => {
-  const copy = { ...obj }
-  keys.forEach((key) => { delete copy[key] })
-  return copy
-}
-
-const replaceAliases = (props) => {
-  const aliases = Object.keys(propsAliases)
-  aliases.forEach((alias) => {
-    if (props[alias] !== undefined) {
-      propsAliases[alias](props, props[alias])
-    }
-  })
-
-  return props
-}
+import deleteKeys from './deleteKeys'
+import replaceAliases from './replaceAliases'
 
 function buildElement (field, merger, parent = {}, globalProps = {}) {
   const __merger = merger || ((component, params, children) => ({
@@ -37,14 +21,12 @@ function buildElement (field, merger, parent = {}, globalProps = {}) {
 
   const isContainerType = fieldType => ['row', 'col'].includes(fieldType)
   const buildProps = fieldType => replaceAliases(
-    deleteKeys(
-      {
-        ...globalProps,
-        ...defaultProps[fieldType] || {},
-        ...field
-      },
-      'class', 'value'
-    )
+    deleteKeys({
+      ...globalProps,
+      ...defaultProps[fieldType] || {},
+      ...field
+    },
+    'class', 'value')
   )
 
   const buildClasses = fieldType => ({ ...defaultClasses[fieldType] || {}, ...field.class || {} })
