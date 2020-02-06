@@ -2,14 +2,9 @@ import { VForm } from 'vuetify/lib/components'
 import clone from 'clone'
 import { fieldCompiler, renderComponents } from './utils'
 
-export default ({ Form, fields }) => {
-  if (typeof fields !== 'object') {
-    throw new TypeError('Fields should be an array or an object')
-  }
+export default ({ Form, fields } = {}) => {
+  const componentsTree = fieldCompiler(fields.length ? { type: 'row', fields } : fields)
 
-  const __fields = fields.length ? { type: 'row', fields } : fields
-
-  const componentsTree = fieldCompiler(__fields)
   return {
     name: 'GenericForm',
     props: {
@@ -21,9 +16,13 @@ export default ({ Form, fields }) => {
         type: Boolean,
         default: false
       },
-      defaultClasses: {
-        type: Object,
-        default: () => ({})
+      reactive: {
+        type: Boolean,
+        default: true
+      },
+      fields: {
+        type: Array,
+        default: null
       }
     },
     data () {
@@ -45,7 +44,7 @@ export default ({ Form, fields }) => {
           return
         }
 
-        this.$emit('input', this.clone)
+        this.$emit('submit', this.clone)
       },
       reset () {
         if (this.$refs.editForm) {
@@ -55,7 +54,9 @@ export default ({ Form, fields }) => {
       }
     },
     render (createElement) {
-      const dense = this.$attrs.dense === undefined ? true : this.$attrs.dense
+      const actualComponentTree = this.fields
+        ? fieldCompiler(this.fields.length ? { type: 'row', fields: this.fields } : this.fields)
+        : componentsTree
 
       return createElement(Form || VForm, {
         props: {
@@ -66,15 +67,20 @@ export default ({ Form, fields }) => {
         on: {
           submit: (event) => {
             this.submit()
-
             event.preventDefault()
           }
         }
       }, [
-        renderComponents(createElement, componentsTree, this.clone, { dense }, {
-          ...this.defaultClasses,
-          ...this.gapped && {
-            'mb-1': true
+        renderComponents(createElement, actualComponentTree, this.clone, {
+          globalProps: {
+            dense: this.$attrs.dense === undefined ? true : this.$attrs.dense
+          },
+          globalClasses: {
+            ...this.gapped && { 'mb-1': true }
+          },
+          ...this.reactive && {
+            onInput: this.reactive && (() => this.$emit('input', this.clone)),
+            onChange: this.reactive && (() => this.$emit('change', this.clone))
           }
         })
       ])
