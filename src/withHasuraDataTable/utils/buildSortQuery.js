@@ -1,6 +1,6 @@
 const buildSortValue = (field, value) => {
-  if (field.__nestedPath) {
-    const pathes = field.__nestedPath.filter((x, i) => i > 0 && x !== 'aggregate')
+  if (field._nestedPath) {
+    const pathes = field._nestedPath.filter((x, i) => i > 0 && x !== 'aggregate')
     return pathes.reduce((acc, item, i) => {
       if (!acc.current) {
         acc.current = acc.total
@@ -27,7 +27,7 @@ export default (fields, sortBy = [], sortDesc = []) => ({
   ...Object.fromEntries(sortBy.map((sort, i) => {
     const field = fields.find(x => x.value === sort)
     return [
-      field.__nestedPath ? field.__nestedPath[0] : field.value,
+      field._nestedPath ? field._nestedPath[0] : field.value,
       buildSortValue(field, sortDesc[i] ? 'desc' : 'asc')
     ]
   }))

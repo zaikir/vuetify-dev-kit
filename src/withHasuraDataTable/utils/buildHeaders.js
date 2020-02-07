@@ -18,7 +18,7 @@ export default (source, fields, { canDelete = true }) => {
     value: field.value
   })),
   ...canDelete
-    ? [{ value: '__remove', sortable: false, width: 1 }]
+    ? [{ value: '_remove', sortable: false, width: 1 }]
     : []
   ]
 }
