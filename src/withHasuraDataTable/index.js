@@ -1,12 +1,12 @@
 import gql from 'graphql-tag'
-import { VDataTable } from 'vuetify/lib/components'
+import BaseTable from '../shared/components/BaseTable.vue'
 import { wrapGraphqlError } from '../shared/utils'
 import {
   buildGraphqlQuery, buildHeaders, buildPathToNestedField,
   buildSortQuery, buildScopedSlots
 } from './utils'
 
-export default ({ Table = VDataTable, source, fields, ...params } = {}) => {
+export default ({ Table = BaseTable, source, fields, ...params } = {}) => {
   if (!fields) { throw new Error('Fields required') }
   if (!source) { throw new Error('Source required') }
 
@@ -37,9 +37,6 @@ export default ({ Table = VDataTable, source, fields, ...params } = {}) => {
         type: Object,
         default: () => ({})
       }
-    },
-    components: {
-      VDataTable
     },
     apollo: {
       items: {

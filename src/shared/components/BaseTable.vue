@@ -1,6 +1,6 @@
 <script>
 import { VDataTable, VProgressLinear } from 'vuetify/lib/components'
-import withDoubleClickEventDataTable from '../../withDoubleClickEventDataTable'
+import { withDoubleClickEventDataTable } from '../../hoc'
 
 const Table = withDoubleClickEventDataTable(VDataTable)
 

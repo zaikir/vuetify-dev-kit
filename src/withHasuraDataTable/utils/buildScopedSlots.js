@@ -13,6 +13,7 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, context 
 
             if (cell) {
               return createElement(cell, { props: {
+                ...field,
                 value
               } })
             } else {
