@@ -2,7 +2,7 @@ import DeleteRowButton from '../components/DeleteRowButton'
 import cells from './cells'
 import deleteRowMutation from './deleteRowMutation'
 
-export default ({ createElement, fields, source, $apollo, $scopedSlots, context }) => {
+export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, context }) => {
   const defaulScopedSlots = {
     ...Object.fromEntries(
       fields
@@ -31,7 +31,7 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, context 
   )
 
   const internalScopedSlots = {
-    'item._remove': ({ item }) => {
+    ...!$attrs.disableDelete && { 'item._remove': ({ item }) => {
       return createElement(DeleteRowButton, {
         props: {
           icon: true
@@ -40,7 +40,7 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, context 
           delete: () => deleteRowMutation(source, $apollo.queries.items, $apollo, item)
         }
       })
-    }
+    } }
   }
 
   return {

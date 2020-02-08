@@ -12,12 +12,12 @@ const getHeaderInfo = (field) => {
   }
 }
 
-export default (source, fields, { canDelete = true }) => {
+export default (source, fields, params) => {
   return [...fields.map((field, i) => ({
     ...getHeaderInfo(field),
     value: field.value
   })),
-  ...canDelete
+  ...!params.disableDelete
     ? [{ value: '_remove', sortable: false, width: 1 }]
     : []
   ]

@@ -14,7 +14,6 @@ export default {
   render (createElement, context) {
     if (!context.props.value) { return '—' }
 
-    console.log(context.props.value)
     return createElement('span', moment(context.props.value).utcOffset(context.props.timezone * 60).format(context.props.format || 'DD.MM.YYYY HH:mm'))
   }
 }
