@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import BaseTable from '../shared/components/BaseTable.vue'
-import EditItemDialog from '../shared/components/EditItemDialog.vue'
+import HasuraEditItemDialog from '../shared/components/HasuraEditItemDialog.vue'
 import { wrapGraphqlError } from '../shared/utils'
 import {
   buildGraphqlQuery, buildHeaders, buildPathToNestedField,
@@ -118,8 +118,9 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         onAdd: this.addItem
       })
       return createElement('div', {}, [
-        createElement(EditItemDialog, {
+        createElement(HasuraEditItemDialog, {
           props: {
+            source,
             value: this.isEditDialogOpened,
             dialogProps: this.dialogProps,
             formProps: this.formProps,

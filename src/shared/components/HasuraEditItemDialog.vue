@@ -41,8 +41,9 @@
   </v-dialog>
 </template>
 <script>
-import { mapMutations } from 'vuex'
-import GenericForm from 'vuetify-schema-form'
+import gql from 'graphql-tag'
+import GenericForm from '../../../../vuetify-schema-form'
+import { clearCache } from '../../shared/utils'
 import { withApolloEditForm } from '../../hoc'
 
 export default {
@@ -50,6 +51,10 @@ export default {
     ApolloEditForm: withApolloEditForm(GenericForm)
   },
   props: {
+    source: {
+      type: String,
+      required: true
+    },
     value: {
       type: Boolean,
       required: true
@@ -82,20 +87,28 @@ export default {
   },
   watch: {
     value () {
-      if (this.value && this.$refs.editForm) {
-        this.$refs.editForm.reset()
+      if (this.value) {
+        this.$refs.editForm && this.$refs.editForm.reset()
+        this.item = this.formProps.default
+          ? this.formProps.default(this.slotContext)
+          : {}
+        console.log(this.item)
       }
-    },
-    item () {
-      console.log(this.item)
     }
   },
   methods: {
-    ...mapMutations(['SET_ERROR']),
     submit () {
       this.$refs.editForm.submit()
     },
     onSubmitted (item) {
+      this.$apollo.mutate({
+        mutation: gql`mutation {
+          update_${this.source} (where: {id: {_eq: ${JSON.stringify(item.id)} } }, _set: {isRemoved: true}) { affected_rows }
+        }`,
+        update: (cache) => {
+          clearCache(cache, new RegExp(`^${this.source}`))
+        }
+      })
       console.log(item)
     }
   }

@@ -13,7 +13,6 @@ export default (type, fields) => {
   return `query ${type} ($limit: Int, $offset: Int, $orderBy: [${type}_order_by!]) { 
     ${type} (limit: $limit, offset: $offset, order_by: $orderBy, where: { isRemoved: {_neq: true}}) {
       id
-      id 
       ${selections}
     } 
     
