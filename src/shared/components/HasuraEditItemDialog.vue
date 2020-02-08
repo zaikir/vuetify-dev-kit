@@ -10,7 +10,7 @@
     <v-card>
       <v-card-title>
         <slot name="title" v-bind="slotContext">
-          {{ dialogProps.title || 'Редактирование' }}
+          {{ item.id ? 'Редактирование': 'Создание' }}
         </slot>
       </v-card-title>
       <v-card-text>
@@ -26,12 +26,14 @@
         <v-spacer />
         <v-btn
           color="primary"
+          :disabled="loading"
           @click="$emit('input', false)"
         >
           Отмена
         </v-btn>
         <v-btn
           color="primary"
+          :loading="loading"
           @click="submit"
         >
           Сохранить
@@ -70,10 +72,15 @@ export default {
     context: {
       type: Object,
       default: () => ({})
+    },
+    isAdd: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
+      loading: false,
       item: {}
     }
   },
@@ -92,7 +99,6 @@ export default {
         this.item = this.formProps.default
           ? this.formProps.default(this.slotContext)
           : {}
-        console.log(this.item)
       }
     }
   },
@@ -100,16 +106,42 @@ export default {
     submit () {
       this.$refs.editForm.submit()
     },
-    onSubmitted (item) {
-      this.$apollo.mutate({
-        mutation: gql`mutation {
+    async onSubmitted (item) {
+      const fields = Object.assign(item, ...this.formProps.fields.map(field => ({
+        [field.value]: item[field.value]
+      })))
+
+      this.loading = true
+
+      try {
+        if (!this.isAdd) {
+          await this.$apollo.mutate({
+            mutation: gql`mutation {
           update_${this.source} (where: {id: {_eq: ${JSON.stringify(item.id)} } }, _set: {isRemoved: true}) { affected_rows }
         }`,
-        update: (cache) => {
-          clearCache(cache, new RegExp(`^${this.source}`))
+            update: (cache) => {
+              clearCache(cache, new RegExp(`^${this.source}`), this.$apollo)
+            }
+          })
+        } else {
+          await this.$apollo.mutate({
+            mutation: gql`mutation Insert($objects: [${this.source}_insert_input!]!) {
+            insert_${this.source} (objects:$objects) { affected_rows }
+          }`,
+            variables: {
+              objects: [fields]
+            },
+            update: (cache) => {
+              clearCache(cache, new RegExp(`^${this.source}`), this.$apollo)
+            }
+          })
         }
-      })
-      console.log(item)
+      } catch (err) {
+        this.$emit('error', err)
+      } finally {
+        this.loading = false
+        this.$emit('input', false)
+      }
     }
   }
 }

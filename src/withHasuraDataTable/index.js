@@ -81,6 +81,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     },
     data () {
       return {
+        isAdd: false,
         isEditDialogOpened: false,
         options: {
           page: 1
@@ -101,7 +102,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     },
     methods: {
       addItem () {
-        console.log('here')
+        this.isAdd = true
         this.isEditDialogOpened = true
       }
     },
@@ -124,7 +125,8 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
             value: this.isEditDialogOpened,
             dialogProps: this.dialogProps,
             formProps: this.formProps,
-            context: this.context
+            context: this.context,
+            isAdd: this.isAdd
           },
           scopedSlots:
           {
@@ -135,6 +137,9 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
               })))
           },
           on: {
+            error: (err) => {
+              this.$emit('error', err)
+            },
             input: (val) => {
               this.isEditDialogOpened = val
             }

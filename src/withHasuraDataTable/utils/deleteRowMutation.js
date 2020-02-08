@@ -10,7 +10,7 @@ export default (source, query, $apollo, row) => {
       query.refresh()
     },
     update: (cache) => {
-      clearCache(cache, new RegExp(`^${source}`))
+      clearCache(cache, new RegExp(`^${source}`), $apollo)
     }
   })
 }
