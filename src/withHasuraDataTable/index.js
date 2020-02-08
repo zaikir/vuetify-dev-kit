@@ -117,11 +117,6 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         context: this.context,
         onAdd: this.addItem
       })
-      console.log(Object.assign({}, ...slotsArray
-        .filter(([key]) => key.startsWith('dialog.'))
-        .map(([key, func]) => ({
-          [key.replace('dialog.', '')]: props => func(props)
-        }))))
       return createElement('div', {}, [
         createElement(EditItemDialog, {
           props: {

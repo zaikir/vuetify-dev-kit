@@ -18,7 +18,7 @@
           ref="editForm"
           :value="item"
           v-bind="formProps"
-          :guttered="formProps.guttered || true"
+          :gapped="formProps.gapped || true"
           @submit="onSubmitted"
         />
       </v-card-text>
