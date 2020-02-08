@@ -95,6 +95,11 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         // })))
       }
     },
+    methods: {
+      addItem () {
+        console.log('here')
+      }
+    },
     render (createElement) {
       const scopedSlots = buildScopedSlots({
         createElement,
@@ -103,7 +108,8 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         $apollo: this.$apollo,
         $scopedSlots: this.$scopedSlots,
         $attrs: this.props,
-        context: this.context
+        context: this.context,
+        onAdd: this.addItem
       })
 
       return createElement(Table, {

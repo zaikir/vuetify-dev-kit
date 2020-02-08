@@ -1,8 +1,9 @@
 import DeleteRowButton from '../components/DeleteRowButton'
+import FabButton from '../components/FabButton'
 import cells from './cells'
 import deleteRowMutation from './deleteRowMutation'
 
-export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, context }) => {
+export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, context, onAdd }) => {
   const defaulScopedSlots = {
     ...Object.fromEntries(
       fields
@@ -40,6 +41,23 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, 
           delete: () => deleteRowMutation(source, $apollo.queries.items, $apollo, item)
         }
       })
+    } },
+    ...!$attrs.disableAdd && { 'footer': ({ item }) => {
+      return createElement('div', {
+        style: 'position: relative; height: 0px;'
+      }, [
+        createElement('div', {
+          style: 'height: 59px;position: absolute;display: flex;align-items: center;'
+        }, [
+          createElement(FabButton, {
+            on: {
+              click: () => {
+                onAdd && onAdd()
+              }
+            }
+          })
+        ])
+      ])
     } }
   }
 
