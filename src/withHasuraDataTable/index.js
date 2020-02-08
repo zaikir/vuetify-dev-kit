@@ -1,16 +1,17 @@
 import gql from 'graphql-tag'
 import BaseTable from '../shared/components/BaseTable.vue'
+import EditItemDialog from '../shared/components/EditItemDialog.vue'
 import { wrapGraphqlError } from '../shared/utils'
 import {
   buildGraphqlQuery, buildHeaders, buildPathToNestedField,
   buildSortQuery, buildScopedSlots
 } from './utils'
 
-const wrapProp = (prop, context) => {
-  return typeof prop === 'function'
-    ? prop(context)
-    : prop
-}
+// const wrapProp = (prop, context) => {
+//   return typeof prop === 'function'
+//     ? prop(context)
+//     : prop
+// }
 
 export default ({ Table = BaseTable, source, fields } = {}) => {
   if (!fields) { throw new Error('Fields required') }
@@ -49,6 +50,8 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         type: Boolean,
         default: false
       },
+      dialogProps: Object,
+      formProps: Object,
       context: {
         type: Object,
         default: () => ({})
@@ -78,6 +81,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     },
     data () {
       return {
+        isEditDialogOpened: false,
         options: {
           page: 1
         },
@@ -98,37 +102,66 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     methods: {
       addItem () {
         console.log('here')
+        this.isEditDialogOpened = true
       }
     },
     render (createElement) {
+      const slotsArray = Object.entries(this.$scopedSlots)
       const scopedSlots = buildScopedSlots({
         createElement,
         fields: _fields,
         source,
         $apollo: this.$apollo,
-        $scopedSlots: this.$scopedSlots,
+        $scopedSlots: slotsArray.filter(([key]) => !key.startsWith('dialog.')),
         $attrs: this.props,
         context: this.context,
         onAdd: this.addItem
       })
-
-      return createElement(Table, {
-        props: {
-          loading: this.$apollo.queries.items.loading,
-          headers: this.headers,
-          items: this.items,
-          serverItemsLength: this.totalItems,
-          options: this.options,
-          ...this.$attrs
-        },
-        scopedSlots,
-        on: {
-          ...this.$listeners,
-          'update:options': (options) => {
-            this.options = options
+      console.log(Object.assign({}, ...slotsArray
+        .filter(([key]) => key.startsWith('dialog.'))
+        .map(([key, func]) => ({
+          [key.replace('dialog.', '')]: props => func(props)
+        }))))
+      return createElement('div', {}, [
+        createElement(EditItemDialog, {
+          props: {
+            value: this.isEditDialogOpened,
+            dialogProps: this.dialogProps,
+            formProps: this.formProps,
+            context: this.context
+          },
+          scopedSlots:
+          {
+            ...Object.assign({}, ...slotsArray
+              .filter(([key]) => key.startsWith('dialog.'))
+              .map(([key, func]) => ({
+                [key.replace('dialog.', '')]: func
+              })))
+          },
+          on: {
+            input: (val) => {
+              this.isEditDialogOpened = val
+            }
           }
-        }
-      })
+        }),
+        createElement(Table, {
+          props: {
+            loading: this.$apollo.loading,
+            headers: this.headers,
+            items: this.items,
+            serverItemsLength: this.totalItems,
+            options: this.options,
+            ...this.$attrs
+          },
+          scopedSlots,
+          on: {
+            ...this.$listeners,
+            'update:options': (options) => {
+              this.options = options
+            }
+          }
+        })
+      ])
     }
   }
 }

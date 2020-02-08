@@ -26,10 +26,12 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, 
   }
 
   const overwrittenScopedSlots = Object.assign(
-    {}, ...Object.entries($scopedSlots).map(([key, func]) => ({
+    {}, ...$scopedSlots.map(([key, func]) => ({
       [key]: (props = {}) => func({ ...props, ...context })
     }))
   )
+
+  const addButtonSlot = $scopedSlots.find(([key]) => key === 'add-button')
 
   const internalScopedSlots = {
     ...!$attrs.disableDelete && { 'item._remove': ({ item }) => {
@@ -49,13 +51,15 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, 
         createElement('div', {
           style: 'height: 59px;position: absolute;display: flex;align-items: center;'
         }, [
-          createElement(FabButton, {
-            on: {
-              click: () => {
-                onAdd && onAdd()
+          addButtonSlot
+            ? addButtonSlot[1]({ onClick: onAdd })
+            : createElement(FabButton, {
+              on: {
+                click: () => {
+                  onAdd && onAdd()
+                }
               }
-            }
-          })
+            })
         ])
       ])
     } }
