@@ -20,6 +20,7 @@
           :query="query"
           :variables="queryVariables"
           v-bind="formProps"
+          :fields="formFields"
           :gapped="formProps.gapped || true"
           @submit="onSubmitted"
         />
@@ -90,12 +91,24 @@ export default {
     }
   },
   computed: {
+    formFields () {
+      const fields = this.formProps.fields
+      return fields.map(field => Object.assign({}, ...Object.entries(field).map(([key, value]) => ({
+        [key]: key.startsWith('@') ? value : (
+          typeof value === 'function' ? value(this.slotContext) : value
+        )
+      }))))
+    },
     query () {
       if (!this.itemId) {
         return null
       }
 
-      const selections = this.formProps.fields.map(x => x.value).join(' ')
+      const selections = this.formFields
+        .filter(x => !x.secure)
+        .map(x => x.value)
+        .join(' ')
+
       return `query GetItem ($where: ${this.source}_bool_exp!){ ${this.source} (where: $where) { ${selections} } }`
     },
     queryVariables () {
@@ -106,6 +119,7 @@ export default {
     slotContext () {
       return {
         ...this.context,
+        isAdd: this.isAdd,
         item: this.item
       }
     }
@@ -125,20 +139,21 @@ export default {
       this.$refs.editForm.submit()
     },
     async onSubmitted (item) {
-      const fields = Object.assign(item, ...this.formProps.fields.map(field => ({
-        [field.value]: item[field.value]
-      })))
-
       this.loading = true
 
+      const onMutation = this.formProps.onMutation || (str => str)
       try {
         if (!this.isAdd) {
+          const fields = Object.assign({}, ...this.formProps.fields.map(field => ({
+            [field.value]: item[field.value]
+          })))
+
           const mutation = `mutation Update($where: ${this.source}_bool_exp!, $set: ${this.source}_set_input){
             update_${this.source} (where: $where, _set: $set) { affected_rows }
           }`
 
           await this.$apollo.mutate({
-            mutation: gql(mutation),
+            mutation: gql(onMutation(mutation)),
             variables: {
               where: { id: { _eq: this.itemId } },
               set: fields
@@ -148,12 +163,16 @@ export default {
             }
           })
         } else {
+          const fields = Object.assign(item, ...this.formProps.fields.map(field => ({
+            [field.value]: item[field.value]
+          })))
+
           const mutation = `mutation Insert($objects: [${this.source}_insert_input!]!) {
             insert_${this.source} (objects:$objects) { affected_rows }
           }`
 
           await this.$apollo.mutate({
-            mutation: gql(mutation),
+            mutation: gql(onMutation(mutation)),
             variables: {
               objects: [fields]
             },
