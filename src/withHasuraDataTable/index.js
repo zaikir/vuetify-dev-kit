@@ -134,8 +134,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
             isAdd: this.isAdd,
             itemId: this.selectedRowId
           },
-          scopedSlots:
-          {
+          scopedSlots: {
             ...Object.assign({}, ...slotsArray
               .filter(([key]) => key.startsWith('dialog.'))
               .map(([key, func]) => ({

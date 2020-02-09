@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-
+import { VProgressCircular } from 'vuetify/lib/components'
 export default Form => ({
   props: {
     query: {
@@ -41,26 +41,49 @@ export default Form => ({
       return this.query && gql(this.query)
     }
   },
-  render (createComponent) {
-    return createComponent(Form, {
-      props: {
-        ...this.$attrs,
-        query: undefined,
-        variables: undefined,
-        value: this.fetchedItem
-          ? this.fetchedItem
-          : this.$attrs.item
-      },
-      ref: 'editForm',
-      scopedSlots: {
-        ...this.$scopedSlots
-      },
-      on: {
-        submit: (event) => {
-          this.$emit('submit', event)
+  render (createElement) {
+    // <div class="fill-height d-flex align-center justify-center body-2 flex-column">
+    //   <v-progress-circular color="primary" size="70" indeterminate />
+    //   <div class="text-center mt-3">
+    //     Инициализация...<br>
+    //     Подождите, пожалуйста.
+    //   </div>
+    // </div>
+    return this.$apollo.loading
+      ? createElement('div', {
+        class: 'fill-height d-flex align-center justify-center body-2 flex-column'
+      }, [
+        createElement(VProgressCircular, {
+          props: {
+            color: 'primary',
+            size: '70',
+            indeterminate: true
+          }
+        }),
+        createElement('div', {
+          class: 'text-center mt-3',
+          domProps: { innerHTML: 'Загрузка...<br> Подождите, пожалуйста.' }
+        })
+      ])
+      : createElement(Form, {
+        props: {
+          ...this.$attrs,
+          query: undefined,
+          variables: undefined,
+          value: this.fetchedItem
+            ? this.fetchedItem
+            : this.$attrs.value
+        },
+        ref: 'editForm',
+        scopedSlots: {
+          ...this.$scopedSlots
+        },
+        on: {
+          submit: (event) => {
+            this.$emit('submit', event)
+          }
         }
-      }
-    })
+      })
   },
   methods: {
     submit () {

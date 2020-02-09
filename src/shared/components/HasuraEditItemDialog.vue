@@ -143,8 +143,8 @@ export default {
               where: { id: { _eq: this.itemId } },
               set: fields
             },
-            update: (cache) => {
-              clearCache(cache, new RegExp(`^${this.source}`), this.$apollo)
+            update: async (cache) => {
+              await clearCache(cache, this.source, this.$apollo)
             }
           })
         } else {
@@ -158,7 +158,7 @@ export default {
               objects: [fields]
             },
             update: (cache) => {
-              clearCache(cache, new RegExp(`^${this.source}`), this.$apollo)
+              clearCache(cache, this.source, this.$apollo)
             }
           })
         }
