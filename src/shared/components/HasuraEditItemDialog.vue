@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     formFields () {
-      const fields = this.formProps.fields
+      const fields = this.formProps.fields || []
       return fields.map(field => Object.assign({}, ...Object.entries(field).map(([key, value]) => ({
         [key]: key.startsWith('@') ? value : (
           typeof value === 'function' ? value(this.slotContext) : value

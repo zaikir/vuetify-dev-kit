@@ -1,4 +1,4 @@
-import { EmailCell, SwitchCell, CheckboxCell, PhoneCell, DateCell, DateTimeCell } from '../components'
+import { EmailCell, SwitchCell, CheckboxCell, PhoneCell, DateCell, DateTimeCell, SelectCell } from '../components'
 
 export default {
   email: EmailCell,
@@ -7,5 +7,7 @@ export default {
   datetime: DateTimeCell,
 
   switch: SwitchCell,
-  checkbox: CheckboxCell
+  checkbox: CheckboxCell,
+
+  select: SelectCell
 }

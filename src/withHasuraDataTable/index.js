@@ -33,8 +33,6 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     }
   })
 
-  const query = gql(buildGraphqlQuery(source, _fields))
-
   return {
     name: 'WithGraphqlDataProviderTable',
     props: {
@@ -52,6 +50,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
       },
       dialogProps: Object,
       formProps: Object,
+      where: String,
       context: {
         type: Object,
         default: () => ({})
@@ -59,7 +58,9 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
     },
     apollo: {
       items: {
-        query,
+        query () {
+          return gql(buildGraphqlQuery(source, _fields, this.where))
+        },
         update (data) {
           return data[source]
         },

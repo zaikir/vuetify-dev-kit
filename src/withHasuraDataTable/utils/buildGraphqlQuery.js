@@ -8,10 +8,11 @@ const getFieldSelections = (field) => {
     }
   }
 }
-export default (type, fields) => {
+export default (type, fields, where = '') => {
   const selections = fields.reduce((acc, item) => `${acc} ` + getFieldSelections(item), '')
+
   return `query ${type} ($limit: Int, $offset: Int, $orderBy: [${type}_order_by!]) { 
-    ${type} (limit: $limit, offset: $offset, order_by: $orderBy, where: { isRemoved: {_neq: true}}) {
+    ${type} (limit: $limit, offset: $offset, order_by: $orderBy, where: { ${where} isRemoved: {_neq: true}}) {
       id
       ${selections}
     } 
