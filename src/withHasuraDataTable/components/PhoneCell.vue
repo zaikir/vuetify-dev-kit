@@ -22,7 +22,7 @@ export default {
     }
   },
   render (createElement, context) {
-    if (!context.props.value) { return '—' }
+    if (!context.props.value) { return createElement('span', '—') }
 
     const phone = formatPhone(context.props.value, this.countryCode, this.sign)
     return createElement('a', {

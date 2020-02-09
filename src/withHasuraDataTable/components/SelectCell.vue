@@ -6,7 +6,7 @@ export default {
     options: Array
   },
   render (createElement, context) {
-    if (!context.props.value) { return '—' }
+    if (!context.props.value) { return createElement('span', '—') }
 
     const elem = (context.props.options || []).find(x => x[context.props.itemValue || 'value'] === context.props.value)
     if (!elem) { return '—' }

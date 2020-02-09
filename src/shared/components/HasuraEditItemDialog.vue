@@ -47,7 +47,7 @@
 </template>
 <script>
 import gql from 'graphql-tag'
-import GenericForm from '../../../../vuetify-schema-form'
+import GenericForm from 'vuetify-schema-form'
 import { clearCache } from '../../shared/utils'
 import { withApolloEditForm } from '../../hoc'
 
