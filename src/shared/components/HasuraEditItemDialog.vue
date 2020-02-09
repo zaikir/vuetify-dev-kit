@@ -17,6 +17,8 @@
         <apollo-edit-form
           ref="editForm"
           :value="item"
+          :query="query"
+          :variables="queryVariables"
           v-bind="formProps"
           :gapped="formProps.gapped || true"
           @submit="onSubmitted"
@@ -61,6 +63,9 @@ export default {
       type: Boolean,
       required: true
     },
+    itemId: {
+      type: null
+    },
     dialogProps: {
       type: Object,
       default: () => ({})
@@ -85,6 +90,19 @@ export default {
     }
   },
   computed: {
+    query () {
+      if (!this.itemId) {
+        return null
+      }
+
+      const selections = this.formProps.fields.map(x => x.value).join(' ')
+      return `query GetItem ($where: ${this.source}_bool_exp!){ ${this.source} (where: $where) { ${selections} } }`
+    },
+    queryVariables () {
+      return this.itemId
+        ? { where: { id: { _eq: this.itemId } } }
+        : {}
+    },
     slotContext () {
       return {
         ...this.context,
@@ -115,19 +133,27 @@ export default {
 
       try {
         if (!this.isAdd) {
+          const mutation = `mutation Update($where: ${this.source}_bool_exp!, $set: ${this.source}_set_input){
+            update_${this.source} (where: $where, _set: $set) { affected_rows }
+          }`
+
           await this.$apollo.mutate({
-            mutation: gql`mutation {
-          update_${this.source} (where: {id: {_eq: ${JSON.stringify(item.id)} } }, _set: {isRemoved: true}) { affected_rows }
-        }`,
+            mutation: gql(mutation),
+            variables: {
+              where: { id: { _eq: this.itemId } },
+              set: fields
+            },
             update: (cache) => {
               clearCache(cache, new RegExp(`^${this.source}`), this.$apollo)
             }
           })
         } else {
-          await this.$apollo.mutate({
-            mutation: gql`mutation Insert($objects: [${this.source}_insert_input!]!) {
+          const mutation = `mutation Insert($objects: [${this.source}_insert_input!]!) {
             insert_${this.source} (objects:$objects) { affected_rows }
-          }`,
+          }`
+
+          await this.$apollo.mutate({
+            mutation: gql(mutation),
             variables: {
               objects: [fields]
             },
@@ -140,6 +166,7 @@ export default {
         this.$emit('error', err)
       } finally {
         this.loading = false
+
         this.$emit('input', false)
       }
     }

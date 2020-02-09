@@ -12,13 +12,18 @@ export default Form => ({
     }
   },
   apollo: {
-    item: {
+    fetchedItem: {
       query () {
-        return gql(this.query)
+        return this.queryTag
       },
       variables () {
-        return {
-          ...this.variables
+        return this.variables
+      },
+      update (data) {
+        const result = data[this.queryTag.definitions[0].selectionSet.selections[0].name.value]
+        return result && result.length && {
+          ...result[0],
+          __typename: undefined
         }
       },
       skip () {
@@ -28,7 +33,12 @@ export default Form => ({
   },
   data () {
     return {
-      item: null
+      fetchedItem: null
+    }
+  },
+  computed: {
+    queryTag () {
+      return this.query && gql(this.query)
     }
   },
   render (createComponent) {
@@ -36,7 +46,10 @@ export default Form => ({
       props: {
         ...this.$attrs,
         query: undefined,
-        variables: undefined
+        variables: undefined,
+        value: this.fetchedItem
+          ? this.fetchedItem
+          : this.$attrs.item
       },
       ref: 'editForm',
       scopedSlots: {
@@ -55,6 +68,7 @@ export default Form => ({
     },
     reset () {
       this.$refs.editForm && this.$refs.editForm.reset()
+      this.fetchedItem = null
     }
   }
 })

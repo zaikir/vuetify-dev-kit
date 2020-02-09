@@ -104,6 +104,11 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
       addItem () {
         this.isAdd = true
         this.isEditDialogOpened = true
+      },
+      editItem (id) {
+        this.selectedRowId = id
+        this.isAdd = false
+        this.isEditDialogOpened = true
       }
     },
     render (createElement) {
@@ -126,7 +131,8 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
             dialogProps: this.dialogProps,
             formProps: this.formProps,
             context: this.context,
-            isAdd: this.isAdd
+            isAdd: this.isAdd,
+            itemId: this.selectedRowId
           },
           scopedSlots:
           {
@@ -141,6 +147,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
               this.$emit('error', err)
             },
             input: (val) => {
+              this.selectedRowId = null
               this.isEditDialogOpened = val
             }
           }
@@ -159,6 +166,9 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
             ...this.$listeners,
             'update:options': (options) => {
               this.options = options
+            },
+            'dblclick:row': (row) => {
+              this.editItem(row.id)
             }
           }
         })
