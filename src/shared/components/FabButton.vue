@@ -17,7 +17,7 @@ export default {
   props: {
     timeout: {
       type: Number,
-      default: 200
+      default: 100
     },
     icon: {
       type: String,

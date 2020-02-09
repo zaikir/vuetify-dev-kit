@@ -1,5 +1,5 @@
 import DeleteRowButton from '../components/DeleteRowButton'
-import FabButton from '../components/FabButton'
+import FabButton from '../../shared/components/FabButton'
 import cells from './cells'
 import deleteRowMutation from './deleteRowMutation'
 
