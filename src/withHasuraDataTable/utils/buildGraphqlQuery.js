@@ -17,7 +17,7 @@ export default (type, fields, where = '') => {
       ${selections}
     } 
     
-    ${type}_aggregate (where: {isRemoved: {_neq: true}}){
+    ${type}_aggregate (where: { ${where} isRemoved: {_neq: true}}){
       aggregate {
         count
       }
