@@ -48,7 +48,7 @@
 <script>
 import gql from 'graphql-tag'
 import GenericForm from 'vuetify-schema-form'
-import { clearCache } from '../../shared/utils'
+import { clearCache, wrapGraphqlError } from '../../shared/utils'
 import { withApolloEditForm } from '../../hoc'
 
 export default {
@@ -182,7 +182,7 @@ export default {
           })
         }
       } catch (err) {
-        this.$emit('error', err)
+        this.$emit('error', wrapGraphqlError(err))
       } finally {
         this.loading = false
 
