@@ -8,5 +8,9 @@ export default (err) => {
     return graphQLErrors.map(x => x.message).join('; ')
   }
 
+  if (err.networkError && err.networkError.result && err.networkError.result.errors && err.networkError.result.errors.length) {
+    return err.networkError.result.errors[0].message
+  }
+
   return err.message
 }
