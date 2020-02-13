@@ -42,13 +42,6 @@ export default Form => ({
     }
   },
   render (createElement) {
-    // <div class="fill-height d-flex align-center justify-center body-2 flex-column">
-    //   <v-progress-circular color="primary" size="70" indeterminate />
-    //   <div class="text-center mt-3">
-    //     Инициализация...<br>
-    //     Подождите, пожалуйста.
-    //   </div>
-    // </div>
     return this.$apollo.loading
       ? createElement('div', {
         class: 'fill-height d-flex align-center justify-center body-2 flex-column'

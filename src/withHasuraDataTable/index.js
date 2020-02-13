@@ -25,7 +25,7 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
         ...field,
         _nestedPath: path,
         _textMapper: (field) => {
-          return path.reduce((acc, item) => acc[item], field)
+          return path.reduce((acc, item) => (acc || {})[item], field)
         }
       }
     } else {
@@ -168,7 +168,11 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
               this.options = options
             },
             'dblclick:row': (row) => {
-              this.editItem(row.id)
+              if (!this.disableEdit) {
+                this.editItem(row.id)
+              }
+
+              this.$emit('dblclick:row', row)
             }
           }
         })
