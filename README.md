@@ -1,1 +1,1 @@
-# vuetify-development-kit
+# vuetify-dev-kit
