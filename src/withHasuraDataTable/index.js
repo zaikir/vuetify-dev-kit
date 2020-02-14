@@ -140,6 +140,11 @@ export default ({ Table = BaseTable, source, fields } = {}) => {
               .filter(([key]) => key.startsWith('dialog.'))
               .map(([key, func]) => ({
                 [key.replace('dialog.', '')]: func
+              }))),
+            ...Object.assign({}, ...slotsArray
+              .filter(([key]) => key.startsWith('field.'))
+              .map(([key, func]) => ({
+                [key]: func
               })))
           },
           on: {
