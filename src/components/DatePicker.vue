@@ -1,0 +1,185 @@
+<template>
+  <v-menu
+    ref="menu"
+    v-model="menu"
+    :close-on-content-click="false"
+    transition="scale-transition"
+    offset-y
+    max-width="290px"
+    min-width="290px"
+    dense
+  >
+    <template v-slot:activator="{ on }">
+      <v-text-field
+        v-model="dateFormatted"
+        v-mask="shortYear ? '##.##.##' : '##.##.####'"
+        :label="label"
+        :rules="[...getRules(rules, required), isDateValid]"
+        :prepend-icon="prependIcon"
+        :required="required"
+        :outlined="outlined"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        dense
+        v-on="on"
+        @input="tryToSetDate"
+      />
+    </template>
+    <v-date-picker
+      :value="dateValue"
+      no-title
+      locale="ru"
+      first-day-of-week="1"
+      dense
+      @input="handleInput"
+    />
+  </v-menu>
+</template>
+
+<script>
+import { mask } from 'vue-the-mask'
+import moment from 'moment'
+
+export default {
+  directives: {
+    mask
+  },
+  props: {
+    value: {
+      type: String,
+      required: false,
+      default: null
+    },
+    label: {
+      type: String,
+      required: false,
+      default: null
+    },
+    placeholder: {
+      type: String,
+      required: false,
+      default: null
+    },
+    rules: {
+      type: Array,
+      required: false,
+      default: () => []
+    },
+    required: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    prependIcon: {
+      type: String,
+      default: 'event'
+    },
+    outlined: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    shortYear: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+  data () {
+    return {
+      dateFormatted: '',
+      isDateValid: (val = '') => {
+        if (!val.length || this.tryToParseDate(val)) {
+          return false
+        }
+
+        return 'Неверный формат'
+      },
+      menu: false
+    }
+  },
+
+  computed: {
+    displayFormat () {
+      if (this.shortYear) {
+        return 'DD.MM.YY'
+      } else {
+        return 'DD.MM.YYYY'
+      }
+    },
+    dateValue () {
+      return moment(this.value || new Date()).toISOString(true).substr(0, 10)
+    }
+  },
+
+  watch: {
+    value: {
+      handler (val) {
+        if (val) {
+          this.dateFormatted = moment(this.value).format(this.displayFormat)
+        } else {
+          this.dateFormatted = ''
+        }
+      },
+      immediate: true
+    }
+  },
+
+  methods: {
+    tryToSetDate (str) {
+      if (!str || !str.length) {
+        this.$emit('input', null)
+      }
+
+      const parsedDate = this.tryToParseDate(str)
+      if (parsedDate) {
+        this.$emit('input', parsedDate)
+      }
+    },
+    tryToParseDate (str = '') {
+      const processString = (s) => {
+        if (!this.shortYear) {
+          return s
+        }
+
+        const parts = str.split('.')
+        if (parts.length !== 3) {
+          return ''
+        }
+
+        return [parts[0], parts[1], '20' + parts[2]].join('.')
+      }
+
+      const processedString = processString(str)
+      const parsedDate = moment(processedString.trim(), 'DD.MM.YYYY')
+      if (!processedString.length || processedString.trim().length !== 10 || !parsedDate.isValid()) {
+        return false
+      }
+
+      if (this.shortYear && parsedDate > moment()) {
+        return parsedDate.subtract(100, 'years').startOf('day').toISOString()
+      } else {
+        return parsedDate.startOf('day').toISOString()
+      }
+    },
+    handleInput (val) {
+      const date = moment(val, 'YYYY-MM-DD')
+      this.dateFormatted = date.format(this.displayFormat)
+
+      this.$nextTick(() => {
+        this.$emit('input', date.startOf('day').toISOString())
+
+        this.menu = false
+      })
+    },
+    getRules () {
+      return [...this.rules, ...this.required ? [x => !!x || 'Введите значение'] : []]
+    }
+  }
+}
+</script>

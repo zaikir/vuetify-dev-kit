@@ -1,6 +1,0 @@
-export { default as buildGraphqlQuery } from './buildGraphqlQuery'
-export { default as buildHeaders } from './buildHeaders'
-export { default as buildPathToNestedField } from './buildPathToNestedField'
-export { default as buildSortQuery } from './buildSortQuery'
-export { default as deleteRowMutation } from './deleteRowMutation'
-export { default as buildScopedSlots } from './buildScopedSlots'
