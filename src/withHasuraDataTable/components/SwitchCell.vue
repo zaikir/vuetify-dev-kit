@@ -9,7 +9,7 @@ export default {
     return createElement(VSwitch, {
       props: {
         ...context.props,
-        value: context.props.value,
+        inputValue: context.props.value,
         dense: true,
         disabled: true
       },

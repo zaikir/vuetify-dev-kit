@@ -18,7 +18,7 @@ export default ({ createElement, fields, source, $apollo, $scopedSlots, $attrs, 
                 value
               } })
             } else {
-              return value || '—'
+              return (value === undefined || value === null) ? '—' : value
             }
           }
         ])
