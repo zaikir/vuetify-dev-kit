@@ -3,6 +3,8 @@ export default {
   functional: true,
   props: {
     value: String,
+    itemValue: String,
+    itemText: String,
     items: Array
   },
   render (createElement, context) {
