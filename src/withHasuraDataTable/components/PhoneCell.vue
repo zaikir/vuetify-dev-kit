@@ -24,7 +24,7 @@ export default {
   render (createElement, context) {
     if (!context.props.value) { return createElement('span', '—') }
 
-    const phone = formatPhone(context.props.value, this.countryCode, this.sign)
+    const phone = formatPhone(context.props.value, context.props.countryCode, context.props.sign)
     return createElement('a', {
       attrs: {
         href: `tel://${phone.internal}`,
