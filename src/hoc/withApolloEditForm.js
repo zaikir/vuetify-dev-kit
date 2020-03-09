@@ -20,10 +20,12 @@ export default Form => ({
         return this.variables
       },
       update (data) {
-        const result = data[this.queryTag.definitions[0].selectionSet.selections[0].name.value]
-        return result && result.length && {
-          ...result[0],
-          __typename: undefined
+        if (data[this.queryTag.definitions[0].selectionSet.selections[0].name.value]) {
+          const result = data[this.queryTag.definitions[0].selectionSet.selections[0].name.value]
+          return result && result.length && {
+            ...result[0],
+            __typename: undefined
+          }
         }
       },
       skip () {

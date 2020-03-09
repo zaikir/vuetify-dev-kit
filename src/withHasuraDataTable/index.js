@@ -50,10 +50,14 @@ export default {
         return gql(buildGraphqlQuery(this.source, this._fields, this.where))
       },
       update (data) {
-        return data[this.source]
+        if (data[this.source]) {
+          return data[this.source]
+        }
       },
       result ({ data }) {
-        this.totalItems = data[`${this.source}_aggregate`].aggregate.count
+        if (data[`${this.source}_aggregate`]) {
+          this.totalItems = data[`${this.source}_aggregate`].aggregate.count
+        }
       },
       error (error) {
         this.$emit('error', wrapGraphqlError(error))
@@ -88,7 +92,7 @@ export default {
       //   [key]: wrapProp(value, this.context)
       // })))
     },
-    _fields() {
+    _fields () {
       return this.fields.map((field) => {
         if (field.value.includes('*')) {
           const path = buildPathToNestedField(field)
