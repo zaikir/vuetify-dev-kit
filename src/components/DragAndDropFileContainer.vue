@@ -76,8 +76,15 @@
               />
               <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 150px;">
                 <span class="subtitle-2">{{ file.name }}</span>
-                <!-- <span class="caption">{{ formatDate(file.created) }}</span> -->
                 <v-spacer />
+                <v-tooltip bottom>
+                  <template #activator="{on}">
+                    <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="downloadFile(file)">
+                      <v-icon>mdi-download</v-icon>
+                    </v-btn>
+                  </template>
+                  Скачать
+                </v-tooltip>
                 <v-tooltip v-if="!disabled" bottom>
                   <template #activator="{on}">
                     <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
@@ -156,6 +163,7 @@
 
 import VueDropzone from 'nuxt-dropzone'
 import moment from 'moment'
+import fileDownload from 'js-file-download'
 import ConfirmationDialog from './ConfirmationDialog'
 
 export default {
@@ -228,6 +236,11 @@ export default {
     this.windowSize = { width: window.innerWidth, height: window.innerHeight }
   },
   methods: {
+    async downloadFile (file) {
+      const blob = await this.$axios.$get(file.url, { responseType: 'blob' })
+
+      fileDownload(blob, file.name)
+    },
     onWindowResized () {
       this.windowSize = { width: window.innerWidth, height: window.innerHeight }
     },

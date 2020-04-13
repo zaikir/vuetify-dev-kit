@@ -250,8 +250,10 @@ export default {
     this.windowSize = { width: window.innerWidth, height: window.innerHeight }
   },
   methods: {
-    downloadFile (file) {
-      fileDownload(file.url, 'filename.csv')
+    async downloadFile (file) {
+      const blob = await this.$axios.$get(file.url, { responseType: 'blob' })
+
+      fileDownload(blob, file.name)
     },
     onWindowResized () {
       this.windowSize = { width: window.innerWidth, height: window.innerHeight }
