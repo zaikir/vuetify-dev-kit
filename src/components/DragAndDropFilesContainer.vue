@@ -38,7 +38,14 @@
       </vue-dropzone>
     </v-col>
     <v-col cols="12">
-      <draggable :list="value.filter(x => !x.isRemoved)" group="people" class="row" :class="$vuetify.breakpoint.xsOnly ? 'd-flex justify-center' : ''" :disabled="disabled || $vuetify.breakpoint.smAndDown" @change="onReordered">
+      <draggable
+        :list="value.filter(x => !x.isRemoved)"
+        group="people"
+        class="row"
+        :class="$vuetify.breakpoint.xsOnly ? 'd-flex justify-center' : ''"
+        :disabled="disabled || $vuetify.breakpoint.smAndDown"
+        @change="onReordered"
+      >
         <v-col v-for="(file, i) in value.filter(x => !x.isRemoved)" :key="i" cols="auto">
           <v-hover v-slot:default="{ hover }">
             <v-card :class="'pa-1 file-card elevation-' + (!hover ? 1 : 6)" @click="openLink(file)" @click.middle="openLink(file, true)">
@@ -75,17 +82,28 @@
                 height="100"
               />
               <v-card-title class=" pt-2 pl-2 pr-1" style="max-width: 150px;">
-                <span class="subtitle-2">{{ file.name }}</span><br>
+                <span class="subtitle-2">{{ file.name }}</span>
                 <!-- <span class="caption">{{ formatDate(file.created) }}</span> -->
                 <v-spacer />
-                <v-tooltip v-if="!disabled" bottom>
-                  <template #activator="{on}">
-                    <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </template>
-                  Удалить
-                </v-tooltip>
+                <div class="d-flex">
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="downloadFile(file)">
+                        <v-icon>mdi-download</v-icon>
+                      </v-btn>
+                    </template>
+                    Скачать
+                  </v-tooltip>
+                  <v-spacer />
+                  <v-tooltip v-if="!disabled" bottom>
+                    <template #activator="{on}">
+                      <v-btn class="ml-auto" icon small v-on="on" @click.prevent.stop="processedItem=file; isConfirmationDialogOpened = true;">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </template>
+                    Удалить
+                  </v-tooltip>
+                </div>
               </v-card-title>
             </v-card>
           </v-hover>
@@ -157,6 +175,7 @@
 import VueDropzone from 'nuxt-dropzone'
 import draggable from 'vuedraggable'
 import moment from 'moment'
+import fileDownload from 'js-file-download'
 import ConfirmationDialog from './ConfirmationDialog'
 
 export default {
@@ -231,6 +250,9 @@ export default {
     this.windowSize = { width: window.innerWidth, height: window.innerHeight }
   },
   methods: {
+    downloadFile (file) {
+      fileDownload(file.url, 'filename.csv')
+    },
     onWindowResized () {
       this.windowSize = { width: window.innerWidth, height: window.innerHeight }
     },
