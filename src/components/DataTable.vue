@@ -7,7 +7,14 @@
         </h3>
         <v-tooltip v-if="canExport" bottom>
           <template #activator="{on}">
-            <v-btn v-on="on" icon :href="`${source.url}?export=true`" large class="ml-1" target="_blank">
+            <v-btn
+              icon
+              :href="`${source.url}?export=true`"
+              large
+              class="ml-1"
+              target="_blank"
+              v-on="on"
+            >
               <v-icon>mdi-export</v-icon>
             </v-btn>
           </template>
@@ -116,7 +123,7 @@
         <slot :name="`item.${header.value}`" :item="item">
           <template v-if="header.display === 'phone'">
             <template v-if="item[header.value]">
-              <a @click.stop="() => {}" :key="`value-${header.value}`" itemprop="telephone" :href="`tel://${header.countryCode || ''}${item[header.value]}`">
+              <a :key="`value-${header.value}`" itemprop="telephone" :href="`tel://${header.countryCode || ''}${item[header.value]}`" @click.stop="() => {}">
                 {{ formatPhoneNumber(item[header.value], header.countryCode, header.sign) }}
               </a>
             </template>
@@ -126,7 +133,7 @@
           </template>
           <template v-else-if="header.display === 'email'">
             <template v-if="item[header.value]">
-              <a @click.stop="() => {}" :key="`value-${header.value}`" itemprop="email" :href="`mailto://${item[header.value]}`">
+              <a :key="`value-${header.value}`" itemprop="email" :href="`mailto://${item[header.value]}`" @click.stop="() => {}">
                 {{ item[header.value] }}
               </a>
             </template>
@@ -273,7 +280,7 @@
         </div>
       </template>
     </v-data-table>
-    <div v-if="isMobileView" class="text-center pt-2">
+    <div v-if="isMobileView && !hideFooter" class="text-center pt-2">
       <v-pagination v-model="options.page" :length="pageCount" />
     </div>
     <div v-if="canAdd && addButtonProps.type === 'fixed'" style="height:50px" />
