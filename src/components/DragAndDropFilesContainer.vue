@@ -126,12 +126,22 @@
           </v-btn>
         </v-toolbar>
         <v-card-text class="pa-0 d-flex align-center justify-center" :class="{'pa-1':isImage(processedItem.type)}" :style="`height: ${windowSize.height - 50}px`">
-          <v-img v-if="isImage(processedItem.type)" :src="processedItem.url" max-width="100%" max-height="100%" contain />
-          <object v-else-if="processedItem.type === '.pdf'" :data="processedItem.url" type="application/pdf" width="100%" height="100%" />
+          <!-- <v-img v-if="isImage(processedItem.type)" :src="processedItem.url" max-width="100%" max-height="100%" contain /> -->
+          <object v-if="processedItem.type === '.pdf'" :data="processedItem.url" type="application/pdf" width="100%" height="100%" />
           <object v-else :data="processedItem.url" width="100%" height="100%" />
         </v-card-text>
       </v-card>
     </v-dialog>
+    <viewer
+      v-if="images.length"
+      ref="viewer"
+      :images="images"
+      class="viewer"
+      :options="{}"
+      @inited="inited"
+    >
+      <img v-for="src in images" :key="src" :src="src" style="display:none;">
+    </viewer>
     <v-dialog
       v-model="isEditDialogOpened"
       persistent
@@ -177,12 +187,15 @@ import draggable from 'vuedraggable'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import ConfirmationDialog from './ConfirmationDialog'
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer/src/component.vue'
 
 export default {
   components: {
     VueDropzone,
     ConfirmationDialog,
-    draggable
+    draggable,
+    Viewer
   },
   props: {
     value: {
@@ -238,6 +251,9 @@ export default {
     }
   },
   computed: {
+    images () {
+      return this.value.filter(x => !x.isRemoved).filter(x => this.isImage(x.type)).map(x => x.url)
+    },
     dropzoneOptions () {
       return {
         dictDefaultMessage: 'Перетащите сюда файл',
@@ -250,6 +266,9 @@ export default {
     this.windowSize = { width: window.innerWidth, height: window.innerHeight }
   },
   methods: {
+    inited (viewer) {
+      this.$viewer = viewer
+    },
     async downloadFile (file) {
       const blob = await this.$axios.$get(file.url, { responseType: 'blob' })
 
@@ -286,8 +305,12 @@ export default {
     },
     openLink (file, modal) {
       if (!modal) {
-        this.processedItem = file
-        this.isFileModalOpened = true
+        if (this.isImage(file.type)) {
+          this.$viewer.show()
+        } else {
+          this.processedItem = file
+          this.isFileModalOpened = true
+        }
       } else {
         window.open(file.url, '_blank')
       }
