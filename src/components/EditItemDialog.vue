@@ -134,16 +134,24 @@
                   :vertical="$vuetify.breakpoint.xsOnly"
                 >
                   <template v-if="!isMobile">
-                    <v-tab
+                    <v-tooltip
                       v-for="(layout, index) in fieldsData.layouts"
                       :key="index"
-                      ripple
+                      bottom
                     >
-                      <v-icon v-if="layout.icon" class="mr-3">
-                        {{ layout.icon }}
-                      </v-icon>
-                      {{ layout.name }}
-                    </v-tab>
+                      <template v-slot:activator="{ on }">
+                        <v-tab
+                          ripple
+                          v-on="on"
+                        >
+                          <v-icon v-if="layout.icon" class="mr-3">
+                            {{ layout.icon }}
+                          </v-icon>
+                          {{ layout.name }}
+                        </v-tab>
+                      </template>
+                      <span>{{ layout.tooltip }}</span>
+                    </v-tooltip>
                   </template>
                   <v-tab-item
                     v-for="(layout, layoutId) in fieldsData.layouts"
