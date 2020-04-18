@@ -137,6 +137,7 @@
                     <v-tooltip
                       v-for="(layout, index) in fieldsData.layouts"
                       :key="index"
+                      :disabled="!layout.tooltip"
                       bottom
                     >
                       <template v-slot:activator="{ on }">
