@@ -501,43 +501,45 @@ export default {
 
       this.isSaving = true
 
-      const isCreation = !this.sourceArgs && !this.isSaved
-      const savingItem = await this.preSave({
-        item: this.editableItem,
-        isCreation,
-        ...this.context
-      })
+      setTimeout(async () => {
+        const isCreation = !this.sourceArgs && !this.isSaved
+        const savingItem = await this.preSave({
+          item: this.editableItem,
+          isCreation,
+          ...this.context
+        })
 
-      try {
-        if (this.source && savingItem) {
-          if (this.source.url) {
-            if (isCreation) {
-              await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
-            } else {
-              await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
+        try {
+          if (this.source && savingItem) {
+            if (this.source.url) {
+              if (isCreation) {
+                await this.$axios.$post(this.source.url({ id: '' }), savingItem, { progress: false })
+              } else {
+                await this.$axios.$put(this.source.url({ id: '' }), savingItem, { progress: false })
+              }
+            } else if (this.source.patch) {
+              await this.$axios.$patch(
+                this.source.patch.url({ item: savingItem, isCreation, ...this.context }),
+                this.source.patch.body({ item: savingItem, isCreation, ...this.context }), { progress: false }
+              )
             }
-          } else if (this.source.patch) {
-            await this.$axios.$patch(
-              this.source.patch.url({ item: savingItem, isCreation, ...this.context }),
-              this.source.patch.body({ item: savingItem, isCreation, ...this.context }), { progress: false }
-            )
           }
+        } catch (err) {
+          this.isSaving = false
+          return false
         }
-      } catch (err) {
+
+        this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })
+
         this.isSaving = false
-        return false
-      }
+        this.isSaved = true
 
-      this.$emit('onSaved', { item: savingItem, isCreation, ...this.context, isClose: this.closeOnSave || !preventExit })
+        if (this.closeOnSave || !preventExit) {
+          this.onValueChanged(false)
+        }
 
-      this.isSaving = false
-      this.isSaved = true
-
-      if (this.closeOnSave || !preventExit) {
-        this.onValueChanged(false)
-      }
-
-      return true
+        return true
+      }, 100)
     },
     cancelSaving () {
       this.$emit('onCanceled')
