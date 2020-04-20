@@ -340,7 +340,7 @@
     :rules="getRules(field)"
     :required="conditionalFunction(field.required)"
     :placeholder="field.placeholder"
-    :items="field.items || []"
+    :items="conditionalFunction(field.items || [])"
     :label="field.text"
     :chips="field.chips"
     dense
